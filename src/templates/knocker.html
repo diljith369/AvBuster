@@ -8,8 +8,6 @@
      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
 	 <link href='https://fonts.googleapis.com/css?family=Chango' rel='stylesheet'>
 	 <link href='https://fonts.googleapis.com/css?family=Allerta' rel='stylesheet'>
-
-
 <style type="text/css">
 body {
      background-color: #333333;
@@ -24,6 +22,7 @@ div{
                      overflow-y:auto;
                      height:150px;
                   }
+
 
 
 
@@ -74,43 +73,107 @@ border:2px solid #3F515F;
         font-size: 90%;
        }
 
+      
+
 /*Gap*/
 
 </style>
 <script type="text/javascript">
 	       window.onload = function() {
-	       	      
+   
 	       	document.getElementById('rhost').style.display = 'none';
           document.getElementById('rport').style.display = 'none';
           document.getElementById('rhostlbl').style.display = 'none';
           document.getElementById('rportlbl').style.display = 'none';
-        //document.getElementById('ifvirtualalloc').style.display = 'none';
+          document.getElementById('shelltype').style.display = 'none';
+          document.getElementById('ostype').style.display = 'none';
+          document.getElementById('archtype').style.display = 'none';
+          document.getElementById('shelltypelbl').style.display = 'none';
+          document.getElementById('ostypelbl').style.display = 'none';
+          document.getElementById('archtypelbl').style.display = 'none';
+          document.getElementById('fingerprintlbl').style.display = 'none';
+          document.getElementById('fingerprint').style.display = 'none';
+
+        //document.getElementById('psshellcode').style.display = 'none';
         
     }
 
-function shellcodevisibility() {
-    if ((document.getElementById('psvalloc').checked)) {
-        document.getElementById('ifvirtualalloc').style.display = 'block';
+ 
+
+ function visibilitycontrol() {
+ 	var currentoption = jQuery('#evdoptions');
+var select = this.value;
+currentoption.change(function () {
+    if ($(this).val() == 'Virtual Alloc Injection (PowerShell)') {
+        document.getElementById('psshellcode').style.display = 'block';
+         document.getElementById('psshellcodelbl').style.display = 'block';
         document.getElementById('rhost').style.display = 'none';
           document.getElementById('rport').style.display = 'none';
           document.getElementById('rhostlbl').style.display = 'none';
           document.getElementById('rportlbl').style.display = 'none';
+          document.getElementById('shelltype').style.display = 'none';
+          document.getElementById('ostype').style.display = 'none';
+          document.getElementById('archtype').style.display = 'none';
+          document.getElementById('shelltypelbl').style.display = 'none';
+          document.getElementById('ostypelbl').style.display = 'none';
+          document.getElementById('archtypelbl').style.display = 'none';
+           document.getElementById('fingerprintlbl').style.display = 'none';
+          document.getElementById('fingerprint').style.display = 'none';
 
-    } else if ((document.getElementById('psrevcmd').checked)|| (document.getElementById('psVallocencode').checked) || (document.getElementById('gorevcmd').checked) || (document.getElementById('gorevhttpvalloc').checked) || (document.getElementById('gorevhttpsheap').checked)) {
-        document.getElementById('ifvirtualalloc').style.display = 'none';
+
+    } else if (($(this).val() == 'ReverseShell (Go Lang)')) {
+    	 document.getElementById('psshellcode').style.display = 'none';
+    	          document.getElementById('psshellcodelbl').style.display = 'none';
+
         document.getElementById('rhost').style.display = 'block';
           document.getElementById('rport').style.display = 'block';
           document.getElementById('rhostlbl').style.display = 'block';
           document.getElementById('rportlbl').style.display = 'block';
+          document.getElementById('shelltype').style.display = 'block';
+          document.getElementById('ostype').style.display = 'block';
+          document.getElementById('archtype').style.display = 'block';
+           document.getElementById('shelltypelbl').style.display = 'block';
+          document.getElementById('ostypelbl').style.display = 'block';
+          document.getElementById('archtypelbl').style.display = 'block';
+           document.getElementById('fingerprintlbl').style.display = 'none';
+          document.getElementById('fingerprint').style.display = 'none';
 
     } else {
-    	document.getElementById('ifvirtualalloc').style.display = 'none';
-        document.getElementById('rhost').style.display = 'none';
-          document.getElementById('rport').style.display = 'none';
-          document.getElementById('rhostlbl').style.display = 'none';
-          document.getElementById('rportlbl').style.display = 'none';
+    	 document.getElementById('psshellcode').style.display = 'none';
+    	          document.getElementById('psshellcodelbl').style.display = 'none';
+        document.getElementById('rhost').style.display = 'block';
+          document.getElementById('rport').style.display = 'block';
+          document.getElementById('rhostlbl').style.display = 'block';
+          document.getElementById('rportlbl').style.display = 'block';
+          document.getElementById('shelltype').style.display = 'none';
+          document.getElementById('ostype').style.display = 'none';
+          document.getElementById('archtype').style.display = 'none';
+           document.getElementById('shelltypelbl').style.display = 'none';
+          document.getElementById('ostypelbl').style.display = 'none';
+          document.getElementById('archtypelbl').style.display = 'none';
+           document.getElementById('fingerprintlbl').style.display = 'none';
+          document.getElementById('fingerprint').style.display = 'none';
+
     }
-}
+
+});
+ }
+
+function setFingerPrintvisibility() {
+ 	var currentoption = jQuery('#shelltype');
+var select = this.value;
+currentoption.change(function () {
+    if ($(this).val() == 'TCP/TLS(PinnedCert)') {
+        document.getElementById('fingerprintlbl').style.display = 'block';
+        document.getElementById('fingerprint').style.display = 'block';        
+
+    } else {
+    	document.getElementById('fingerprintlbl').style.display = 'none';
+        document.getElementById('fingerprint').style.display = 'none';  
+    }
+});
+ }
+
 </script>
 
 <script type="text/javascript">
@@ -128,135 +191,122 @@ function shellcodevisibility() {
 
 </script>
 
-</head>
 
+</head>
 <body>
-<div class="container"  style="width:90%" >
-	<div class="text-center" style="color: #428bca	; font-family: 'Chango'"><h3> Knocker </h3> </div> <!--end of header-->
-	<div class="container" style="width:60%" >
-			<ul class="nav nav-tabs" id="maintab">
-		             <li><a href="#pshell" data-toggle="tab">Evade Options</a> </li>
-		    </ul> <!-- end of tab options ul-->
-		    
-		    <div class="tab-content">
-		        	<div class="tab-pane active" id="pshelloptions">
-		        		<div class="container" style="width:100%" >
+<div class="container" style="margin-right: auto; margin-left: auto; width: 520px; border: 2px" id="main">
+	<div style="width: 100%">
+		 <div class="row"> 	<div class="col-sm-12">	<h3 style="color: #428bca	; font-family: 'Chango'" class="text-center"> Knocker </h3>	</div>	 </div>
 		        			<form action="" method="post">
 		        				<div class="form-group">
 		        					<div class="row"><p></p></div>
 		        					<div class="row">
-		        						<div class="col-sm-2"></div>
-		        						<div class="col-sm-5">
+		        						<div class="col-sm-12">
 			                 	
 			                 	
 				                    <div class="row"><p></p></div>
-		        							<div class="form-group">
-											    <input name="evadeoptions" value="psValloc" type="radio" onclick="javascript:shellcodevisibility();" id="psvalloc" checked>
-											    <label for="radio105"><p class="gtextblue"> PowerShell</p> Virtual Alloc Injection </label>
-											  
-											</div>	
-											<div class="form-group">
-											    <input name="evadeoptions" value="psVallocencode" type="radio" onclick="javascript:shellcodevisibility();" id="psVallocencode" >
-											    <label for="radio105">VAlloc Injection <span class="gtextblue">(Cmprssd/EnC RevHttp)</span></label>											  
-											</div>									
-											
-											<div class="form-group">
-											    <input name="evadeoptions" value="psRevShell" type="radio" onclick="javascript:shellcodevisibility();" id="psrevcmd" >
-											    <label for="radio103">ReverseShell</label>
-											</div>											
-									<div class="row">
-										
-									</div>
-			              
-              						</div> <!--end of powershellpanel column-->
-              						<div class="col-sm-4">
-              							<div class="row"><p></p></div>
-              							<div class="form-group">
-											    <input name="evadeoptions" value="gorevhttpvalloc" type="radio" onclick="javascript:shellcodevisibility();" id="gorevhttpvalloc">
-											    <label for="radio104" ><p class="gtextblue">Go Lang</p> ReverseHTTP <span class="gtextblue">(VAlloc)</span></label>
-											</div>
-											<div class="form-group">
-											    <input name="evadeoptions" value="gorevhttpsheap" type="radio" onclick="javascript:shellcodevisibility();" id="gorevhttpsheap" >
-											    <label for="radio103" >ReverseHTTPs <span class="gtextblue">(HeapAlloc)</span></label>
-											</div>
-											<div class="form-group">
-											    <input name="evadeoptions" value="goRevShel" type="radio" onclick="javascript:shellcodevisibility();" id="gorevcmd" >
-											    <label for="radio103" >ReverseShell</label>
-											</div>
+				                    <label for="evdoptions"> <span class="gtextblue">Evade Options</span></label>
+				                    <select class="form-control" id="evdoptions" name="evdoptions" onclick="javascript:visibilitycontrol();" >
+				                    	<option>Virtual Alloc Injection (PowerShell)</option>
+										<option>VAlloc Injection (Cmprssd/EnC RevHttp) (PowerShell)</option>
+										<option>ReverseShell (PowerShell)</option>
+										<option>ReverseHTTP (VAlloc) (Go Lang)</option>
+										<option>ReverseHTTPs (HeapAlloc) (Go Lang)</option>
+										<option>ReverseShell (Go Lang)</option>
+				                    </select>
+		        					
+              						</div> <!--end of evade options column-->
+              						
               						</div>
               						<div class="col-sm-2"></div>
 		        					</div>
 
-		        					<div class="row">
-		        						<div class="col-sm-2">
-					        				</div>
-		        						<div class="col-sm-9">
-		        						<div class="form-row" id="ifvirtualalloc" >
-					        						<div class="form-group">
-													  <label for="shellcode">Shell Code</label>
-													  <textarea class="form-control" rows="5" id="shellcode" name="shellcode"></textarea>
-													</div>
-					        					</div>
+		        					<div class="row" >
+		        					    <div class="col-sm-12">
+											<label for="shellcode" id="psshellcodelbl"> <span class="gtextblue">Shell Code </span></label>
+											<textarea class="form-control" rows="5" id="psshellcode" name="shellcode"></textarea>
+					        					
 					        			</div>
 					        				
 		        					</div>
-		        					
 		        					<div class="row">
-		        						<div class="col-sm-2">
-					        				</div>
-		        						<div class="col-sm-7">
-					                  		<label for="rhost" id="rhostlbl">RHost</label>
+		        						
+		        						<div class="col-sm-5">
+					                  		<label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type </span></label>
+					                  		 <select class="form-control" id="shelltype" name="shelltype" onclick="javascript:setFingerPrintvisibility();" >
+						                    	<option>TCP</option>
+												<option>TCP/TLS(PinnedCert)</option>
+												<option>HTTPS</option>												
+				                    		</select>
+					                  		
+				                  		</div>
+				                  		<div class="col-sm-4">
+					                  		<label for="ostype" id="ostypelbl"> <span class="gtextblue">OS </span></label>
+					                  		 <select class="form-control" id="ostype" name="ostype" >
+						                    	<option>Windows</option>
+												<option>Linux</option>
+				                    		</select>
+				                  		</div>
+				                  		<div class="col-sm-3">
+					                  		<label for="archtype" id="archtypelbl"> <span class="gtextblue">Arch</span></label>
+					                  		 <select class="form-control" id="archtype" name="archtype" >
+						                    	<option>32</option>
+												<option>64</option>
+				                    		</select>
+				                  		</div>
+				                  		
+
+		        					</div>
+		        					<div class="row"><p></p></div>
+		        					<div class="row">
+		        						
+					        				<div class="col-sm-12">
+					        				
+				        						<label for="fingerprint" id="fingerprintlbl"> <span class="gtextblue">Certificate FingerPrint </span></label>
+							                  	<input type="text" name="fingerprint" class="form-control" id="fingerprint"  placeholder="openssl x509 -fingerprint -sha256 -noout -in server.crt">
+					                  	</div>
+		        					</div>
+		        					<div class="row"><p></p></div>
+		        					<div class="row">
+		        						<div class="col-sm-10">
+					                  		<label for="rh6ost" id="rhostlbl"> <span class="gtextblue">RHost </span></label>
 					                  		<input type="text" name="rhost" class="form-control" id="rhost"  placeholder="Remote Server IP">
 				                  		</div>
 				                  		<div class="col-sm-2">
-					                  		<label for="rport" id="rportlbl">RPort</label>
+					                  		<label for="rport" id="rportlbl"> <span class="gtextblue">RPort </span></label>
 					                  		<input type="text" name="rport" class="form-control" id="rport"  placeholder="Port">
 				                  		</div>
-				                  		<div class="col-sm-2">
-					        				</div>
+
+				                  			
+				                  		
 				                  	</div>
 				                  	<div class="row"><p></p></div>
 				                  	<div class="row">
-		        						<div class="col-sm-2">
-					        				</div>
-		        						<div class="col-sm-9">
-		        						<div class="form-row" id="saveas" >
-					        						<div class="form-group">
-													  <label for="saveas">Save as</label>
-													  <input type="text" class="form-control" rows="5" id="saveas" name="saveas" placeholder="Please specify file name only. (No Extension)">
-													</div>
-					        					</div>
+		        						
+		        						<div class="col-sm-12">
+													  <label for="saveas"> <span class="gtextblue">Save as </span></label>
+													  <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
 					        			</div>
 					        				
 		        					</div>
 
 				                  	<div class="row"><p></p></div>
 				                  	<div class="row">
-				                  		<div class="col-sm-2">
-					        				</div>
-				                  		<div class="col-sm-9">
+				                  		<div class="col-sm-12">
 				                  			<button type="submit" class="btn btn-primary form-control">Generate</button>
 				                  		</div>
 				                  		
 				                  	</div>
+
 				                  	<div class="row">
-				                  		<div class="col-sm-2">
-					        				</div>
+				                  		
 				                  		<div class="col-sm-7">
-				                  			<label class="form-row justify-content-md-center" name="downloadlink"><a href={{.Link}}>Download</a></label>
+				                  			<label class="form-row justify-content-md-center" name="downloadlink"><a href={{.Link}}> <span class="gtextblue">Download </span></a></label>
 				                  		</div>
 				                  	</div>
-
-
-			                	</div>
 		        			</form>
-		        		</div>
-		        	</div>
-		    </div> 
-    </div>   		
-</div>  <!--end of main container div-->
 
-
-
+</div>
+			                	</div>
 </body>
 </html>
