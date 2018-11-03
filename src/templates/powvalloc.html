@@ -29,11 +29,11 @@
             </div>
 
             <ul class="list-unstyled components">
-                    <li class="active">
+                    <li>
                             <a href="/">Home</a>
     
                     </li>
-                <li>
+                <li class="active">
                     <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">PowerShell</a>
                     <ul class="collapse list-unstyled" id="homeSubmenu">
                         <li>
@@ -75,19 +75,49 @@
 
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <div class="container" style="width:55%"> <h4><span>The Anti Malware Assessment Framework</span></h4></div>
+                            <div class="container" style="width:45%"> <h4><span>PowerShell Virtual Alloc Injection</span></h4></div>
                         </div>
                 </div>
             </nav>
-            <div class="container" style="width:75%"> 
-                    <p>Knocker is an anti malware assessment framework packed with several options that helps the user to create different types of executable files
-                       that can be used to test on both Windows and Linux platforms. Current version supports three PowerShell options to create exe files to assess Windows
-                       based anti malwares and go lang options to create both Windows and Linux executables to assess anti malwares.
-                       It is open source. Feel free to download and test it.
-                       <br> You can find it here <a href="https://github.com/diljithishere/knocker.git">GitHub</a>
+                    <p>
+                            <div class="container" style="width:75%">
+
+                        <form action="" method="post">
+                                <div class="row" >
+		        					    <div class="col-sm-12">
+											<label for="shellcode" id="psshellcodelbl"> <span>Shell Code </span></label>
+											<textarea class="form-control" rows="10" id="psshellcode" name="shellcode"></textarea>
+					        					
+					        			</div>
+					        				
+                                </div>
+                                <div class="row"><p></p></div>
+				                  	<div class="row">
+		        						
+		        						<div class="col-sm-12">
+													  <label for="saveas"> <span>Save as </span></label>
+													  <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+					        			</div>
+					        				
+		        					</div>
+
+				                  	<div class="row"><p></p></div>
+				                  	<div class="row">
+				                  		<div class="col-sm-12">
+				                  			<button type="submit" class="btn btn-primary form-control">Generate</button>
+				                  		</div>
+				                  		
+				                  	</div>
+
+                        </form>
+                        <div class="row">
+				                  		
+                                <div class="col-sm-2">
+                                    <label class="form-row justify-content-md-center" name="downloadlink"><a href={{.Link}}> <span style="color:royalblue;font-weight: bold">Download </span></a></label>
+                                </div>
+                            </div> </div>
                     </p>
 
-            </div>
 
         </div>
     </div>

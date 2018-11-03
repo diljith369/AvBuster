@@ -29,7 +29,7 @@
             </div>
 
             <ul class="list-unstyled components">
-                    <li class="active">
+                    <li>
                             <a href="/">Home</a>
     
                     </li>
@@ -47,7 +47,7 @@
                         </li>
                     </ul>
                 </li>
-                <li>
+                <li class="active">
                     <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Go Lang</a>
                     <ul class="collapse list-unstyled" id="pageSubmenu">
                         <li>
@@ -61,8 +61,7 @@
                         </li>
                     </ul>
                 </li>
-                
-               
+                               
             </ul>
 
         </nav>
@@ -75,16 +74,50 @@
 
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <div class="container" style="width:55%"> <h4><span>The Anti Malware Assessment Framework</span></h4></div>
+                            <div class="container" style="width:35%"> <h4><span>Go Lang Reverse Http</span></h4></div>
                         </div>
                 </div>
             </nav>
-            <div class="container" style="width:75%"> 
-                    <p>Knocker is an anti malware assessment framework packed with several options that helps the user to create different types of executable files
-                       that can be used to test on both Windows and Linux platforms. Current version supports three PowerShell options to create exe files to assess Windows
-                       based anti malwares and go lang options to create both Windows and Linux executables to assess anti malwares.
-                       It is open source. Feel free to download and test it.
-                       <br> You can find it here <a href="https://github.com/diljithishere/knocker.git">GitHub</a>
+                    <p>
+                            <div class="container" style="width:75%">
+ 
+                        <form action="" method="post">
+		        					<div class="row">
+		        						<div class="col-sm-10">
+					                  		<label for="rhost" id="rhostlbl"> <span class="gtextblue">RHost </span></label>
+					                  		<input type="text" name="rhost" class="form-control" id="rhost"  placeholder="Remote Server IP">
+				                  		</div>
+				                  		<div class="col-sm-2">
+					                  		<label for="rport" id="rportlbl"> <span class="gtextblue">RPort </span></label>
+					                  		<input type="text" name="rport" class="form-control" id="rport"  placeholder="Port">
+				                  		</div>
+				                  	</div>
+                                <div class="row"><p></p></div>
+				                  	<div class="row">
+		        						
+		        						<div class="col-sm-12">
+													  <label for="saveas"> <span>Save as </span></label>
+													  <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+					        			</div>
+					        				
+		        					</div>
+
+				                  	<div class="row"><p></p></div>
+				                  	<div class="row">
+				                  		<div class="col-sm-12">
+				                  			<button type="submit" class="btn btn-primary form-control">Generate</button>
+				                  		</div>
+				                  		
+				                  	</div>
+
+                        </form>
+                        <div class="row">
+				                  		
+                                <div class="col-sm-2">
+                                    <label class="form-row justify-content-md-center" name="downloadlink"><a href={{.Link}}> <span style="color:royalblue;font-weight: bold">Download </span></a></label>
+                                </div>
+                            </div>
+                            </div>
                     </p>
 
             </div>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>AV Assessment Framework</title>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+	 <link href='https://fonts.googleapis.com/css?family=Chango' rel='stylesheet'>
+	 <link href='https://fonts.googleapis.com/css?family=Allerta' rel='stylesheet'>
+	 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<style type="text/css">
+body {
+     background-color: #333333;
+     font-family: 'Allerta';
+}
+div{
+  background-color: #333333;
+  color: #D3D3D3;
+}
+
+.sidenav {
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    z-index: 1;
+    top: 90px;
+    left: 0;
+    background-color: #333333;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+h4{letter-spacing:2px;font-weight:400; color: tan}
+
+/* Style the sidenav links and the dropdown button */
+.sidenav a, .dropdown-btn {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 20px;
+    color: #818181;
+    display: block;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+}
+
+/* On mouse-over */
+.sidenav a:hover, .dropdown-btn:hover {
+    color: #f1f1f1;
+}
+
+/* Main content */
+.main {
+    margin-left: 200px; /* Same as the width of the sidenav */
+    font-size: 20px; /* Increased text to enable scrolling */
+    padding: 0px 10px;
+}
+
+/* Add an active class to the active dropdown button */
+.active {
+    background-color: darkgray;
+    color: aliceblue;
+}
+
+/* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+.dropdown-container {
+    display: none;
+    background-color: #262626;
+    padding-left: 8px;
+}
+
+/* Optional: Style the caret down icon */
+.fa-caret-down {
+    float: right;
+    padding-right: 8px;
+}
+
+/* Some media queries for responsiveness */
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+#PowerShell {
+                     overflow-y:auto;
+                     height:150px;
+                  }
+
+
+
+
+.nav-tabs > li > a{
+ 
+border-radius: 5px;
+color : #D3D3D3; 
+}
+
+.nav-tabs > li > a:hover{
+ 
+background-color: #393939 !important;
+ 
+border-radius: 5px;
+ 
+color:#D3D3D3;
+ 
+border:1px solid black;
+ 
+}
+.nav-tabs > li.active > a,
+ 
+.nav-tabs > li.active > a:focus,
+ 
+.nav-tabs > li.active > a:hover{
+ 
+background-color: #393939 !important;
+ 
+color:#D3D3D3;
+ 
+border:2px solid #3F515F;
+ 
+}
+.gtext3 {
+          color: #D3D3D3	;
+          text-shadow: 0px 1px 0px lightgray;
+          font-size: 90%;
+         }
+
+.gtext {
+        color: #D3D3D3;
+        text-shadow: 0px 1px 0px #D3D3D3;
+        font-size: 90%;
+       }
+       .gtextblue {
+        color:aliceblue	;
+        font-size: 65%;
+       }
+
+   h1{color:aliceblue;font-size:55px;letter-spacing:-2px;text-indent:105px;font-weight:400;line-height:1em;margin-bottom:20px;text-shadow:-8px 15px 8px rgba(0,0,0,0.4)}   
+
+/*Gap*/
+
+</style>
+<script type="text/javascript">
+	       window.onload = function() {
+   
+	       	document.getElementById('rhost').style.display = 'none';
+          document.getElementById('rport').style.display = 'none';
+          document.getElementById('rhostlbl').style.display = 'none';
+          document.getElementById('rportlbl').style.display = 'none';
+          document.getElementById('shelltype').style.display = 'none';
+          document.getElementById('ostype').style.display = 'none';
+          document.getElementById('archtype').style.display = 'none';
+          document.getElementById('shelltypelbl').style.display = 'none';
+          document.getElementById('ostypelbl').style.display = 'none';
+          document.getElementById('archtypelbl').style.display = 'none';
+          document.getElementById('fingerprintlbl').style.display = 'none';
+          document.getElementById('fingerprint').style.display = 'none';
+
+        //document.getElementById('psshellcode').style.display = 'none';
+        
+    }
+
+ 
+
+ function visibilitycontrol() {
+ 	var currentoption = jQuery('#evdoptions');
+var select = this.value;
+currentoption.change(function () {
+    if ($(this).val() == 'Virtual Alloc Injection (PowerShell)') {
+        document.getElementById('psshellcode').style.display = 'block';
+         document.getElementById('psshellcodelbl').style.display = 'block';
+        document.getElementById('rhost').style.display = 'none';
+          document.getElementById('rport').style.display = 'none';
+          document.getElementById('rhostlbl').style.display = 'none';
+          document.getElementById('rportlbl').style.display = 'none';
+          document.getElementById('shelltype').style.display = 'none';
+          document.getElementById('ostype').style.display = 'none';
+          document.getElementById('archtype').style.display = 'none';
+          document.getElementById('shelltypelbl').style.display = 'none';
+          document.getElementById('ostypelbl').style.display = 'none';
+          document.getElementById('archtypelbl').style.display = 'none';
+           document.getElementById('fingerprintlbl').style.display = 'none';
+          document.getElementById('fingerprint').style.display = 'none';
+
+
+    } else if (($(this).val() == 'ReverseShell (Go Lang)')) {
+    	 document.getElementById('psshellcode').style.display = 'none';
+    	          document.getElementById('psshellcodelbl').style.display = 'none';
+
+        document.getElementById('rhost').style.display = 'block';
+          document.getElementById('rport').style.display = 'block';
+          document.getElementById('rhostlbl').style.display = 'block';
+          document.getElementById('rportlbl').style.display = 'block';
+          document.getElementById('shelltype').style.display = 'block';
+          document.getElementById('ostype').style.display = 'block';
+          document.getElementById('archtype').style.display = 'block';
+           document.getElementById('shelltypelbl').style.display = 'block';
+          document.getElementById('ostypelbl').style.display = 'block';
+          document.getElementById('archtypelbl').style.display = 'block';
+           document.getElementById('fingerprintlbl').style.display = 'none';
+          document.getElementById('fingerprint').style.display = 'none';
+
+    } else {
+    	 document.getElementById('psshellcode').style.display = 'none';
+    	          document.getElementById('psshellcodelbl').style.display = 'none';
+        document.getElementById('rhost').style.display = 'block';
+          document.getElementById('rport').style.display = 'block';
+          document.getElementById('rhostlbl').style.display = 'block';
+          document.getElementById('rportlbl').style.display = 'block';
+          document.getElementById('shelltype').style.display = 'none';
+          document.getElementById('ostype').style.display = 'none';
+          document.getElementById('archtype').style.display = 'none';
+           document.getElementById('shelltypelbl').style.display = 'none';
+          document.getElementById('ostypelbl').style.display = 'none';
+          document.getElementById('archtypelbl').style.display = 'none';
+           document.getElementById('fingerprintlbl').style.display = 'none';
+          document.getElementById('fingerprint').style.display = 'none';
+
+    }
+
+});
+ }
+
+function setFingerPrintvisibility() {
+ 	var currentoption = jQuery('#shelltype');
+var select = this.value;
+currentoption.change(function () {
+    if ($(this).val() == 'TCP/TLS(PinnedCert)') {
+        document.getElementById('fingerprintlbl').style.display = 'block';
+        document.getElementById('fingerprint').style.display = 'block';        
+
+    } else {
+    	document.getElementById('fingerprintlbl').style.display = 'none';
+        document.getElementById('fingerprint').style.display = 'none';  
+    }
+});
+ }
+
+</script>
+
+<script type="text/javascript">
+        $(document).ready(function(){
+            $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+                localStorage.setItem('activeTab', $(e.target).attr('href'));
+            });
+            var activeTab = localStorage.getItem('activeTab');
+            if(activeTab){
+                $('#maintab a[href="' + activeTab + '"]').tab('show');
+            }
+        });
+
+
+
+</script>
+
+
+
+
+</head>
+<body>
+		<div class="sidenav">
+				<button class="dropdown-btn">PowerShell 
+				  <i class="fa fa-caret-down"></i>
+				</button>
+				<div class="dropdown-container">
+				  <a href="#">VAlloc Injection</a>
+				  <a href="#">Reverse HTTP</a>
+				  <a href="#">Reverse Shell</a>
+				</div>
+				<button class="dropdown-btn">Go Lang 
+						<i class="fa fa-caret-down"></i>
+					  </button>
+					  <div class="dropdown-container">
+						<a href="#">Reverse HTTP</a>
+						<a href="#">Reverse HTTPS</a>
+						<a href="#">Reverse Shell</a>
+					  </div>
+					  <a href="#about">About</a>
+					</div>
+<div class="main" id="main">
+<div class="container" style="margin-right: auto; margin-left: auto; width: 620px; border: 2px" >
+	<div style="width: 80%">
+		 <div class="row"> 	<div class="col-sm-12"><h1>KNOCKER</h1> 	</div>	 </div>
+		        			<form action="" method="post">
+		        				<div class="form-group">
+		        					<div class="row"><p></p></div>
+		        					<div class="row">
+		        						<div class="col-sm-12">
+			                 	
+			                 	
+				                    <div class="row"><p></p></div>
+				                    <label for="evdoptions"> <span class="gtextblue">Evade Options</span></label>
+				                    <select class="form-control" id="evdoptions" name="evdoptions" onclick="javascript:visibilitycontrol();" >
+				                    	<option>Virtual Alloc Injection (PowerShell)</option>
+										<option>VAlloc Injection (Cmprssd/EnC RevHttp) (PowerShell)</option>
+										<option>ReverseShell (PowerShell)</option>
+										<option>ReverseHTTP (VAlloc) (Go Lang)</option>
+										<option>ReverseHTTPs (HeapAlloc) (Go Lang)</option>
+										<option>ReverseShell (Go Lang)</option>
+				                    </select>
+		        					
+              						</div> <!--end of evade options column-->
+              						
+              						</div>
+              						<div class="col-sm-2"></div>
+		        					</div>
+
+		        					<div class="row" >
+		        					    <div class="col-sm-12">
+											<label for="shellcode" id="psshellcodelbl"> <span class="gtextblue">Shell Code </span></label>
+											<textarea class="form-control" rows="5" id="psshellcode" name="shellcode"></textarea>
+					        					
+					        			</div>
+					        				
+		        					</div>
+		        					<div class="row">
+		        						
+		        						<div class="col-sm-5">
+					                  		<label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type </span></label>
+					                  		 <select class="form-control" id="shelltype" name="shelltype" onclick="javascript:setFingerPrintvisibility();" >
+						                    	<option>TCP</option>
+												<option>TCP/TLS(PinnedCert)</option>
+												<option>HTTPS</option>												
+				                    		</select>
+					                  		
+				                  		</div>
+				                  		<div class="col-sm-4">
+					                  		<label for="ostype" id="ostypelbl"> <span class="gtextblue">OS </span></label>
+					                  		 <select class="form-control" id="ostype" name="ostype" >
+						                    	<option>Windows</option>
+												<option>Linux</option>
+				                    		</select>
+				                  		</div>
+				                  		<div class="col-sm-3">
+					                  		<label for="archtype" id="archtypelbl"> <span class="gtextblue">Arch</span></label>
+					                  		 <select class="form-control" id="archtype" name="archtype" >
+						                    	<option>32</option>
+												<option>64</option>
+				                    		</select>
+				                  		</div>
+				                  		
+
+		        					</div>
+		        					<div class="row"><p></p></div>
+		        					<div class="row">
+		        						
+					        				<div class="col-sm-12">
+					        				
+				        						<label for="fingerprint" id="fingerprintlbl"> <span class="gtextblue">Certificate FingerPrint </span></label>
+							                  	<input type="text" name="fingerprint" class="form-control" id="fingerprint"  placeholder="openssl x509 -fingerprint -sha256 -noout -in server.crt">
+					                  	</div>
+		        					</div>
+		        					<div class="row"><p></p></div>
+		        					<div class="row">
+		        						<div class="col-sm-10">
+					                  		<label for="rhost" id="rhostlbl"> <span class="gtextblue">RHost </span></label>
+					                  		<input type="text" name="rhost" class="form-control" id="rhost"  placeholder="Remote Server IP">
+				                  		</div>
+				                  		<div class="col-sm-2">
+					                  		<label for="rport" id="rportlbl"> <span class="gtextblue">RPort </span></label>
+					                  		<input type="text" name="rport" class="form-control" id="rport"  placeholder="Port">
+				                  		</div>
+
+				                  			
+				                  		
+				                  	</div>
+				                  	<div class="row"><p></p></div>
+				                  	<div class="row">
+		        						
+		        						<div class="col-sm-12">
+													  <label for="saveas"> <span class="gtextblue">Save as </span></label>
+													  <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+					        			</div>
+					        				
+		        					</div>
+
+				                  	<div class="row"><p></p></div>
+				                  	<div class="row">
+				                  		<div class="col-sm-12">
+				                  			<button type="submit" class="btn btn-primary form-control">Generate</button>
+				                  		</div>
+				                  		
+				                  	</div>
+
+				                  	<div class="row">
+				                  		
+				                  		<div class="col-sm-7">
+				                  			<label class="form-row justify-content-md-center" name="downloadlink"><a href={{.Link}}> <span class="gtextblue">Download </span></a></label>
+				                  		</div>
+				                  	</div>
+		        			</form>
+
+</div>
+</div>
+								</div>
+								
+
+								
+<script>
+		/* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
+		var dropdown = document.getElementsByClassName("dropdown-btn");
+		var i;
+		
+		for (i = 0; i < dropdown.length; i++) {
+		  dropdown[i].addEventListener("click", function() {
+			this.classList.toggle("active");
+			var dropdownContent = this.nextElementSibling;
+			if (dropdownContent.style.display === "block") {
+			  dropdownContent.style.display = "none";
+			} else {
+			  dropdownContent.style.display = "block";
+			}
+		  });
+		}
+		</script>
+</body>
+</html>
