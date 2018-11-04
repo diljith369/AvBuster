@@ -79,6 +79,10 @@ func fpowrev(httpw http.ResponseWriter, req *http.Request) {
 		time.Sleep(5000 * time.Millisecond)
 		dwnloadlink.Link = "download/" + saveas + ".exe"
 		os.Remove("outfiles/rev.go")
+		err = powrev.Execute(httpw, dwnloadlink)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
@@ -105,6 +109,10 @@ func fpowvalloc(httpw http.ResponseWriter, req *http.Request) {
 		time.Sleep(5000 * time.Millisecond)
 		dwnloadlink.Link = "download/" + saveas + ".exe"
 		os.Remove("outfiles/psvalloc.go")
+		err = powvalloc.Execute(httpw, dwnloadlink)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
@@ -134,6 +142,10 @@ func fpowrevhttp(httpw http.ResponseWriter, req *http.Request) {
 		createencodedpsvirtualallocpayload(encstring, saveas)
 		time.Sleep(5000 * time.Millisecond)
 		dwnloadlink.Link = "download/" + saveas + ".exe"
+		err = powrevhttp.Execute(httpw, dwnloadlink)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
@@ -163,6 +175,10 @@ func fgorevhttp(httpw http.ResponseWriter, req *http.Request) {
 		dwnloadlink.Link = "download/" + saveas + ".exe"
 		time.Sleep(5000 * time.Millisecond)
 		os.Remove("outfiles/gorevhttp.go")
+		err = gorevhttp.Execute(httpw, dwnloadlink)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
@@ -192,6 +208,10 @@ func fgorevhttps(httpw http.ResponseWriter, req *http.Request) {
 		dwnloadlink.Link = "download/" + saveas + ".exe"
 		time.Sleep(5000 * time.Millisecond)
 		os.Remove("outfiles/gorevhttps.go")
+		err = gorevhttps.Execute(httpw, dwnloadlink)
+		if err != nil {
+			fmt.Println(err)
+		}
 
 	}
 }
@@ -222,6 +242,7 @@ func fgorev(httpw http.ResponseWriter, req *http.Request) {
 		} else {
 			archtype = "amd64"
 		}
+		fmt.Println(archtype)
 
 		fprint := req.Form.Get("fingerprint")
 
@@ -253,6 +274,10 @@ func fgorev(httpw http.ResponseWriter, req *http.Request) {
 
 		time.Sleep(5000 * time.Millisecond)
 		dwnloadlink.Link = downloadlink
+		err = gorev.Execute(httpw, dwnloadlink)
+		if err != nil {
+			fmt.Println(err)
+		}
 		/*gofiles, err := filepath.Glob("outfiles/*.go")
 		if err != nil {
 			fmt.Println(err)
