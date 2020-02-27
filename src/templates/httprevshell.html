@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>AVBUSTER - The Anti Malware assessment framework.</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+
+    <!-- Font Awesome JS -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <!-- Sidebar Holder -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h1>AVBUSTER</h1>
+            </div>
+
+            <ul class="list-unstyled components">
+            <li>
+                <a href="/">Home</a>
+            </li>
+            <li>
+                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Microsoft Shells</a>
+                    <ul class="collapse list-unstyled" id="homeSubmenu">
+                        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">PowerShell Shells</a>
+                        <ul class="collapse list-unstyled" id="pageSubmenu">
+                           <ul>
+                                <li>
+                                    <a href="/powershellcustomshellcode">PS Custom Shell Code</a>
+                                </li>
+                                <li>
+                                    <a href="/powershelltcpreverseshell">PS TCP Reverse Shell</a>
+                                </li>
+                        </ul>
+                        </ul>
+                        <a href="#msother" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">MS Other Shells</a>
+                    <ul class="collapse list-unstyled" id="msother">
+                           <ul>
+                                <li>
+                                    <a href="/msbuild">MS Build</a>
+                                </li>
+                                <li>
+                                    <a href="/installutil">InstallUtil</a>
+                                </li>
+                                <li>
+                                    <a href="/msxmlxslt">MS XmlXslt</a>
+                                </li>
+                                <li>
+                                    <a href="/msforfiles">ForFiles</a>
+                                </li>
+                         </ul>
+                        </ul>
+                    </ul>
+                   
+                    
+            </li>
+
+                <li class="active">
+                    <a href="#othermainmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Other Shells</a>
+                    <ul class="collapse list-unstyled" id="othermainmenu">
+                        <a href="#othertcpsubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">TCP Shells</a>
+                        <ul class="collapse list-unstyled" id="othertcpsubmenu">
+                            <ul>
+                                <li>
+                                    <a href="/tcprevshell">Normal Shell</a>
+                                </li>
+                                <li>
+                                    <a href="/hybridencshell">Hyrbid Encrypted Shell</a>
+                                </li>
+                            </ul>
+
+                        </ul>
+                        <a href="#othersubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">HTTP Shells</a>
+                        <ul class="collapse list-unstyled" id="othersubmenu">
+                            <ul>
+                                <li>
+                                    <a href="/httprevshell">Normal Http Shell</a>
+                                </li>
+                                <li>
+                                    <a href="/httpmeterpretershell">Meterpreter Http Shell</a>
+                                </li>
+                            </ul>
+
+                        </ul>
+                        <a href="#otherhttpssubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">HTTPS Shells</a>
+                        <ul class="collapse list-unstyled" id="otherhttpssubmenu">
+                            <ul>
+                                <li>
+                                    <a href="/httprevshell">Pinned Cert Shell</a>
+                                </li>
+                                <li>
+                                    <a href="/httpmeterpretershell">Meterpreter Https Shell</a>
+                                </li>
+                            </ul>
+
+                        </ul>
+                    </ul>
+                   
+                </li>
+ 
+                <li>
+                    <a href="/customencryptedshell">Your Encrypted ShellCode</a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+         <!-- Page Content Holder -->
+         <div id="content">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <div class="container" style="width:75%"> <h4><span>HTTP Reverse Shell</span></h4></div>
+                        </div>
+                </div>
+            </nav>
+                    <p>
+                            <div class="container" style="width:75%">
+ 
+                        <form action="" method="post">
+		        					<div class="row">
+		        						<div class="col-sm-10">
+					                  		<label for="rhost" id="rhostlbl"> <span class="gtextblue">RHOST</span></label>
+					                  		<input type="text" name="rhost" class="form-control" id="rhost"  placeholder="Remote Server IP">
+				                  		</div>
+				                  		<div class="col-sm-2">
+					                  		<label for="rport" id="rportlbl"> <span class="gtextblue">RPORT </span></label>
+					                  		<input type="text" name="rport" class="form-control" id="rport"  placeholder="Port">
+				                  		</div>
+				                  	</div>
+                                <div class="row"><p></p></div>
+				                  	<div class="row">
+		        						
+		        						<div class="col-sm-12">
+													  <label for="saveas"> <span>Save as </span></label>
+													  <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+					        			</div>
+					        				
+		        					</div>
+
+				                  	<div class="row"><p></p></div>
+				                  	<div class="row">
+				                  		<div class="col-sm-12">
+				                  			<button type="submit" class="btn btn-primary form-control">Generate</button>
+				                  		</div>
+				                  		
+				                  	</div>
+
+                        </form>
+                        <div class="row">
+				                  		
+                                <div class="col-sm-2">
+                                    <label class="form-row justify-content-md-center" name="downloadlink"><a href={{.Link}}> <span style="color:royalblue;font-weight: bold">Download </span></a></label>
+                                </div>
+                            </div>
+                            </div>
+                    </p>
+
+            </div>
+    </div>
+
+    <!-- jQuery CDN - Slim version (=without AJAX) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- Popper.JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+                $(this).toggleClass('active');
+            });
+        });
+    </script>
+</body>
+
+</html>

