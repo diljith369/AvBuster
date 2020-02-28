@@ -316,7 +316,7 @@ const BUFFSIZE = 512
 //MASKMANAGERIP connection string to the maskmanager
 const MASKMANAGERIP = "REVIPPORT"
 
-//PINNEDFPRINT fingerprint pinning to escape from MITM
+//PINNEDCERT fingerprint pinning to escape from MITM
 const PINNEDKEY = "FPRINT"
 
 func main() {
