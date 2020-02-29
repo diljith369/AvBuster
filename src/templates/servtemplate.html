@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+    <title>Server</title>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
+	 <link href='https://fonts.googleapis.com/css?family=Chango' rel='stylesheet'>
+	 <link href='https://fonts.googleapis.com/css?family=Allerta' rel='stylesheet'>
+
+
+<style type="text/css">
+body {
+     background-color: #333333;
+     font-family: 'Allerta';
+}
+div{
+  background-color: #333333;
+  color: #D3D3D3;
+}
+.gtext3 {
+          color: #D3D3D3	;
+          text-shadow: 0px 1px 0px lightgray;
+          font-size: 90%;
+         }
+.gtext {
+        color: #D3D3D3;
+        text-shadow: 0px 1px 0px #D3D3D3;
+        font-size: 90%;
+       }
+       .gtextblue {
+        color: #428bca	;
+        text-shadow: 0px 1px 0px #428bca;
+        font-size: 90%;
+       }
+/*Gap*/
+</style>
+
+<script>
+	$(document).ready(function(){
+					$('#cmdform').keydown(function(e) {
+						var cmd = $("#cmd").val();
+						//alert(cmd)
+						var key = (e.keyCode ? e.keyCode : e.which);
+						//alert(key)
+						if (key == 13) {
+							if (cmd == "") {
+								alert("Please enter a command to execute...");
+							} else {
+							$('#cmdform').submit();
+							//alert("Form Submitted ...!!");
+							}
+						return false;
+						}
+});
+});
+</script>
+
+
+</head>
+
+<body>
+<div class="container"  style="width:90%" >
+	<div class="text-center" style="color: #428bca	; font-family: 'Chango'"><h3> Manage Server  </h3> </div> <!--end of header-->
+	<div class="container" style="width:50%" >
+		<form action="" method="post" id="cmdform" name="cmdform">
+			<div class="container" style="width:100%" >
+				<div class="row">
+					<div class="col-sm-10">
+						 <label id="serverlbl">Server commands.</label>
+			    		 <input type="text" class="form-control" name="cmd" id="cmd" value= {{.Command}}>
+					</div>					
+				</div>
+				
+				</div>
+			</div>
+		</form>
+    </div>   		
+</div>  <!--end of main container div-->
+
+
+
+</body>
+</html>

