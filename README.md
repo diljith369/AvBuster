@@ -1,24 +1,19 @@
-# Knocker - Endpoint Security Assessment Framework .
+## AvBuster - Endpoint Security Assessment Framework .
 
-#####  Knocker is an EndPoint Security Assessment Framework .User can create different types of executable files that will help to assess endpoints by trying different techniques to bypass endpoint protections including AntiVirus .Current version has 6 options 3 Powershell and 5 Go Lang Techniques .
+#####  AvBuster is an EndPoint Security Assessment Framework .Helps you to create serveral binary files to assess endpoint protection / anti malware solutions by trying different techniques to bypass endpoint protections including AntiVirus .Current version has 6 options 3 Powershell and 5 Go Lang Techniques .
 
 ## Getting Started
 
-##### git clone https://github.com/diljithishere/knocker.git
-##### cd knocker/src
-#### Open apiconfig.cfg under src\config folder and update your IP address 
+##### git clone https://github.com/diljith369/AvBuster.git
+##### cd AvBuster/src
 ### Set it up in Windows 
 #### set GOARCH=386
-#### go build knocker.go
-##### > knocker.exe
+#### go build avbustercli.go
+##### > avbustercli.exe
 
 ### Set it up in Linux 
-#### go build knocker.go
-##### ./knocker
-
-##### Use your browser to access : http://localhost:8085
-#### Virtual Alloc Injection : Inject windows/meterpreter/reverse_http powershell shell code, all other options need only RHOST and RPORT
-
+#### go build avbustercli.go
+##### ./avbustercli
 
 ### Prerequisites
 
@@ -31,4 +26,4 @@
 
 ### Author
 
-#### * **Diljith S** - *Initial work* - (https://github.com/diljithishere)
+#### * **Diljith S** - *Initial work* - (https://github.com/diljith369)
