@@ -1,0 +1,310 @@
+/*
+    DEMO STYLE
+*/
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: black;
+
+}
+
+p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color:aliceblue;
+}
+
+a, a:hover, a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.navbar {
+    padding: 10px 10px;
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 40px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#sidebar .dropdown .dropdown-menu a:hover
+{
+  color: rgb(36, 37, 43);
+  background-color: white;
+  border-color:#007bff;
+}
+
+.card-body {
+     padding: 0.0rem !important;
+}
+.card-header {
+    background-color: #23282E !important;
+    border-bottom: 2px solid rgba(0,0,0,.125) !important;
+}
+
+.navbar-btn {
+    box-shadow: none;
+    outline: none !important;
+    border: none;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px dashed #ddd;
+    margin: 40px 0;
+}
+
+/* ---------------------------------------------------
+    SIDEBAR STYLE
+----------------------------------------------------- */
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    perspective: 1500px;
+}
+
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: black;
+    color: aliceblue;
+    
+}
+
+#sidebar .logo {
+    display: block;
+    width: 125px;
+    height: 125px;
+    margin: 0 auto; 
+}
+#sidebar .logo span {
+      display: block;
+}
+
+#sidebar.active {
+    margin-left: -250px;
+    transform: rotateY(100deg);
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: black;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid black;
+}
+
+
+
+#sidebar ul p {
+    color:aliceblue;
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+#sidebar ul li a:hover {
+    color: black;
+    background: #fff;
+}
+
+#sidebar ul li.active > a, a[aria-expanded="true"] {
+    color:aliceblue;
+    background: black;
+}
+
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: black; 
+}
+
+ul.CTAs {
+    padding: 20px;
+}
+
+ul.CTAs a {
+    text-align: center;
+    font-size: 0.9em !important;
+    display: block;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+a.download {
+    background: #fff;
+    color: #55382E;
+}
+
+a.article, a.article:hover {
+    background: #6d7fcc !important;
+    color: #fff !important;
+}
+
+.modal-content {
+    background-color: gray !important;
+    color: black !important;
+    }
+
+
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+#content {
+    width: 100%;
+    padding-left: 70px;
+    padding-top: 15px;
+    padding-right: 15px;
+
+    min-height: 100vh;
+    transition: all 0.3s;
+    background: black;
+    color: aliceblue;
+}
+
+#allshellcontent {
+    width: 100%;
+    padding-left: 5px;
+    padding-top: 15px;
+    padding-right: 120px;
+
+    min-height: 100vh;
+    transition: all 0.3s;
+    background: black;
+    color: aliceblue;
+}
+
+.dropdown-menu.show {
+    min-width: 190px;
+    display: inline-block;
+    background-color: rgb(36, 37, 43);
+    color: white;
+
+}
+.dropdown .dropdown-menu a{color: aliceblue; padding-left: 50px;  background-color: rgb(36, 37, 43); text-align: justify;  text-decoration: none;}
+
+.dropdown-menu .dropdown-item {display: inline-block; width: 100%; padding: 10px 5px;}
+
+
+.dropdown .nav-link {color:#fff; text-decoration: none;}
+.dropdown .btn:hover { color:aliceblue;}
+.dropdown .btn:active {background: cyan; color:aliceblue;}
+.dropdown .btn:focus {background: cyan; color:aliceblue;}
+.container .dropdown .dropdown-menu a:hover
+{
+  color: rgb(36, 37, 43);
+  background-color: white;
+  border-color:#007bff;
+}
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    background-color: black !important;
+}
+
+.btn-info, .btn-info:hover, .btn-info:active, .btn-info:visited {
+    background-color: black !important;
+    border: white !important;
+}
+
+.modal-header {
+    background-color: #23282E !important;color: white !important;
+}
+.card-header {
+    text-align: center;font-weight: bold !important;
+}
+#sidebarCollapse {
+    width: 40px;
+    height: 40px;
+    background: #f5f5f5;
+    cursor: pointer;
+}
+
+#sidebarCollapse span {
+    width: 80%;
+    height: 2px;
+    margin: 0 auto;
+    display: block;
+    background: #555;
+    transition: all 0.8s cubic-bezier(0.810, -0.330, 0.345, 1.375);
+    transition-delay: 0.2s;
+}
+
+#sidebarCollapse span:first-of-type {
+    transform: rotate(45deg) translate(2px, 2px);
+}
+#sidebarCollapse span:nth-of-type(2) {
+    opacity: 0;
+}
+#sidebarCollapse span:last-of-type {
+    transform: rotate(-45deg) translate(1px, -1px);
+}
+
+
+#sidebarCollapse.active span {
+    transform: none;
+    opacity: 1;
+    margin: 5px auto;
+}
+
+
+/* ---------------------------------------------------
+    MEDIAQUERIES
+----------------------------------------------------- */
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px;
+        transform: rotateY(90deg);
+    }
+    #sidebar.active {
+        margin-left: 0;
+        transform: none;
+    }
+    #sidebarCollapse span:first-of-type,
+    #sidebarCollapse span:nth-of-type(2),
+    #sidebarCollapse span:last-of-type {
+        transform: none;
+        opacity: 1;
+        margin: 5px auto;
+    }
+    #sidebarCollapse.active span {
+        margin: 0 auto;
+    }
+    #sidebarCollapse.active span:first-of-type {
+        transform: rotate(45deg) translate(2px, 2px);
+    }
+    #sidebarCollapse.active span:nth-of-type(2) {
+        opacity: 0;
+    }
+    #sidebarCollapse.active span:last-of-type {
+        transform: rotate(-45deg) translate(1px, -1px);
+    }
+
+}
