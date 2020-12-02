@@ -11,7 +11,7 @@
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <!-- Our Custom CSS -->
-    <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/style.css">
 
     <!-- Font Awesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
@@ -19,61 +19,61 @@
 
 </head>
 
-<body>
+<body> 
 
     <div class="wrapper">
         <!-- Sidebar Holder -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <h1>AVBUSTER</h1>
+        <nav id="sidebar">            
+            <div class="p-2 pt-2">
+                <a href="#" class="img logo rounded-circle mb-0" style="background-image: url(/static/logo/logo.png);"></a>
             </div>
 
             <ul class="list-unstyled components">
-            <li>
-                <a href="/">Home</a>
-            </li>
-            <li>
-                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Microsoft Shells</a>
-                    <ul class="collapse list-unstyled" id="homeSubmenu">
-                        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">PowerShell Shells</a>
-                        <ul class="collapse list-unstyled" id="pageSubmenu">
-                           <ul>
-                                <li>
-                                    <a href="/powershellcustomshellcode">PS Custom Shell Code</a>
-                                </li>
-                                <li>
-                                    <a href="/powershelltcpreverseshell">PS TCP Reverse Shell</a>
-                                </li>
-                        </ul>
-                        </ul>
+                <li>
+                    <a href="/">Home</a>
+                </li>
+                <li >
+                    <a href="#MsShellsmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Microsoft Shells</a>
+                    <ul class="collapse list-unstyled" id="MsShellsmenu">
+                        <a href="#PsSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">PowerShell Shells</a>
+                        <ul class="collapse list-unstyled" id="PsSubmenu">
+                            <ul>
+                            <li>
+                                <a href="/pscutomshell">PS Custom Shell Code</a>
+                            </li>
+                            <li>
+                                <a href="/pstcprevshell">PS Normal Reverse Shell</a>
+                            </li> 
+                            </ul>                           
+                        </ul>   
                         <a href="#msother" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">MS Other Shells</a>
-                    <ul class="collapse list-unstyled" id="msother">
-                           <ul>
-                                <li>
-                                    <a href="/msbuild">MS Build</a>
-                                </li>
-                                <li>
-                                    <a href="/installutil">InstallUtil</a>
-                                </li>
-                                <li>
-                                    <a href="/msxmlxslt">MS XmlXslt</a>
-                                </li>
-                                <li>
-                                    <a href="/msforfiles">ForFiles</a>
-                                </li>
-                         </ul>
+                        <ul class="collapse list-unstyled" id="msother">
+                            <ul>
+                                    <li>
+                                        <a href="/msbuild">MS Build</a>
+                                    </li>
+                                    <li>
+                                        <a href="/installutil">InstallUtil</a>
+                                    </li>
+                                    <li>
+                                        <a href="/msxmlxslt">MS XmlXslt</a>
+                                    </li>      
+                                    <li>
+                                        <a href="/msexcelmacro">Excel Macro</a>
+                                    </li>                               
+                            </ul>
                         </ul>
                     </ul>
-                   
-                    
-            </li>
-
+                </li>
                 <li class="active">
                     <a href="#othermainmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Other Shells</a>
                     <ul class="collapse list-unstyled" id="othermainmenu">
                         <a href="#othertcpsubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">TCP Shells</a>
                         <ul class="collapse list-unstyled" id="othertcpsubmenu">
                             <ul>
+                                <li>
+                                    <a href="/customgoshell">Custom Go Shell</a>
+                                </li>
                                 <li>
                                     <a href="/tcprevshell">Normal Shell</a>
                                 </li>
@@ -90,7 +90,7 @@
                                     <a href="/httprevshell">Normal Http Shell</a>
                                 </li>
                                 <li>
-                                    <a href="/httpmeterpretershell">Http Meterpreter Shell</a>
+                                    <a href="/httpmeterpretershell">Meterpreter Http Shell</a>
                                 </li>
                             </ul>
 
@@ -99,87 +99,85 @@
                         <ul class="collapse list-unstyled" id="otherhttpssubmenu">
                             <ul>
                                 <li>
-                                    <a href="/httpspinnedcertrevshell">Pinned Cert Shell</a>
+                                    <a href="/selfsignedhttpsrevshell">Self Signed Shell</a>
                                 </li>
                                 <li>
-                                    <a href="/httpsmeterpretershell">Https Meterpreter Shell</a>
+                                    <a href="/pinnedcertshell">Pinned Cert Shell</a>
+                                </li>
+                                <li>
+                                    <a href="/httpsmeterpretershell">Meterpreter Https Shell</a>
                                 </li>
                             </ul>
 
                         </ul>
                     </ul>
-                   
-                </li>
- 
-                <li>
-                    <a href="/customencryptedshell">Your Encrypted ShellCode</a>
+                    <a href="/customencshellcode">Encrypted ShellCode</a>
+
                 </li>
 
-            </ul>
-
+            </ul>           
         </nav>
 
         <!-- Page Content Holder -->
         <div id="content">
 
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <div class="container" style="width:75%"> <h4><span>Encrypted ShellCode Injection</span></h4></div>
-                        </div>
-                </div>
-            </nav>
-                    <p>
-                            <div class="container" style="width:75%">
+            <div class="container" style="width:80%"> <h4><span style="color: #00C0C0; font-size: xx-large;font-weight: bold;">Encrypted Shell Code </span></h4>
 
                         <form action="" method="post">
-                                <div class="row" >
-		        					    <div class="col-sm-12">
-											<label for="shellcode" id="psshellcodelbl"> <span>Shell Code </span></label>
-											<textarea class="form-control" rows="10" id="psshellcode" name="shellcode"></textarea>
-					        					
-					        			</div>
-					        				
-                                </div>
-                                <div class="row">
-		        						
-                                    <div class="col-sm-12">
-                                                  <label for="key"> <span>Key to Decrypt </span></label>
-                                                  <input type="text" class="form-control" id="key" name="key" placeholder="Key to decrypt">
-                                    </div>
+                            <table class="table table-borderless .table-fixed">
+                                <tbody>
+                                    
+                                    <tr>
+
+                                        <td > 
                                         
-                                </div>
-                                <div class="row"><p></p></div>
-				                  	<div class="row">
-		        						
-		        						<div class="col-sm-12">
-													  <label for="saveas"> <span>Save as </span></label>
-													  <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
-					        			</div>
-					        				
-		        					</div>
+                                                <div class="col-sm-12">
+                                                    <label for="key" id="keylbl"> <span>Key </span></label>
+                                                     <input type="text" name="key" class="form-control" id="key"  placeholder="Key to Decrypt">
+                                                </div>
 
-				                  	<div class="row"><p></p></div>
-				                  	<div class="row">
-				                  		<div class="col-sm-12">
-				                  			<button type="submit" class="btn btn-primary form-control">Generate</button>
-				                  		</div>
-				                  		
-				                  	</div>
+                                                <div class="col-sm-12">
+                                                    <label for="shellcode" id="shellcodelbl"> <span>Encrypted Shell Code </span></label>
+                                                    <textarea class="form-control" rows="10" id="shellcode" name="shellcode"></textarea>
+                                                </div>
 
+                                                  <div class="col-sm-12">
+
+                                                    <label for="saveas"> <span>Save as </span></label>
+                                                    <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                                </div>
+
+                                        </td>
+                                        
+                                    </tr>
+                                    
+                                   
+                                    <tr>
+                                        <td>
+                                            <div class="col-sm-12">
+
+                                            <!--label for="buildbinary"> <span>Build Your Binary </span></label-->
+                                            <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                                            <div class="row">
+                                                <div class="col-sm-5">
+
+                                                    <a href={{.Link}}> <span style="color:royalblue;font-weight: bold">Download </span></a>
+                                                    </div>
+                                            </div>
+                                        </div>
+
+                                        </td>   
+                                    </tr>
+                                  
+                                </tbody>
+                            </table>                                                                 
+                                			                  
+                                
                         </form>
-                        <div class="row">
-				                  		
-                                <div class="col-sm-2">
-                                    <label class="form-row justify-content-md-center" name="downloadlink"><a href={{.Link}}> <span style="color:royalblue;font-weight: bold">Download </span></a></label>
-                                </div>
-                            </div> </div>
-                    </p>
+                        
+                    </div>
 
-
-        </div>
+            </div>
     </div>
 
     <!-- jQuery CDN - Slim version (=without AJAX) -->

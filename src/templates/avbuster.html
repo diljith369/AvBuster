@@ -5,13 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
+    <link rel="shortcut icon" href="/static/logo/logo.png">
     <title>AVBUSTER - The Anti Malware assessment framework.</title>
 
     <!-- Bootstrap CSS CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <!-- Our Custom CSS -->
-    <link rel="stylesheet" href="/static/css/style.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/style.css">
 
     <!-- Font Awesome JS -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
@@ -20,171 +20,1313 @@
 </head>
 
 <body>
-
+    
     <div class="wrapper">
         <!-- Sidebar Holder -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <h1>AVBUSTER</h1>
+        <nav id="sidebar">            
+            <div class="p-2 pt-2">
+                <a href="#" class="img logo rounded-circle mb-0" style="background-image: url(/static/logo/logo.png);"></a>
             </div>
 
             <ul class="list-unstyled components">
-            <li>
-                <a href="/">Home</a>
-            </li>
-            <li>
-                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Microsoft Shells</a>
-                    <ul class="collapse list-unstyled" id="homeSubmenu">
-                        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">PowerShell Shells</a>
-                        <ul class="collapse list-unstyled" id="pageSubmenu">
-                           <ul>
-                                <li>
-                                    <a href="/powershellcustomshellcode">PS Custom Shell Code</a>
-                                </li>
-                                <li>
-                                    <a href="/powershelltcpreverseshell">PS TCP Reverse Shell</a>
-                                </li>
-                            </ul>
-                    </ul>
-                    <a href="#msother" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">MS Other Shells</a>
-                    <ul class="collapse list-unstyled" id="msother">
-                           <ul>
-                                <li>
-                                    <a href="/msbuild">MS Build</a>
-                                </li>
-                                <li>
-                                    <a href="/installutil">InstallUtil</a>
-                                </li>
-                                <li>
-                                    <a href="/msxmlxslt">MS XmlXslt</a>
-                                </li>
-                                <li>
-                                    <a href="/msforfiles">ForFiles</a>
-                                </li>
-                         </ul>
-                        </ul>
-                    </ul>
-                   
-                    
-            </li>
+                <div class="card bg-primary">  
+                    <div class="card-header">Microsoft Shells</div>
+                    <div style="margin-top:2px"></div>  
+                    <div class="card-body text-left">
+                      <div class="dropdown">                                        
+                          <button type="button" class="btn btn-info btn-block" data-toggle="dropdown">
+                              PowerShell Shells</button>
+                          <div class="dropdown-menu">
+                              <a  class="dropdown-item" data-toggle="modal" data-target="#pstcprevshell">Reverse Shell (L)</a>
+                              <a  class="dropdown-item" data-toggle="modal" data-target="#pstcprevshellRemote">Reverse Shell (R)</a>
+                          </div>
+                        </div>
+                        <div style="margin-top:2px"></div>
+                        <div class="dropdown">                                        
+                          <button type="button" class="btn btn-info btn-block" data-toggle="dropdown">
+                              MS Other Shells</button>
+                          <div class="dropdown-menu">
+                              <a class="dropdown-item"  data-toggle="modal" data-target="#msbuildtcprevshell">Ms Build</a>
+                              <a  class="dropdown-item" data-toggle="modal" data-target="#installutilrevshell">InstallUtil</a>
+                              <a  class="dropdown-item" data-toggle="modal" data-target="#msxmlxslttcprevshell">MS XmlXslt</a>
+                              <a  class="dropdown-item" data-toggle="modal" data-target="#mspscsharprevshell">PS C# Reverse Shell</a>
 
-                <li>
-                    <a href="#othermainmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Other Shells</a>
-                    <ul class="collapse list-unstyled" id="othermainmenu">
-                        <a href="#othertcpsubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">TCP Shells</a>
-                        <ul class="collapse list-unstyled" id="othertcpsubmenu">
-                            <ul>
-                                <li>
-                                    <a href="/tcprevshell">Normal Shell</a>
-                                </li>
-                                <li>
-                                    <a href="/hybridencshell">Hyrbid Encrypted Shell</a>
-                                </li>
-                            </ul>
+                          </div>
+                        </div>
+                                 
+                    </div>
+                  </div>
+                  <div style="margin-top:5px"></div>
+                  <div class="card bg-primary">  
+                    <div class="card-header">Custom Shells</div>
+                    <div style="margin-top:2px"></div>
+                    <div class="card-body text-left">
+                      <div class="dropdown">                                        
+                          <button type="button" class="btn btn-info btn-block" data-toggle="dropdown">
+                              Encrypted Shells</button>
+                          <div class="dropdown-menu">
+                              
+                              <a class="dropdown-item" data-toggle="modal" data-target="#hybridencrypted" >Hybrid Encrypted</a>
+                              <a  class="dropdown-item" data-toggle="modal" data-target="#selfsigned">SelfSigned Shell</a>
+                              <a  class="dropdown-item" data-toggle="modal" data-target="#pinnedcert">PinnedCert Shell</a>
+                              <a  class="dropdown-item" data-toggle="modal" data-target="#encshellcode">Encrypted(RC4) ShellCode</a>
 
-                        </ul>
-                        <a href="#othersubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">HTTP Shells</a>
-                        <ul class="collapse list-unstyled" id="othersubmenu">
-                            <ul>
-                                <li>
-                                    <a href="/httprevshell">Normal Http Shell</a>
-                                </li>
-                                <li>
-                                    <a href="/httpmeterpretershell">Http Meterpreter Shell</a>
-                                </li>
-                            </ul>
+                          </div>
+                        </div>
+                        <div style="margin-top:2px"></div>
+                        <div class="dropdown">                                        
+                          <button type="button" class="btn btn-info btn-block" data-toggle="dropdown">
+                              Other Shells</button>
+                          <div class="dropdown-menu">
+                              <a class="dropdown-item"  data-toggle="modal" data-target="#customgorev">Custom Go Shell</a>
+                              <a class="dropdown-item"  data-toggle="modal" data-target="#httprevshell">HTTP Shell</a>
+                              <a class="dropdown-item"  data-toggle="modal" data-target="#customdotnetrev">Cutom DotNet Shell</a>
+                              <a class="dropdown-item"  data-toggle="modal" data-target="#normaltcprev">Nomal TCP Shell</a>
+                          </div>
+                        </div>
+                                 
+                    </div>
+                  </div>
+                  <div style="margin-top:5px"></div>
+                  <div class="card bg-primary">
+                    <div class="card-header">WebSocket Shells</div>
+                    <div style="margin-top:2px"></div>
+                    <div class="card-body text-left">
+                      <div class="dropdown">                                        
+                        <button type="button" class="btn btn-info btn-block" data-toggle="dropdown">
+                            Bind Shells</button>
+                        <div class="dropdown-menu">
+                            
+                            <a class="dropdown-item" data-toggle="modal" data-target="#hybridencrypted" >Encrypted BindShell</a>
+                            <a  class="dropdown-item" data-toggle="modal" data-target="#selfsigned">Normal Bind Shell</a>
+                           
+                        </div>
+                      </div> 
+                      <div style="margin-top:2px"></div>
+                    </div>
+                  </div>   
+                      
+                      
 
-                        </ul>
-                        <a href="#otherhttpssubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">HTTPS Shells</a>
-                        <ul class="collapse list-unstyled" id="otherhttpssubmenu">
-                            <ul>
-                                <li>
-                                    <a href="/httpspinnedcertrevshell">Pinned Cert Shell</a>
-                                </li>
-                                <li>
-                                    <a href="/httpsmeterpretershell">Https Meterpreter Shell</a>
-                                </li>
-                            </ul>
-                        </ul>
-                    </ul>
-                   
-                </li>
- 
-                <li>
-                    <a href="/customencryptedshell">Your Encrypted ShellCode</a>
-                </li>
-
-            </ul>
-
+            </ul>           
         </nav>
 
         <!-- Page Content Holder -->
         <div id="content">
-
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <div class="container" style="width:90%"> <h4><span>Stress test your Anti Malware / End Point Protection solutions.</span></h4></div>
-                        </div>
-                </div>
-            </nav>
+            <div class="row">
+                <div class="col-md-10">
+                    <div id="content">
                     <p>
-                        <div class="container" style="width:75%"> 
-                            <p>AVBUSTER helps you to assess your anti malware solutions. It is a framework packed with options to generate different types of executable files
-                               that can be used to test any anti malware / EndPoint Security solutions on both Windows and Linux platforms. Current version supports to create following types of binaries
-                               <ul>
-                                    <li>
-                                        PowerShell Custom Code Injection
-                                    </li>
-                                    <li>
-                                        PowerShell TCP Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        MSBuild TCP Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        Installutil TCP Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        MS XML Xslt TCP Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        Forfiles TCP Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        Normal TCP Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        Hybrid Encrypted TCP Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        HTTP Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        HTTP Meterpreter Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        HTTPS Pinned Cert Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        HTTPS Meterpreter Reverse Shell                                    
-                                    </li>
-                                    <li>
-                                        User Defined Shell Code Injection [Encrypted]                                    
-                                    </li>
-                               </ul>
-                                 Explore more about it here <a href="https://github.com/diljith369/avbuster.git">GitHub</a>
-                            </p>
+                        <div class="container" style="width: 100%;">
+                        <h4><span style="font-size: xx-large;font-weight: bolder; color: #007bff;">AvBuster</span></h4>
         
+                            <p style="text-align: justify;">The Stress Tester for your Anti Malware or EDR Solution. Don't trust your AntiVirus or EDR until it is being stress tested against advanced malware simulated binaries in a safe environment.
+                               AvBuster's unique binaries simulate advanced Malware functions. 
+                               Attack and Defense yourself before someone else do. Use AvBuster to test your system(s) and be safe.
+                               
+                               <div class="row">
+                                   <div class="col-sm-6">
+                                    <ul>                      
+                                        <li>
+                                            PowerShell Reverse Shell (L)                                   
+                                        </li>
+                                        <li>
+                                            PowerShell Reverse Shell (R)                                   
+                                        </li>
+                                        <li>
+                                            PS C# Reverse Shell                                
+                                        </li>
+                                        <li>
+                                            MSBuild Reverse Shell                                    
+                                        </li>
+                                        <li>
+                                            Installutil Reverse Shell                                    
+                                        </li>
+                                        <li>
+                                            MS XML Xslt Reverse Shell                                    
+                                        </li>
+                                       
+                                        <li>
+                                            Custom GoShell Reverse Shell                                    
+                                        </li>
+                                        <li >
+                                            Normal Reverse Shell                                    
+                                        </li>
+                                        <li>
+                                            Hybrid Encrypted Reverse Shell                                    
+                                        </li>
+                                        <li>
+                                            HTTP Reverse Shell                                    
+                                        </li>
+                                    </ul>
+                                   </div>
+                                   <div class="col-sm-6">
+                                    <ul>
+                                   
+                                      <li >
+                                         Custom DotNet (C#) ReverseShell
+                                    </li>
+                                            
+                                            <li>
+                                                Pinned Cert Reverse Shell                                    
+                                            </li>
+                                            <li>
+                                                HTTPS Self Signed Cert Reverse Shell                                    
+                                            </li>
+                                            
+                                            <li>
+                                                User Defined Shell Code Injection [Encrypted]                                    
+                                            </li>
+                                            <li >
+                                                WebSocket Bind Shell                                    
+                                            </li>
+                                            <li >
+                                                Encrypted WebSocket Bind Shell                                    
+                                            </li>
+                                           
+                                            <li >
+                                                WebSocket Custom Bind Shell                                    
+                                            </li>
+                                           
+                                       </ul>
+                                   </div>
+        
+                               </div>
+                               <div class="row">
+                                <div class="container" style="width: 100%; padding-right: 150px;">
+                                <div class="col-sm-6">
+                                    <a href="https://www.youtube.com/c/Aalphaas" class="btn btn-primary">Explore Demo</a>
+                                </div>
+                                </div>
+                            </div>
+                                                   
+                                <!--a href="https://github.com/diljith369/avbuster" style="color: cyan;">GitHub</a-->
+                            </p>
                         </div>
                     </p>
-
-
+                    </div>
+                    </div>  
+                     
+            </div>
+           
+            
         </div>
     </div>
 
+     <!-- encrypted shellcode -->
+ <div class="modal fade" id="encshellcode">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header text-center">
+          <h4 class="modal-title w-100 font-weight-bold">Encrypted ShellCode (RC4) </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>      
+        
+      <!-- Modal body -->
+      <div class="modal-body" >
+          <form action="" method="post">
+            <table class="table table-borderless .table-fixed">
+                <tbody>
+                    
+                    <tr>
+  
+                        <td > 
+                            
+                            <div class="col-sm-12">
+                                <label for="key" id="keylbl"> <span>Key </span></label>
+                                <input type="text" name="key" class="form-control" id="key"  placeholder="Key to Decrypt">
+                            </div>
+                              <div class="col-sm-12">
+                                <label for="shellcode" id="shellcodelbl"> <span>RC4 Encrypted Shell Code </span></label>
+                                <textarea class="form-control" rows="10" id="shellcode" name="shellcode"></textarea>
+                               </div>
+                                <div class="col-sm-12">
+  
+                                    <label for="saveas"> <span>Save as </span></label>
+                                    <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                </div>
+                        </td>
+                        <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="pscsharprevshell">
+  
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="col-sm-12">
+                              <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+
+                            </div>
+  
+                        </td>   
+                    </tr>
+                  
+                </tbody>
+            </table>                                                                 
+          </form>
+      </div>
+  </div>
+</div>
+</div> <!--end encrypted shellcode  modal-->
+    <!-- The PS Csharp reverse Modal -->
+ <div class="modal fade" id="mspscsharprevshell">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header text-center">
+          <h4 class="modal-title w-100 font-weight-bold">PowerShell C# Reverse Shell </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>      
+        
+      <!-- Modal body -->
+      <div class="modal-body" >
+          <form action="" method="post">
+            <table class="table table-borderless .table-fixed">
+                <tbody>
+                    
+                    <tr>
+  
+                        <td > 
+                            <div class="col-sm-12">
+  
+                                <label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type</span></label>
+                                 <select class="form-control" id="shelltype" name="shelltype" >
+                                  <option>Console</option>
+                                  <option>Win GUI</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-12">
+  
+                                <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                              </div>
+                              <div class="col-sm-12">
+  
+                                <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                  <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                </div>
+                                <div class="col-sm-12">
+  
+                                    <label for="saveas"> <span>Save as </span></label>
+                                    <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                </div>
+                        </td>
+                        <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="pscsharprevshell">
+  
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="col-sm-12">
+                              <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+
+                            </div>
+  
+                        </td>   
+                    </tr>
+                  
+                </tbody>
+            </table>                                                                 
+          </form>
+      </div>
+  </div>
+</div>
+</div> <!--end pscsharp rev shell modal-->
+ <!-- pinnedcert  reverse Modal -->
+ <div class="modal fade" id="pinnedcert">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header text-center">
+          <h4 class="modal-title w-100 font-weight-bold">PinnedCert Reverse Shell </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>      
+        
+      <!-- Modal body -->
+      <div class="modal-body" >
+          <form action="" method="post">
+              <table class="table table-borderless .table-fixed">
+                  <tbody>
+                    <tr>
+
+                          <td > 
+                             <div class="row">
+          
+                              <div class="col-sm-4">
+                                  <label for="ostype" id="ostypelbl"> <span class="gtextblue">Target OS </span></label>
+                                   <select class="form-control" id="ostype" name="ostype" >
+                                    <option>Windows</option>
+                                    <option>Linux</option>
+                                </select>
+                              </div>
+                              <div class="col-sm-3">
+                                  <label for="archtype" id="archtypelbl"> <span class="gtextblue">Arch</span></label>
+                                   <select class="form-control" id="archtype" name="archtype" >
+                                    <option>32</option>
+                                    <option>64</option>
+                                </select>
+                              </div>
+                              <div class="col-sm-5">
+    
+                                <label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type</span></label>
+                                 <select class="form-control" id="shelltype" name="shelltype" >
+                                  <option>Console</option>
+                                  <option>No Console</option>
+                              </select>
+                            </div>
+                            </div>
+                            <div class="row">
+                  
+                              <div class="col-sm-6">
+                                <label for="ostype" id="cntostypelbl"> <span class="gtextblue">Controller OS </span></label>
+                                 <select class="form-control" id="cntostype" name="cntostype" >
+                                  <option>Windows</option>
+                                  <option>Linux</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="archtype" id="cntarchtypelbl"> <span class="gtextblue">Arch</span></label>
+                                 <select class="form-control" id="cntarchtype" name="cntarchtype" >
+                                  <option>32</option>
+                                  <option>64</option>
+                              </select>
+                            </div>
+                            
+                          </div>
+                          <div class="row">
+                              <div class="col-sm-6">
+
+                                  <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                  <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                                </div>
+                                <div class="col-sm-6">
+
+                                    <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                      <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                    </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-sm-12">
+
+                                  <label for="fprint" id="fprintlbl"> <span>Finger Print </span></label>
+                                    <input type="text" name="fprint" class="form-control" id="fprint"  placeholder="Finger Print">
+                                  </div>
+                              <div class="col-sm-12">
+
+                                      <label for="saveas"> <span>Save as </span></label>
+                                      <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                  </div>
+                                </div>
+                                <div style="height: 20px;"></div>
+                                <div class="row">
+                                  <div class="col-sm-12">
+
+                                    <!--label for="buildbinary"> <span>Build Your Binary </span></label-->
+                                    <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                                   
+                                </div>
+                                </div>
+                          </td>
+                          
+                      </tr>
+                      <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="pinnedcert">
+                  </tbody>
+              </table>                                                                 
+                                                
+                  
+          </form>
+      </div><!--modal body ends-->
+      
+  </div>
+</div>
+</div> <!--end pinned cert reverseshell shell modal-->
+    <!-- custom go reverse Modal -->
+ <div class="modal fade" id="customgorev">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">Custom Go Reverse Shell </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>      
+          
+        <!-- Modal body -->
+        <div class="modal-body" >
+            <form action="" method="post">
+                <table class="table table-borderless .table-fixed">
+                    <tbody>
+                      <tr>
+
+                            <td > 
+                               <div class="row">
+            
+                                <div class="col-sm-4">
+                                    <label for="ostype" id="ostypelbl"> <span class="gtextblue">Target OS </span></label>
+                                     <select class="form-control" id="ostype" name="ostype" >
+                                      <option>Windows</option>
+                                      <option>Linux</option>
+                                  </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="archtype" id="archtypelbl"> <span class="gtextblue">Arch</span></label>
+                                     <select class="form-control" id="archtype" name="archtype" >
+                                      <option>32</option>
+                                      <option>64</option>
+                                  </select>
+                                </div>
+                                <div class="col-sm-5">
+    
+                                  <label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type</span></label>
+                                   <select class="form-control" id="shelltype" name="shelltype" >
+                                    <option>Console</option>
+                                    <option>No Console</option>
+                                </select>
+                              </div>
+                              </div>
+                              <div class="row">
+                    
+                                <div class="col-sm-6">
+                                  <label for="ostype" id="cntostypelbl"> <span class="gtextblue">Controller OS </span></label>
+                                   <select class="form-control" id="cntostype" name="cntostype" >
+                                    <option>Windows</option>
+                                    <option>Linux</option>
+                                </select>
+                              </div>
+                              <div class="col-sm-6">
+                                  <label for="archtype" id="cntarchtypelbl"> <span class="gtextblue">Arch</span></label>
+                                   <select class="form-control" id="cntarchtype" name="cntarchtype" >
+                                    <option>32</option>
+                                    <option>64</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+
+                                    <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                    <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                                  </div>
+                                  <div class="col-sm-6">
+
+                                      <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                        <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                      </div>
+                                </div>
+                                <div class="row">
+                                <div class="col-sm-12">
+
+                                        <label for="saveas"> <span>Save as </span></label>
+                                        <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                    </div>
+                                  </div>
+                                  <div style="height: 20px;"></div>
+                                  <div class="row">
+                                    <div class="col-sm-12">
+
+                                      <!--label for="buildbinary"> <span>Build Your Binary </span></label-->
+                                      <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                                     
+                                  </div>
+                                  </div>
+                            </td>
+                            
+                        </tr>
+                        <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="customgo">
+                    </tbody>
+                </table>                                                                 
+                                                  
+                    
+            </form>
+        </div><!--modal body ends-->
+        
+    </div>
+  </div>
+  </div> <!--end custom go reverseshell shell modal-->
+  <div class="modal fade" id="customdotnetrev">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">Custom DotNet (C#) Reverse Shell </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>      
+          
+        <!-- Modal body -->
+        <div class="modal-body" >
+            <form action="" method="post">
+                <table class="table table-borderless .table-fixed">
+                    <tbody>
+                      <tr>
+
+                            <td > 
+                               
+                              
+                            <div class="row">
+                                <div class="col-sm-6">
+
+                                    <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                    <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                                  </div>
+                                  <div class="col-sm-6">
+
+                                      <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                        <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                      </div>
+                                </div>
+                                <div class="row">
+                                <div class="col-sm-12">
+
+                                        <label for="saveas"> <span>Save as </span></label>
+                                        <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                    </div>
+                                  </div>
+                                  <div style="height: 20px;"></div>
+                                  <div class="row">
+                                    <div class="col-sm-12">
+
+                                      <!--label for="buildbinary"> <span>Build Your Binary </span></label-->
+                                      <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                                     
+                                  </div>
+                                  </div>
+                            </td>
+                            
+                        </tr>
+                        <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="customdotnetrev">
+                    </tbody>
+                </table>                                                                 
+                                                  
+                    
+            </form>
+        </div><!--modal body ends-->
+        
+    </div>
+  </div>
+  </div> <!--end custom dotnet reverseshell shell modal-->
+
+
+  <div class="modal fade" id="normaltcprev">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">Normal Reverse Shell </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>      
+          
+        <!-- Modal body -->
+        <div class="modal-body" >
+            <form action="" method="post">
+                <table class="table table-borderless .table-fixed">
+                    <tbody>
+                      <tr>
+
+                            <td > 
+                               
+                              
+                            <div class="row">
+                                <div class="col-sm-6">
+
+                                    <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                    <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                                  </div>
+                                  <div class="col-sm-6">
+
+                                      <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                        <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                      </div>
+                                </div>
+                                <div class="row">
+                                <div class="col-sm-12">
+
+                                        <label for="saveas"> <span>Save as </span></label>
+                                        <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                    </div>
+                                  </div>
+                                  <div style="height: 20px;"></div>
+                                  <div class="row">
+                                    <div class="col-sm-12">
+
+                                      <!--label for="buildbinary"> <span>Build Your Binary </span></label-->
+                                      <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                                     
+                                  </div>
+                                  </div>
+                            </td>
+                            
+                        </tr>
+                        <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="normaltcprev">
+                    </tbody>
+                </table>                                                                 
+                                                  
+                    
+            </form>
+        </div><!--modal body ends-->
+        
+    </div>
+  </div>
+  </div> <!--end simple normal  revshell  modal-->
+  <!-- http  reverse Modal -->
+ <div class="modal fade" id="httprevshell">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header text-center">
+          <h4 class="modal-title w-100 font-weight-bold">HTTP Reverse Reverse Shell </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>      
+        
+      <!-- Modal body -->
+      <div class="modal-body" >
+        <form action="" method="post">
+          <table class="table table-borderless .table-fixed">
+              <tbody>
+                 
+                  <tr>
+
+                          <td>
+                            <div class="row">
+                              <div class="col-sm-4">
+                                  <label for="ostype" id="ostypelbl"> <span class="gtextblue">Target OS </span></label>
+                                   <select class="form-control" id="ostype" name="ostype" >
+                                    <option>Windows</option>
+                                    <option>Linux</option>
+                                </select>
+                              </div>
+                              <div class="col-sm-3">
+                                  <label for="archtype" id="archtypelbl"> <span>Arch</span></label>
+                                   <select class="form-control" id="archtype" name="archtype" >
+                                    <option>32</option>
+                                    <option>64</option>
+                                </select>
+                              </div>
+                              <div class="col-sm-5">
+    
+                                <label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type</span></label>
+                                 <select class="form-control" id="shelltype" name="shelltype" >
+                                  <option>Console</option>
+                                  <option>No Console</option>
+                              </select>
+                            </div>
+                            </div>
+                            <div class="row">
+                              <div class="col-sm-6">
+                                  <label for="cntostype" id="cntostypelbl"> <span>Controller OS </span></label>
+                                   <select class="form-control" id="cntostype" name="cntostype" >
+                                    <option>Windows</option>
+                                    <option>Linux</option>
+                                </select>
+                              </div>
+                              <div class="col-sm-6">
+                                  <label for="cntarchtype" id="cntarchtypelbl"> <span >Arch</span></label>
+                                   <select class="form-control" id="cntarchtype" name="cntarchtype" >
+                                    <option>32</option>
+                                    <option>64</option>
+                                </select>
+                              </div>
+                             
+                            </div>
+                            <div class="row">
+                              <div class="col-sm-12">
+
+                                <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                              </div>
+                              <div class="col-sm-12">
+
+                                  <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                    <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-sm-12">
+
+                                      <label for="saveas"> <span>Save as </span></label>
+                                      <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                      </div>
+                                </div>
+                                <div style="height: 20px;"></div>
+                                <div class="row">
+                                      <div class="col-sm-12">
+
+                                        <!--label for="buildbinary"> <span>Build Your Binary </span></label-->
+                                        <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                                      </div>
+                                    </div>
+                          </td>
+                      </tr>
+                      <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="httprevshell">
+              </tbody>
+          </table>                                                                 
+                                      
+              
+      </form>
+      </div>
+  </div>
+</div>
+</div> <!--end http  shell modal-->
+<!-- selfsigned reverse Modal -->
+ <div class="modal fade" id="selfsigned">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">Self Signed Reverse Shell </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>      
+          
+        <!-- Modal body -->
+        <div class="modal-body" >
+          <form action="" method="post">
+            <table class="table table-borderless .table-fixed">
+                <tbody>
+                   
+                    <tr>
+  
+                            <td>
+                              <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="ostype" id="ostypelbl"> <span class="gtextblue">Target OS </span></label>
+                                     <select class="form-control" id="ostype" name="ostype" >
+                                      <option>Windows</option>
+                                      <option>Linux</option>
+                                  </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="archtype" id="archtypelbl"> <span>Arch</span></label>
+                                     <select class="form-control" id="archtype" name="archtype" >
+                                      <option>32</option>
+                                      <option>64</option>
+                                  </select>
+                                </div>
+                                <div class="col-sm-5">
+    
+                                  <label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type</span></label>
+                                   <select class="form-control" id="shelltype" name="shelltype" >
+                                    <option>Console</option>
+                                    <option>No Console</option>
+                                </select>
+                              </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="cntostype" id="cntostypelbl"> <span>Controller OS </span></label>
+                                     <select class="form-control" id="cntostype" name="cntostype" >
+                                      <option>Windows</option>
+                                      <option>Linux</option>
+                                  </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="cntarchtype" id="cntarchtypelbl"> <span >Arch</span></label>
+                                     <select class="form-control" id="cntarchtype" name="cntarchtype" >
+                                      <option>32</option>
+                                      <option>64</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-sm-12">
+  
+                                  <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                  <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                                </div>
+                                <div class="col-sm-12">
+  
+                                    <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                      <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                    </div>
+                                  </div>
+                                  <div class="row">
+                                    <div class="col-sm-12">
+  
+                                        <label for="saveas"> <span>Save as </span></label>
+                                        <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                        </div>
+                                  </div>
+                                  <div style="height: 20px;"></div>
+                                  <div class="row">
+                                        <div class="col-sm-12">
+  
+                                          <!--label for="buildbinary"> <span>Build Your Binary </span></label-->
+                                          <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                                        </div>
+                                      </div>
+                            </td>
+                        </tr>
+                        <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="selfsigned">
+                </tbody>
+            </table>                                                                 
+                                        
+                
+        </form>
+        </div>
+    </div>
+  </div>
+  </div> <!--end self signed shell modal-->
+  <!-- Hybridencrypted reverse Modal -->
+  <div class="modal fade" id="hybridencrypted">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">Hybrid Encrypted Reverse Shell </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>      
+          
+        <!-- Modal body -->
+        <div class="modal-body" >
+          <form action="" method="post">
+            <table class="table table-borderless .table-fixed">
+                <tbody>
+                    
+                    <tr>
+  
+                        <td > 
+                           <div class="row">
+                            <div class="col-sm-4">
+                                <label for="ostype" id="ostypelbl"> <span class="gtextblue">Target OS </span></label>
+                                 <select class="form-control" id="ostype" name="ostype" >
+                                  <option>Windows</option>
+                                  <option>Linux</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="archtype" id="archtypelbl"> <span class="gtextblue">Arch</span></label>
+                                 <select class="form-control" id="archtype" name="archtype" >
+                                  <option>32</option>
+                                  <option>64</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-5">
+    
+                              <label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type</span></label>
+                               <select class="form-control" id="shelltype" name="shelltype" >
+                                <option>Console</option>
+                                <option>No Console</option>
+                            </select>
+                          </div>
+                           </div>
+                           <div class="row">
+                            <div class="col-sm-6">
+                                <label for="ostype" id="cntostypelbl"> <span class="gtextblue">Controller OS </span></label>
+                                 <select class="form-control" id="cntostype" name="cntostype" >
+                                  <option>Windows</option>
+                                  <option>Linux</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="archtype" id="cntarchtypelbl"> <span class="gtextblue">Arch</span></label>
+                                 <select class="form-control" id="cntarchtype" name="cntarchtype" >
+                                  <option>32</option>
+                                  <option>64</option>
+                              </select>
+                            </div>
+                           </div>
+                            <div class="row">
+                            <div class="col-sm-6">
+  
+                                <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                              </div>
+                              <div class="col-sm-6">
+  
+                                <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                  <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                </div>
+                            </div>
+                            <div class="row">
+  
+                              <div class="col-sm-6">
+                                <label for="pvtkey" id="pvtkeylbl"> <span>Client Private Key </span></label>
+                                <textarea class="form-control" rows="7" id="pvtkey" name="pvtkey"></textarea>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="pubkey" id="pubkeylbl"> <span>Client Public Key </span></label>
+                                <textarea class="form-control" rows="7" id="pubkey" name="pubkey"></textarea>
+                                    
+                            </div>
+                            </div>
+                            <div class="row">
+  
+                                  <div class="col-sm-12">
+  
+                                    <label for="saveas"> <span>Save as </span></label>
+                                    <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                </div>
+                                </div>
+                                
+                        </td>
+                        <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="hybridencrypted">
+  
+                    </tr>
+                    
+                    <tr>
+                      <td>
+                            <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+  
+  
+                      </td>   
+                  </tr>
+                  
+                </tbody>
+            </table>                                                                 
+                                        
+                
+        </form>
+        </div>
+    </div>
+  </div>
+  </div> <!--end hybrid encrypted shell modal-->
+  <!-- The MsBuild reverse Modal -->
+  <div class="modal fade" id="msbuildtcprevshell">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">MSBuild Reverse Shell </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>      
+          
+        <!-- Modal body -->
+        <div class="modal-body" >
+            <form action="" method="post">
+              <table class="table table-borderless .table-fixed">
+                  <tbody>
+                      
+                      <tr>
+    
+                          <td > 
+                              <div class="col-sm-12">
+    
+                                  <label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type</span></label>
+                                   <select class="form-control" id="shelltype" name="shelltype" >
+                                    <option>Console</option>
+                                    <option>Win GUI</option>
+                                </select>
+                              </div>
+                              <div class="col-sm-12">
+    
+                                  <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                  <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                                </div>
+                                <div class="col-sm-12">
+    
+                                  <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                    <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                  </div>
+                                  <div class="col-sm-12">
+    
+                                      <label for="saveas"> <span>Save as </span></label>
+                                      <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                  </div>
+                          </td>
+                          <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="msbuildrevshell">
+    
+                      </tr>
+                      
+                      <tr>
+                          <td>
+                            <div class="col-sm-12">
+  
+                                <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                              </div>
+    
+                          </td>   
+                      </tr>
+                    
+                  </tbody>
+              </table>                                                                 
+            </form>
+        </div>
+    </div>
+  </div>
+  </div> <!--end msbuild shell modal-->
+  <!-- The msxmlxslt reverse Modal -->
+  <div class="modal fade" id="msxmlxslttcprevshell">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">MsXmlXslt Reverse Shell </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>      
+          
+        <!-- Modal body -->
+        <div class="modal-body" >
+            <form action="" method="post">
+              <table class="table table-borderless .table-fixed">
+                  <tbody>
+                      
+                      <tr>
+    
+                          <td > 
+                              <div class="col-sm-12">
+    
+                                  <label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type</span></label>
+                                   <select class="form-control" id="shelltype" name="shelltype" >
+                                    <option>Console</option>
+                                    <option>Win GUI</option>
+                                </select>
+                              </div>
+                              <div class="col-sm-12">
+    
+                                  <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                  <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                                </div>
+                                <div class="col-sm-12">
+    
+                                  <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                    <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                  </div>
+                                  <div class="col-sm-12">
+    
+                                      <label for="saveas"> <span>Save as </span></label>
+                                      <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                  </div>
+                          </td>
+                          <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="msxmlxslttcprevshell">
+    
+                      </tr>
+                      
+                      <tr>
+                          <td>
+                            <div class="col-sm-12">
+  
+                                <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                              </div>
+    
+                          </td>   
+                      </tr>
+                    
+                  </tbody>
+              </table>                                                                 
+            </form>
+        </div>
+    </div>
+  </div>
+  </div> <!--end xslt shell modal-->
+   <!-- The installutil reverse Modal -->
+   <div class="modal fade" id="installutilrevshell">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">InstallUtil Reverse Shell </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>      
+          
+        <!-- Modal body -->
+        <div class="modal-body" >
+            <form action="" method="post">
+              <table class="table table-borderless .table-fixed">
+                  <tbody>
+                      
+                      <tr>
+    
+                          <td > 
+                              
+                              <div class="col-sm-12">
+    
+                                  <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                  <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                                </div>
+                                <div class="col-sm-12">
+    
+                                  <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                    <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                  </div>
+                                  <div class="col-sm-12">
+    
+                                      <label for="saveas"> <span>Save as </span></label>
+                                      <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                  </div>
+                          </td>
+                          <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="installutilrevshell">
+    
+                      </tr>
+                      
+                      <tr>
+                          <td>
+                            <div class="col-sm-12">
+  
+                                <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                              </div>
+    
+                          </td>   
+                      </tr>
+                    
+                  </tbody>
+              </table>                                                                 
+            </form>
+        </div>
+    </div>
+  </div>
+  </div> <!--end installutil modal-->
+  <!-- The PS reverse Modal -->
+  <div class="modal fade" id="pstcprevshell">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header text-center">
+            <h4 class="modal-title w-100 font-weight-bold">PowerShell Reverse Shell </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>      
+          
+        <!-- Modal body -->
+        <div class="modal-body" >
+            <form action="" method="post">
+              <table class="table table-borderless .table-fixed">
+                  <tbody>
+                      
+                      <tr>
+    
+                          <td > 
+                              <div class="col-sm-12">
+    
+                                  <label for="shelltype" id="shelltypelbl"> <span class="gtextblue">Shell Type</span></label>
+                                   <select class="form-control" id="shelltype" name="shelltype" >
+                                    <option>Console</option>
+                                    <option>Win GUI</option>
+                                </select>
+                              </div>
+                              <div class="col-sm-12">
+    
+                                  <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                  <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                                </div>
+                                <div class="col-sm-12">
+    
+                                  <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                    <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                  </div>
+                                  <div class="col-sm-12">
+    
+                                      <label for="saveas"> <span>Save as </span></label>
+                                      <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                  </div>
+                          </td>
+                          <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="psrevshell">
+    
+                      </tr>
+                      
+                      <tr>
+                          <td>
+                              <div class="col-sm-12">
+                                <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+  
+                              </div>
+    
+                          </td>   
+                      </tr>
+                    
+                  </tbody>
+              </table>                                                                 
+            </form>
+        </div>
+    </div>
+  </div>
+  </div> <!--end ps rev shell modal-->        
+  <!-- The PS Cusom Modal -->
+  <div class="modal fade" id="pscustomshellcode">
+          <div class="modal-dialog">
+            <div class="modal-content">
+        
+              <!-- Modal Header -->
+              <div class="modal-header text-center">
+                  <h4 class="modal-title w-100 font-weight-bold">PowerShell Custom Shell Code</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              
+        
+              <!-- Modal body -->
+              <div class="modal-body">
+                  <form action="" method="post">
+                      <table class="table table-borderless .table-fixed">
+                          <tbody>
+                             
+                              <tr>
+  
+                                  <td > 
+                                        <div class="col-sm-12">
+                                          <label for="encshellcode" id="encshellcodelbl"> <span>Custom ShellCode</span></label>
+                                          <textarea class="form-control" rows="10" id="encshellcode" name="encshellcode"></textarea>
+                                      </div>
+                                            <div class="col-sm-12">
+  
+                                              <label for="saveas"> <span>Save as </span></label>
+                                              <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                          </div>
+                                          
+  
+                                  </td>
+                                  
+                              </tr>
+                              <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="pscustomshellcode">
+
+                             
+                              <tr>
+                                  <td>
+                                      <div class="col-sm-12">
+  
+                                      <!--label for="buildbinary"> <span>Build Your Binary </span></label-->
+                                      <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+                                      
+                                  </div>
+  
+                                  </td>   
+                              </tr>
+                            
+                          </tbody>
+                      </table>                                                                 
+                                                        
+                          
+                  </form>
+              </div>
+        
+            </div>
+          </div>
+  </div>
     <!-- jQuery CDN - Slim version (=without AJAX) -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <!-- Popper.JS -->

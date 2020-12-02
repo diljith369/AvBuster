@@ -494,6 +494,7 @@ func createavbusterpayload(userselectedval UserValues, ismanager bool, finflag c
 	portreplaced := strings.Replace(ipreplaced, "RPORT", userselectedval.lport, 1)
 	valuetowrite = strings.Replace(portreplaced, "SHELLCODE", userselectedval.shellcode, 1)
 
+	
 	if strings.TrimSpace(userselectedval.privatekey) != "" &&
 		strings.TrimSpace(userselectedval.publickey) != "" {
 		getpvtkeycontents := readfilecontent(userselectedval.privatekey)
