@@ -1,0 +1,12 @@
+Go and C# (mono-csc)
+git commandline
+
+go get github.com/fatih/color
+go get github.com/kbinani/screenshot
+go get github.com/gorilla/mux
+go get github.com/PuerkitoBio/goquery
+
+cd /root/go/src/github.com/
+mkdir lxn
+cd lxn
+git clone https://github.com/lxn/win
