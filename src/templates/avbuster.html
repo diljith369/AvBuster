@@ -30,8 +30,7 @@
 
             <ul class="list-unstyled components">
                 <div class="card bg-primary">  
-                    <div class="card-header">Microsoft Shells</div>
-                    <div style="margin-top:2px"></div>  
+                    <div style="margin-top:6px"></div>  
                     <div class="card-body text-left">
                       <div class="dropdown">                                        
                           <button type="button" class="btn btn-info btn-block" data-toggle="dropdown">
@@ -56,10 +55,9 @@
                                  
                     </div>
                   </div>
-                  <div style="margin-top:5px"></div>
+                  <div style="margin-top:12px"></div>
                   <div class="card bg-primary">  
-                    <div class="card-header">Custom Shells</div>
-                    <div style="margin-top:2px"></div>
+                    <div style="margin-top:6px"></div>
                     <div class="card-body text-left">
                       <div class="dropdown">                                        
                           <button type="button" class="btn btn-info btn-block" data-toggle="dropdown">
@@ -87,22 +85,21 @@
                                  
                     </div>
                   </div>
-                  <div style="margin-top:5px"></div>
+                  <div style="margin-top:12px"></div>
                   <div class="card bg-primary">
-                    <div class="card-header">WebSocket Shells</div>
-                    <div style="margin-top:2px"></div>
+                    <div style="margin-top:6px"></div>
                     <div class="card-body text-left">
                       <div class="dropdown">                                        
                         <button type="button" class="btn btn-info btn-block" data-toggle="dropdown">
-                            Bind Shells</button>
+                          WebSocket Bind Shells</button>
                         <div class="dropdown-menu">
                             
-                            <a class="dropdown-item" data-toggle="modal" data-target="#hybridencrypted" >Encrypted BindShell</a>
-                            <a  class="dropdown-item" data-toggle="modal" data-target="#selfsigned">Normal Bind Shell</a>
+                            <a class="dropdown-item" data-toggle="modal" data-target="#encwebsocketbindshell" >Encrypted BindShell</a>
+                            <a  class="dropdown-item" data-toggle="modal" data-target="#websocketbindshell">Normal Bind Shell</a>
                            
                         </div>
                       </div> 
-                      <div style="margin-top:2px"></div>
+                      <div style="margin-top:0px"></div>
                     </div>
                   </div>   
                       
@@ -212,6 +209,68 @@
             
         </div>
     </div>
+
+ <!-- websocket bindshell -->
+ <div class="modal fade" id="websocketbindshell">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header text-center">
+          <h4 class="modal-title w-100 font-weight-bold">WebSocket Bind </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>      
+        
+      <!-- Modal body -->
+      <div class="modal-body" >
+          <form action="" method="post">
+            <table class="table table-borderless .table-fixed">
+                <tbody>
+                    
+                    <tr>
+  
+                        <td >  
+                          <div class="col-sm-12">
+                          <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                          <input type="text" name="lport" class="form-control" id="lport"  placeholder="Local port of your listener to get victim's IP">
+                      </div>
+                      <div class="col-sm-12">
+                        <label for="rhost" id="rhostlbl"> <span>Listener IP</span></label>
+                        <input type="text" name="rhost" class="form-control" id="rhost"  placeholder="Listener IP">
+                    </div>
+                        <div class="col-sm-12">
+                          <label for="rport" id="rportlbl"> <span>RPORT </span></label>
+                          <input type="text" name="rport" class="form-control" id="rport"  placeholder="Remote port opens on the victim machine">
+                         </div>
+                                <div class="col-sm-12">
+  
+                                    <label for="saveas"> <span>Save as </span></label>
+                                    <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                </div>
+                        </td>
+                        <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="websocketbindshell">
+  
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="col-sm-12">
+                              <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+
+                            </div>
+  
+                        </td>   
+                    </tr>
+                  
+                </tbody>
+            </table>                                                                 
+          </form>
+      </div>
+  </div>
+</div>
+</div> <!--end websocket bind shell  modal-->
 
      <!-- encrypted shellcode -->
  <div class="modal fade" id="encshellcode">

