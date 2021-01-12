@@ -49,6 +49,8 @@
                               <a  class="dropdown-item" data-toggle="modal" data-target="#installutilrevshell">InstallUtil</a>
                               <a  class="dropdown-item" data-toggle="modal" data-target="#msxmlxslttcprevshell">MS XmlXslt</a>
                               <a  class="dropdown-item" data-toggle="modal" data-target="#mspscsharprevshell">PS C# Reverse Shell</a>
+                              <a  class="dropdown-item" data-toggle="modal" data-target="#msexcelmacrorevshell">Excel Macro Reverse Shell</a>
+
 
                           </div>
                         </div>
@@ -178,12 +180,10 @@
                                                 WebSocket Bind Shell                                    
                                             </li>
                                             <li >
-                                                Encrypted WebSocket Bind Shell                                    
+                                                Excel Macro Reverse Shell                                    
                                             </li>
                                            
-                                            <li >
-                                                WebSocket Custom Bind Shell                                    
-                                            </li>
+                                            
                                            
                                        </ul>
                                    </div>
@@ -397,6 +397,71 @@
   </div>
 </div>
 </div> <!--end pscsharp rev shell modal-->
+ <!-- The ms excel macro reverse Modal -->
+ <div class="modal fade" id="msexcelmacrorevshell">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header text-center">
+          <h4 class="modal-title w-100 font-weight-bold">Excel Macro PS Reverse Shell </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>      
+        
+      <!-- Modal body -->
+      <div class="modal-body" >
+          <form action="" method="post">
+            <table class="table table-borderless .table-fixed">
+                <tbody>
+                    
+                    <tr>
+  
+                        <td > 
+                            
+                            <div class="col-sm-12">
+  
+                                <label for="lhost" id="lhostlbl"> <span >LHOST</span></label>
+                                <input type="text" name="lhost" class="form-control" id="lhost"  placeholder="Listener IP">
+                              </div>
+                              <div class="col-sm-12">
+  
+                                <label for="lport" id="lportlbl"> <span>LPORT </span></label>
+                                  <input type="text" name="lport" class="form-control" id="lport"  placeholder="Port">
+                                </div>
+                                <div class="col-sm-12">
+  
+                                  <label for="rhostserver" id="rhostlbl"> <span >Hosting Server</span></label>
+                                  <input type="text" name="rhostserver" class="form-control" id="rhostserver"  placeholder="Powershell hosting server IP">
+                                </div>
+                                <div class="col-sm-12">
+  
+                                    <label for="saveas"> <span>Save as </span></label>
+                                    <input type="text" class="form-control" id="saveas" name="saveas" placeholder="File name. (No Extension)">
+                                </div>
+                        </td>
+                        <input type="hidden" id="selectedshelltype" name="selectedshelltype" value="msexcelmacrops">
+  
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <div class="col-sm-12">
+                              <button type="submit" class="btn btn-primary form-control">Build Binary</button>
+
+                            </div>
+  
+                        </td>   
+                    </tr>
+                  
+                </tbody>
+            </table>                                                                 
+          </form>
+      </div>
+  </div>
+</div>
+</div> <!--end msexcel rev shell modal-->
  <!-- pinnedcert  reverse Modal -->
  <div class="modal fade" id="pinnedcert">
   <div class="modal-dialog">

