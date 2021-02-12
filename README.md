@@ -10,6 +10,9 @@
 
 ## Getting Started
 
+![AvBuster](https://github.com/diljith369/AvBuster/blob/master/avbuster.png)
+
+
 ##### git clone https://github.com/diljith369/AvBuster.git
 ##### cd AvBuster/bin
 ### Set it up in Windows 
