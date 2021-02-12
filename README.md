@@ -5,13 +5,11 @@
                               ██║  ██║ ╚████╔╝ ██████╔╝╚██████╔╝███████║   ██║   ███████╗██║  ██║
                               ╚═╝  ╚═╝  ╚═══╝  ╚═════╝  ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 ## AvBuster - Endpoint Security Assessment Framework .
+![AvBuster](https://github.com/diljith369/AvBuster/blob/master/avbuster.png)
 
 #####  AvBuster is an EndPoint Security Assessment Framework .Helps you to create different binary files to assess endpoint protection / anti malware solutions by trying different techniques to bypass endpoint protections in place .
 
 ## Getting Started
-
-![AvBuster](https://github.com/diljith369/AvBuster/blob/master/avbuster.png)
-
 
 ##### git clone https://github.com/diljith369/AvBuster.git
 ##### cd AvBuster/bin
